@@ -9,6 +9,9 @@
 ![5](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/f9ad7166-e24f-403c-8a60-1efba12f7efc)
 
 
+## .:[ Dependencies ]:.
+[Metamod:Source (2.x)](https://www.sourcemm.net/downloads.php/?branch=master)
+[CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
 ## .:[ ConVars ]:.
  ```
