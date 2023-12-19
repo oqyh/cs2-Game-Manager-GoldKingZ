@@ -1,4 +1,4 @@
-# [CS2] Game-Manager (1.0.0)
+# [CS2] Game-Manager (1.0.1)
 
 ### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , And More )
 
@@ -15,20 +15,40 @@
 [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
 ## .:[ ConVars ]:.
- ```
-  "DisableRadio": false (Disable Radio)
-  "DisablePing": false (Disable Player Ping)
-  "DisableChatWheel": false (Disable Chat Wheel)
-  "DisableKillfeed": false (Disable Killfeed)
-  "DisableWinOrLosePanel": false (Disable Win Or Lose Panel At End Round)
-  "DisableWinOrLoseSound": false (Disable Win Or Lose Sound At End Round)
-  "IgnoreJoinTeamMessages": false (Remove Player Join Message)
-  "IgnoreDefaultDisconnectMessages": false (Remove Player Disconnect Message)
+```json
+{
+  "DisableRadio": false,                            // Disable Radio
+  "DisableGrenadeRadio": false,                     // Disable Throwing Grenade Radio
+  "DisablePing": false,                             // Disable Player Ping
+  "DisableChatWheel": false,                        // Disable Player ChatWheel
+  "DisableKillfeed": false,                         // Disable Killfeed
+  "DisableRadar": false,                            // Disable Radar
+  "DisableMoneyHUD": false,                         // Disable Money Hud
+  "DisableWinOrLosePanel": false,                   // Disable Win/Lose/DRAW Panel
+  "DisableWinOrLoseSound": false,                   // Disable Win/Lose/DRAW Sound
+  "DisableJumpLandSound": false,                    // Disable Jump Land Sound
+  "DisableFallDamage": false,                       // Disable Fall Damage
+  "IgnoreJoinTeamMessages": false,                  // Ignore Player Join Team Messages
+  "IgnoreRewardMoneyMessages": false,               // Ignore Player Reward Money Messages
+  "IgnoreTeamMateAttackMessages": false,            // Ignore Player Attack TeamMate Messages
+  "IgnorePlayerSavedYouByPlayerMessages": false,    // Ignore Player Saved You By Player Messages
+  "IgnoreDefaultDisconnectMessages": false,         // Ignore Player Default Disconnect Messages
+}
 ```
 
 
 ## .:[ Change Log ]:.
 ```
+(1.0.1)
+-Added [DisableGrenadeRadio]
+-Added [DisableRadar]
+-Added [DisableMoneyHUD]
+-Added [DisableJumpLandSound]
+-Added [DisableFallDamage]
+-Added [IgnoreRewardMoneyMessages]
+-Added [IgnoreTeamMateAttackMessages]
+-Added [IgnorePlayerSavedYouByPlayerMessages]
+
 (1.0.0)
 -Initial Release
 ```
