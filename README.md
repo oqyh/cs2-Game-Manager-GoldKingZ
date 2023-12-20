@@ -6,7 +6,7 @@
 ![2](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/1d2c9311-3092-4c49-8198-b37d3cb65890)
 ![1](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/65c8b2d0-045a-46d2-b75a-a2c235fc6a26)
 ![4](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/138b8ff5-df2e-4c3a-a85a-f8996aeda63b)
-![5](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/f9ad7166-e24f-403c-8a60-1efba12f7efc)
+https://github.com/oqyh/cs2-Game-Manager/blob/main/img/111.png?raw=true
 
 
 ## .:[ Dependencies ]:.
