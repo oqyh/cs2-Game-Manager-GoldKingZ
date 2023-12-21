@@ -5,9 +5,9 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using System.Text.Json.Serialization;
 using System.Drawing;
+using CounterStrikeSharp.API.Modules.Timers;
 
 namespace Game_Manager;
-
 
 public class GameBMangerConfig : BasePluginConfig
 {
@@ -28,24 +28,46 @@ public class GameBMangerConfig : BasePluginConfig
     [JsonPropertyName("IgnoreTeamMateAttackMessages")] public bool IgnoreTeamMateAttackMessages { get; set; } = false;
     [JsonPropertyName("IgnorePlayerSavedYouByPlayerMessages")] public bool IgnorePlayerSavedYouByPlayerMessages { get; set; } = false;
     [JsonPropertyName("IgnoreDefaultDisconnectMessages")] public bool IgnoreDefaultDisconnectMessages { get; set; } = false;
+    [JsonPropertyName("RestartServerLastPlayerDisconnect")] public bool RestartServerLastPlayerDisconnect { get; set; } = false;
+    [JsonPropertyName("RestartMethod")] public int RestartMethod { get; set; } = 1;
+    [JsonPropertyName("RestartXTimerInMins")] public int RestartXTimerInMins { get; set; } = 5;  
+    [JsonPropertyName("RestartWhenXPlayersInServerORLess")] public int RestartWhenXPlayersInServerORLess { get; set; } = 0;
+
 }
+
+
 
 public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig> 
 {
     public override string ModuleName => "Game Manager";
-    public override string ModuleVersion => "1.0.2";
+    public override string ModuleVersion => "1.0.3";
     public override string ModuleAuthor => "Gold KingZ";
-    public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds";
+    public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds , Restart On Last Player Disconnect";
     public GameBMangerConfig Config { get; set; } = new GameBMangerConfig();
-    
     public void OnConfigParsed(GameBMangerConfig config)
     {
+        Config = config;
+
         if (Config.IgnoreRewardMoneyMessages < 0 || Config.IgnoreRewardMoneyMessages > 2)
         {
             config.IgnoreRewardMoneyMessages = 0;
+            Console.WriteLine("IgnoreRewardMoneyMessages: is invalid, setting to default value (0) Please Choose 0 or 1 or 2.");
         }
-
-        Config = config;
+        if (Config.RestartXTimerInMins < 0 )
+        {
+            config.RestartXTimerInMins = 5;
+            Console.WriteLine("RestartXTimerInMins: is invalid, setting to default value (5) Please Choose 0 OR Above.");
+        }
+        if (Config.RestartWhenXPlayersInServerORLess < 0 )
+        {
+            config.RestartWhenXPlayersInServerORLess = 0;
+            Console.WriteLine("RestartWhenXPlayersInServerORLess: is invalid, setting to default value (0) Please Choose 0 OR Above.");
+        }
+        if (Config.RestartMethod < 0 || Config.RestartMethod > 2)
+        {
+            config.RestartMethod = 1;
+            Console.WriteLine("RestartMethod: is invalid, setting to default value (1) Please Choose 0 or 1 or 2.");
+        }
     }
 
     /*
@@ -59,6 +81,8 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         }
     }
     */
+    private CounterStrikeSharp.API.Modules.Timers.Timer? _restartTimer;
+    private CounterStrikeSharp.API.Modules.Timers.Timer? _restartTimer2;
     private string[] RadioArray = new string[] {
     "coverme",
 	"takepoint",
@@ -208,6 +232,13 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
             return HookResult.Continue;
         }, HookMode.Pre);
+        RegisterListener<Listeners.OnMapStart>(mapName =>
+        {
+            _restartTimer?.Kill();
+            _restartTimer = null;
+            _restartTimer2?.Kill();
+            _restartTimer2 = null;
+        });
         RegisterEventHandler<EventRoundEnd>((@event, info) =>
         {
             if (!Config.DisableWinOrLoseSound || @event == null)return HookResult.Continue;
@@ -272,12 +303,94 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             return HookResult.Continue;
             
         });
+        RegisterListener<Listeners.OnClientConnected>(playerSlot =>
+        {
+            if (!Config.RestartServerLastPlayerDisconnect || Config.RestartMethod == 0) return;
+            var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+            var playersCount = players.Count();
+
+            if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
+            {
+            _restartTimer?.Kill();
+            _restartTimer = null;
+            _restartTimer2?.Kill();
+            _restartTimer2 = null;
+
+            _restartTimer = AddTimer(0.1f, RestartTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+            }else if(playersCount >= Config.RestartWhenXPlayersInServerORLess)
+            {
+                _restartTimer?.Kill();
+                _restartTimer = null;
+                
+                _restartTimer2?.Kill();
+                _restartTimer2 = null;
+            }
+
+        });
+        RegisterListener<Listeners.OnClientDisconnectPost>(playerSlot =>
+        {
+            if (!Config.RestartServerLastPlayerDisconnect || Config.RestartMethod == 0) return;
+
+            var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+            var playersCount = players.Count();
+
+            if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
+            {
+            _restartTimer?.Kill();
+            _restartTimer = null;
+            _restartTimer2?.Kill();
+            _restartTimer2 = null;
+
+            _restartTimer = AddTimer(0.1f, RestartTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+            }else if(playersCount >= Config.RestartWhenXPlayersInServerORLess)
+            {
+                _restartTimer?.Kill();
+                _restartTimer = null;
+                
+                _restartTimer2?.Kill();
+                _restartTimer2 = null;
+            }
+        });
         for (int i = 0; i < RadioArray.Length; i++)
         {
             AddCommandListener(RadioArray[i], CommandListener_RadioCommands);
         }
     }
-    
+    private void RestartTimer_Callback()
+    {
+        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+        var playersCount = players.Count();
+
+        //Server.PrintToConsole($"playersCount{playersCount} Config.RestartWhenXPlayersInServerORLess{Config.RestartWhenXPlayersInServerORLess}");
+        if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
+        {
+            _restartTimer2 = AddTimer(Config.RestartXTimerInMins * 60, RestartTimer_Callback2, TimerFlags.STOP_ON_MAPCHANGE);
+        }
+    }
+    private void RestartTimer_Callback2()
+    {
+        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+        var playersCount = players.Count();
+
+        if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
+        {
+            if(Config.RestartMethod == 1)
+            {
+                Server.ExecuteCommand("sv_cheats 1; restart");
+            }else if(Config.RestartMethod == 2)
+            {
+                Server.ExecuteCommand("sv_cheats 1; crash");
+            }
+
+        }else if(playersCount >= Config.RestartWhenXPlayersInServerORLess)
+        {
+            _restartTimer?.Kill();
+            _restartTimer = null;
+            
+            _restartTimer2?.Kill();
+            _restartTimer2 = null;
+        }
+    }
     private HookResult CommandListener_Ping(CCSPlayerController? player, CommandInfo info)
     {
         if(!Config.DisablePing || player == null || !player.IsValid)return HookResult.Continue;
