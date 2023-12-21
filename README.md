@@ -1,6 +1,6 @@
 # [CS2] Game-Manager (1.0.3)
 
-### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , And More )
+### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , And More )
 
 ![3](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/76d08c47-d838-4867-8410-06b7c8249add)
 ![2](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/1d2c9311-3092-4c49-8198-b37d3cb65890)
