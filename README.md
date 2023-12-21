@@ -1,4 +1,4 @@
-# [CS2] Game-Manager (1.0.2)
+# [CS2] Game-Manager (1.0.3)
 
 ### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , And More )
 
@@ -33,13 +33,23 @@
   "IgnoreRewardMoneyMessages": 0,                   // Ignore Player Reward Money Messages ( 1=Covar [Better Option] , 2= Remove Message Only [[Dont Put 2 Wait For CounterStrikeSharp Update OtherWise Will Crash]])
   "IgnoreTeamMateAttackMessages": false,            // Ignore Player Attack TeamMate Messages ([[Dont Make it True Wait For CounterStrikeSharp Update OtherWise Will Crash]])
   "IgnorePlayerSavedYouByPlayerMessages": false,    // Ignore Player Saved You By Player Messages ([[Dont Make it True Wait For CounterStrikeSharp Update OtherWise Will Crash]])
-  "IgnoreDefaultDisconnectMessages": false,         // Ignore Player Default Disconnect Messages
+
+  "RestartServerLastPlayerDisconnect": false,       // Restart Server On Last Player Disconnect
+  "RestartMethod": 1,                               // if [RestartServerLastPlayerDisconnect True] Which Method Do You Like   1= Restart    2= Crash  if 1 not working
+  "RestartXTimerInMins": 5,                         // if [RestartServerLastPlayerDisconnect True] How Many In Mins To Wait Before Start [RestartMethod]
+  "RestartWhenXPlayersInServerORLess": 0,           // if [RestartServerLastPlayerDisconnect True] (Bot Doesn't Count As Player) How Many Players In Server To Start [RestartMethod] 0= Means 0 Players In Server Do Restart
 }
 ```
 
 
 ## .:[ Change Log ]:.
 ```
+(1.0.3)
+-Added [RestartServerLastPlayerDisconnect]
+-Added [RestartMethod]
+-Added [RestartXTimerInMins]
+-Added [RestartWhenXPlayersInServerORLess]
+
 (1.0.2)
 -Added [DisableLegs]
 -Fix [IgnoreRewardMoneyMessages]
