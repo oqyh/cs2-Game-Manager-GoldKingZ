@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using System.Text.Json.Serialization;
+using System.Drawing;
 
 namespace Game_Manager;
 
@@ -21,24 +22,29 @@ public class GameBMangerConfig : BasePluginConfig
     [JsonPropertyName("DisableWinOrLoseSound")] public bool DisableWinOrLoseSound { get; set; } = false;
     [JsonPropertyName("DisableJumpLandSound")] public bool DisableJumpLandSound { get; set; } = false;
     [JsonPropertyName("DisableFallDamage")] public bool DisableFallDamage { get; set; } = false;
+    [JsonPropertyName("DisableLegs")] public bool DisableLegs { get; set; } = false;
     [JsonPropertyName("IgnoreJoinTeamMessages")] public bool IgnoreJoinTeamMessages { get; set; } = false;
-    [JsonPropertyName("IgnoreRewardMoneyMessages")] public bool IgnoreRewardMoneyMessages { get; set; } = false;
+    [JsonPropertyName("IgnoreRewardMoneyMessages")] public int IgnoreRewardMoneyMessages { get; set; } = 0;
     [JsonPropertyName("IgnoreTeamMateAttackMessages")] public bool IgnoreTeamMateAttackMessages { get; set; } = false;
     [JsonPropertyName("IgnorePlayerSavedYouByPlayerMessages")] public bool IgnorePlayerSavedYouByPlayerMessages { get; set; } = false;
     [JsonPropertyName("IgnoreDefaultDisconnectMessages")] public bool IgnoreDefaultDisconnectMessages { get; set; } = false;
 }
 
-public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
+public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig> 
 {
     public override string ModuleName => "Game Manager";
-    public override string ModuleVersion => "1.0.1";
+    public override string ModuleVersion => "1.0.3";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds";
-
-    public GameBMangerConfig Config { get; set; }
+    public GameBMangerConfig Config { get; set; } = new GameBMangerConfig();
     
     public void OnConfigParsed(GameBMangerConfig config)
     {
+        if (Config.IgnoreRewardMoneyMessages < 0 || Config.IgnoreRewardMoneyMessages > 2)
+        {
+            config.IgnoreRewardMoneyMessages = 0;
+        }
+
         Config = config;
     }
 
@@ -53,13 +59,6 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         }
     }
     */
-
-    public void Release(bool hotReload)
-    {
-        VirtualFunctions.ClientPrintFunc.Unhook(OnPrintToChat, HookMode.Pre);
-        VirtualFunctions.ClientPrintAllFunc.Unhook(OnPrintToChatAll, HookMode.Pre);
-    }
-    
     private string[] RadioArray = new string[] {
     "coverme",
 	"takepoint",
@@ -166,17 +165,22 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     };
     public override void Load(bool hotReload)
     {
-        VirtualFunctions.ClientPrintFunc.Hook(OnPrintToChat, HookMode.Pre);
-        VirtualFunctions.ClientPrintAllFunc.Hook(OnPrintToChatAll, HookMode.Pre);
+        if(Config.IgnoreTeamMateAttackMessages == true || Config.IgnorePlayerSavedYouByPlayerMessages == true || Config.IgnoreRewardMoneyMessages == 2)
+        {
+            VirtualFunctions.ClientPrintFunc.Hook(OnPrintToChat, HookMode.Pre);
+            VirtualFunctions.ClientPrintAllFunc.Hook(OnPrintToChatAll, HookMode.Pre);
+        }
 
-        //AddCommandListener("chatwheel_ping", CommandListener_chatwheelping);
-        //AddCommandListener("playerradio", CommandListener_playerradio);
         AddCommandListener("player_ping", CommandListener_Ping);
         AddCommandListener("playerchatwheel", CommandListener_chatwheel);
-        //RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect, HookMode.Pre);
-        //RegisterEventHandler<EventPlayerTeam>(OnPlayerTeam, HookMode.Pre);
+
         RegisterEventHandler<EventRoundPrestart>((@event, info) =>
         {
+            if(Config.IgnoreRewardMoneyMessages == 1)
+            {
+                Server.ExecuteCommand("mp_playercashawards 0");
+                Server.ExecuteCommand("cash_team_bonus_shorthanded 0");
+            }
             if(Config.DisableRadar)
             {
                 Server.ExecuteCommand("sv_disable_radar 1");
@@ -244,6 +248,30 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             
             return HookResult.Continue;
         }, HookMode.Pre);
+        RegisterEventHandler<EventPlayerSpawn>((@event, info) =>
+        {
+            if(!Config.DisableLegs || @event == null)
+            {
+                return HookResult.Continue;
+            }
+
+            CCSPlayerController player = @event.Userid;
+
+            if (player == null
+            || !player.IsValid
+            || player.PlayerPawn == null
+            || !player.PlayerPawn.IsValid
+            || player.PlayerPawn.Value == null
+            || !player.PlayerPawn.Value.IsValid)
+            {
+                return HookResult.Continue;
+            }
+
+            player.PlayerPawn.Value.Render = Color.FromArgb(254, 254, 254, 254);
+
+            return HookResult.Continue;
+            
+        });
         for (int i = 0; i < RadioArray.Length; i++)
         {
             AddCommandListener(RadioArray[i], CommandListener_RadioCommands);
@@ -256,9 +284,18 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         return HookResult.Handled;
     }
+
+    private HookResult OnPrintToChat(DynamicHook hook)
+    {
+        return InternalHandler(hook.GetParam<string>(2));
+    }
+    private HookResult OnPrintToChatAll(DynamicHook hook)
+    {
+        return InternalHandler(hook.GetParam<string>(1));
+    }
     private HookResult InternalHandler(string message)
     {
-        if(Config.IgnoreTeamMateAttackMessages)
+        if(Config.IgnoreTeamMateAttackMessages == true)
         {
             for (int i = 0; i < TeamWarningArray.Length; i++)
             {
@@ -269,7 +306,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             }
         }
 
-        if(Config.IgnorePlayerSavedYouByPlayerMessages)
+        if(Config.IgnorePlayerSavedYouByPlayerMessages == true)
         {
             for (int i = 0; i < SavedbyArray.Length; i++)
             {
@@ -280,7 +317,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             }
         }
 
-        if(Config.IgnoreRewardMoneyMessages)
+        if(Config.IgnoreRewardMoneyMessages == 2)
         {
             for (int i = 0; i < MoneyMessageArray.Length; i++)
             {
@@ -293,17 +330,6 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         
         return HookResult.Continue;
     }
-    
-    private HookResult OnPrintToChat(DynamicHook hook)
-    {
-        return InternalHandler(hook.GetParam<string>(2));
-    }
-
-    private HookResult OnPrintToChatAll(DynamicHook hook)
-    {
-        return InternalHandler(hook.GetParam<string>(1));
-    }
-
     private HookResult CommandListener_chatwheel(CCSPlayerController? player, CommandInfo info)
     {
         if(!Config.DisableChatWheel || player == null || !player.IsValid)return HookResult.Continue;
@@ -315,5 +341,13 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         if(!Config.DisableRadio || player == null || !player.IsValid)return HookResult.Continue;
 
         return HookResult.Handled;
+    }
+    public override void Unload(bool hotReload)
+    {
+        if(Config.IgnoreTeamMateAttackMessages == true || Config.IgnorePlayerSavedYouByPlayerMessages == true || Config.IgnoreRewardMoneyMessages == 2)
+        {
+            VirtualFunctions.ClientPrintFunc.Unhook(OnPrintToChat, HookMode.Pre);
+            VirtualFunctions.ClientPrintAllFunc.Unhook(OnPrintToChatAll, HookMode.Pre);
+        }
     }
 }
