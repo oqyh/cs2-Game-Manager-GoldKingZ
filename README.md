@@ -1,4 +1,4 @@
-# [CS2] Game-Manager (1.0.1)
+# [CS2] Game-Manager (1.0.2)
 
 ### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , And More )
 
@@ -14,7 +14,7 @@
 
 [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
-## .:[ ConVars ]:.
+## .:[ Configuration ]:.
 ```json
 {
   "DisableRadio": false,                            // Disable Radio
@@ -28,10 +28,11 @@
   "DisableWinOrLoseSound": false,                   // Disable Win/Lose/DRAW Sound
   "DisableJumpLandSound": false,                    // Disable Jump Land Sound
   "DisableFallDamage": false,                       // Disable Fall Damage
+  "DisableLegs": false,                             // Disable Legs
   "IgnoreJoinTeamMessages": false,                  // Ignore Player Join Team Messages
-  "IgnoreRewardMoneyMessages": false,               // Ignore Player Reward Money Messages
-  "IgnoreTeamMateAttackMessages": false,            // Ignore Player Attack TeamMate Messages
-  "IgnorePlayerSavedYouByPlayerMessages": false,    // Ignore Player Saved You By Player Messages
+  "IgnoreRewardMoneyMessages": 0,                   // Ignore Player Reward Money Messages ( 1=Covar [Better Option] , 2= Remove Message Only [[Dont Put 1 Wait For CounterStrikeSharp Update OtherWise Will Crash]])
+  "IgnoreTeamMateAttackMessages": false,            // Ignore Player Attack TeamMate Messages ([[Dont Make it True Wait For CounterStrikeSharp Update OtherWise Will Crash]])
+  "IgnorePlayerSavedYouByPlayerMessages": false,    // Ignore Player Saved You By Player Messages ([[Dont Make it True Wait For CounterStrikeSharp Update OtherWise Will Crash]])
   "IgnoreDefaultDisconnectMessages": false,         // Ignore Player Default Disconnect Messages
 }
 ```
@@ -39,6 +40,12 @@
 
 ## .:[ Change Log ]:.
 ```
+(1.0.1)
+-Added [DisableLegs]
+-Fix [IgnoreRewardMoneyMessages]
+-Fix [IgnoreTeamMateAttackMessages]
+-Fix [IgnorePlayerSavedYouByPlayerMessages]
+
 (1.0.1)
 -Added [DisableGrenadeRadio]
 -Added [DisableRadar]
