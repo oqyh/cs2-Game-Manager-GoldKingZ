@@ -1,23 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+      <TargetFramework>net7.0</TargetFramework>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Nullable>enable</Nullable>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
- <ItemGroup>
-
+  <ItemGroup>
     <Reference Include="CounterStrikeSharp.API">
-
-       <HintPath>CounterStrikeSharp.API.dll</HintPath>
-
+      <HintPath>CounterStrikeSharp.API.dll</HintPath>
     </Reference>
-
   </ItemGroup>
-
- <ItemGroup>
-   <PackageReference Include="Nexd.MySQL" Version="1.0.1" />
- </ItemGroup>
-
 </Project>
