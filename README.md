@@ -51,6 +51,7 @@
   
 //-----------------------------------------------------------------------------------------
 
+  // ((MUST Disable This sv_hibernate_when_empty OTHERWISE WILL NOT WORK ))
   //Restart The Server If (RestartWhenXPlayersInServerORLess) After (RestartXTimerInMins)
   //RestartServerMode (1) = Restart Method
   //RestartServerMode (2) = Crash Method Sometimes Restart Will Not Work Use This Method Instead
@@ -60,6 +61,7 @@
   
 //-----------------------------------------------------------------------------------------
 
+  // ((MUST Disable This sv_hibernate_when_empty OTHERWISE WILL NOT WORK ))
   //Rotate Maps Server If (RotationWhenXPlayersInServerORLess) After (RotationXTimerInMins)
   //RotationServerMode (1) = Get Maps From Top To Bottom In RotationServerMapList.txt
   //RotationServerMode (2) = Get Random Maps In RotationServerMapList.txt
