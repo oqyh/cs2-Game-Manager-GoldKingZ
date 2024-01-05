@@ -1,6 +1,6 @@
-# [CS2] Game-Manager (1.0.3)
+# [CS2] Game-Manager (1.0.4)
 
-### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , And More )
+### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation , And More )
 
 ![3](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/76d08c47-d838-4867-8410-06b7c8249add)
 ![2](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/1d2c9311-3092-4c49-8198-b37d3cb65890)
@@ -17,33 +17,77 @@
 ## .:[ Configuration ]:.
 ```json
 {
-  "DisableRadio": false,                            // Disable Radio
-  "DisableGrenadeRadio": false,                     // Disable Throwing Grenade Radio
-  "DisablePing": false,                             // Disable Player Ping
-  "DisableChatWheel": false,                        // Disable Player ChatWheel
-  "DisableKillfeed": false,                         // Disable Killfeed
-  "DisableRadar": false,                            // Disable Radar
-  "DisableMoneyHUD": false,                         // Disable Money Hud
-  "DisableWinOrLosePanel": false,                   // Disable Win/Lose/DRAW Panel
-  "DisableWinOrLoseSound": false,                   // Disable Win/Lose/DRAW Sound
-  "DisableJumpLandSound": false,                    // Disable Jump Land Sound
-  "DisableFallDamage": false,                       // Disable Fall Damage
-  "DisableLegs": false,                             // Disable Legs
-  "IgnoreJoinTeamMessages": false,                  // Ignore Player Join Team Messages
-  "IgnoreRewardMoneyMessages": 0,                   // Ignore Player Reward Money Messages ( 1=Covar [Better Option] , 2= Remove Message Only [[Dont Put 2 Wait For CounterStrikeSharp Update OtherWise Will Crash]])
-  "IgnoreTeamMateAttackMessages": false,            // Ignore Player Attack TeamMate Messages ([[Dont Make it True Wait For CounterStrikeSharp Update OtherWise Will Crash]])
-  "IgnorePlayerSavedYouByPlayerMessages": false,    // Ignore Player Saved You By Player Messages ([[Dont Make it True Wait For CounterStrikeSharp Update OtherWise Will Crash]])
+  "DisableRadio": false,
+  "DisableGrenadeRadio": false,
+  "DisablePing": false,
+  "DisableChatWheel": false,
+  "DisableKillfeed": false,
+  "DisableRadar": false,
+  "DisableMoneyHUD": false,
+  "DisableTeamMateHeadTag": 0, // (1) = Remove Head Tag Only Behind Wall || (2) = Remove Head Tag Completely
+  "DisableWinOrLosePanel": false,
+  "DisableWinOrLoseSound": false,
+  "DisableJumpLandSound": false,
+  "DisableFallDamage": false,
+  "DisableLegs": false,
+  "DisableSvCheats": false, // Force sv_cheats 0
+  "DisableRewardMoneyMessages": false,
+  
+//-----------------------------------------------------------------------------------------
 
-  "RestartServerLastPlayerDisconnect": false,       // Restart Server On Last Player Disconnect
-  "RestartMethod": 1,                               // if [RestartServerLastPlayerDisconnect True] Which Method Do You Like   1= Restart    2= Crash  if 1 not working
-  "RestartXTimerInMins": 5,                         // if [RestartServerLastPlayerDisconnect True] How Many In Mins To Wait Before Start [RestartMethod]
-  "RestartWhenXPlayersInServerORLess": 0,           // if [RestartServerLastPlayerDisconnect True] (Bot Doesn't Count As Player) How Many Players In Server To Start [RestartMethod] 0= Means 0 Players In Server Do Restart
+  "IgnoreDefaultDisconnectMessages": false,
+  "IgnoreDefaultJoinTeamMessages": false,
+  
+//-----------------------------------------------------------------------------------------
+
+  //{PLAYERNAME} == Player Name Who Joinned The Team
+  //Colors Available = {default} {white} {darkred} {green} {lightyellow} {lightblue} {olive} {lime} {red} {lightpurple}
+                      //{purple} {grey} {yellow} {gold} {silver} {blue} {darkblue} {bluegrey} {magenta} {lightred} {orange}
+					  
+  "CustomJoinTeamMessages": false,
+  "CustomJoinTeamMessagesCT": "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Counter-Terrorists",
+  "CustomJoinTeamMessagesT": "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Terrorists",
+  "CustomJoinTeamMessagesSpec": "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Spectators",
+  
+//-----------------------------------------------------------------------------------------
+
+  //Restart The Server If (RestartWhenXPlayersInServerORLess) After (RestartXTimerInMins)
+  //RestartServerMode (1) = Restart Method
+  //RestartServerMode (2) = Crash Method Sometimes Restart Will Not Work Use This Method Instead
+  "RestartServerMode": 0,
+  "RestartXTimerInMins": 5,
+  "RestartWhenXPlayersInServerORLess": 0,
+  
+//-----------------------------------------------------------------------------------------
+
+  //Rotate Maps Server If (RotationWhenXPlayersInServerORLess) After (RotationXTimerInMins)
+  //RotationServerMode (1) = Get Maps From Top To Bottom In RotationServerMapList.txt
+  //RotationServerMode (2) = Get Random Maps In RotationServerMapList.txt
+  "RotationServerMode": 0,
+  "RotationXTimerInMins": 8,
+  "RotationWhenXPlayersInServerORLess": 0,
+  
+//-----------------------------------------------------------------------------------------
+  "ConfigVersion": 1
 }
 ```
 
 
 ## .:[ Change Log ]:.
 ```
+(1.0.4)
+-Added "DisableTeamMateHeadTag"
+-Added "DisableSvCheats"
+-Added "CustomJoinTeamMessages"
+-Added "CustomJoinTeamMessagesCT"
+-Added "CustomJoinTeamMessagesT"
+-Added "CustomJoinTeamMessagesSpec"
+-Added "RotationServerMode"
+-Added "RotationXTimerInMins"
+-Added "RotationWhenXPlayersInServerORLess"
+
+-Fix / Remove Some Bugs
+
 (1.0.3)
 -Added [RestartServerLastPlayerDisconnect]
 -Added [RestartMethod]
