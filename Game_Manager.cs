@@ -62,7 +62,7 @@ public class GameBMangerConfig : BasePluginConfig
 public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig> 
 {
     public override string ModuleName => "Game Manager";
-    public override string ModuleVersion => "1.0.5";
+    public override string ModuleVersion => "1.0.6";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation";
     public GameBMangerConfig Config { get; set; } = new GameBMangerConfig();
@@ -415,7 +415,8 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             {
                 info.DontBroadcast = true;
             }
-
+            var playerteam = player.TeamNum;
+            
             if (OnDeadBody.ContainsKey(player.UserId.Value))return HookResult.Continue;
 
             OnDeadBody.Add(player.UserId.Value, true);
@@ -432,10 +433,18 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
                     AddTimer(1.50f, () =>
                     {
-                        player.CommitSuicide(false, true);
+                        player.ChangeTeam(CsTeam.Spectator);
                     }, TimerFlags.STOP_ON_MAPCHANGE);
                     AddTimer(2.00f, () =>
                     {
+                        if(playerteam == 2)
+                        {
+                            player.ChangeTeam(CsTeam.Terrorist);
+                        }else if(playerteam == 3)
+                        {
+                            player.ChangeTeam(CsTeam.CounterTerrorist);
+                        }
+
                         OnDeadBody.Remove(player.UserId.Value);
                     }, TimerFlags.STOP_ON_MAPCHANGE);
                     
