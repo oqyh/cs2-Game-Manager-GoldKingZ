@@ -1,4 +1,4 @@
-# [CS2] Game-Manager (1.0.5)
+# [CS2] Game-Manager (1.0.6)
 
 ### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation , And More )
 
