@@ -410,7 +410,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             if (!Config.DisableDeadBody)return HookResult.Continue;
 
             if (player == null || !player.IsValid || player.PlayerPawn == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.Value.IsValid || !player.UserId.HasValue)return HookResult.Continue;
-
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))return HookResult.Continue;
             if(OnDeadBody.ContainsKey(player.UserId.Value) || OnSwitchTeam.ContainsKey(player.UserId.Value))
             {
                 info.DontBroadcast = true;
