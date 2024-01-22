@@ -16,41 +16,45 @@
 ## .:[ Configuration ]:.
 ```json
 {
-  "DisableRadio": false,
+  "DisableBotRadio": false,
+  
+  "DisableRadio": 0, // (1) = Disable Radio Completely || (2) = Make it Cooldown [DisableRadioThreshold] + [DisableRadioTime]
+  "DisableRadioThreshold": 6, // if DisableRadio (2) How Much Threshold Radio
+  "DisableRadioTime": 5, // if DisableRadio (2) Time In Sec Give Cooldown
+  
+  "DisableChatWheel": 0, // (1) = Disable ChatWheel Completely || (2) = Make it Cooldown [DisableChatWheelThreshold] + [DisableChatWheelTime]
+  "DisableChatWheelThreshold": 6, // if DisableChatWheel (2) How Much Threshold Radio
+  "DisableChatWheelTime": 5, // if DisableChatWheel (2) Time In Sec Give Cooldown
+  
   "DisableGrenadeRadio": false,
   "DisablePing": false,
-  "DisableChatWheel": false,
-  "DisableKillfeed": false,
+  "DisableKillfeed": 0, // (1) = Disable Killfeed Completely || (2) = Disable Killfeed And Show Who I Killed Only
   "DisableRadar": false,
   "DisableMoneyHUD": false,
   "DisableTeamMateHeadTag": 0, // (1) = Remove Head Tag Only Behind Wall || (2) = Remove Head Tag Completely
   "DisableWinOrLosePanel": false,
   "DisableWinOrLoseSound": false,
   "DisableJumpLandSound": false,
+  "DisableMPVSound": false,
   "DisableFallDamage": false,
   "DisableLegs": false,
   "DisableSvCheats": false, // Force sv_cheats 0
   "DisableRewardMoneyMessages": false,
-  
+  "DisableDeadBody": false,
+  "DisableBomb": false,
+
 //-----------------------------------------------------------------------------------------
 
   "IgnoreDefaultDisconnectMessages": false,
   "IgnoreDefaultJoinTeamMessages": false,
+  "IgnoreTeamMateAttackMessages": false,
   
 //-----------------------------------------------------------------------------------------
 
-  //{PLAYERNAME} == Player Name Who Joinned The Team
-  //Colors Available = {default} {white} {darkred} {green} {lightyellow} {lightblue} {olive} {lime} {red} {lightpurple}
-                      //{purple} {grey} {yellow} {gold} {silver} {blue} {darkblue} {bluegrey} {magenta} {lightred} {orange}
-					  
-  "CustomJoinTeamMessages": false,
-  "CustomJoinTeamMessagesCT": "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Counter-Terrorists",
-  "CustomJoinTeamMessagesT": "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Terrorists",
-  "CustomJoinTeamMessagesSpec": "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Spectators",
+  "CustomJoinTeamMessages": 0, // (1) Enable Custom Join Team Messages || (2) = Enable Custom Join Team Messages Without Bots
   
 //-----------------------------------------------------------------------------------------
 
-  // ((MUST Disable This sv_hibernate_when_empty OTHERWISE WILL NOT WORK ))
   //Restart The Server If (RestartWhenXPlayersInServerORLess) After (RestartXTimerInMins)
   //RestartServerMode (1) = Restart Method
   //RestartServerMode (2) = Crash Method Sometimes Restart Will Not Work Use This Method Instead
@@ -60,7 +64,6 @@
   
 //-----------------------------------------------------------------------------------------
 
-  // ((MUST Disable This sv_hibernate_when_empty OTHERWISE WILL NOT WORK ))
   //Rotate Maps Server If (RotationWhenXPlayersInServerORLess) After (RotationXTimerInMins)
   //RotationServerMode (1) = Get Maps From Top To Bottom In RotationServerMapList.txt
   //RotationServerMode (2) = Get Random Maps In RotationServerMapList.txt
