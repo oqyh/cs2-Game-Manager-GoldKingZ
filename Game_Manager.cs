@@ -1,38 +1,49 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using System.Text.Json.Serialization;
-using System.Drawing;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
+using System.Drawing;
 
 namespace Game_Manager;
 
 public class GameBMangerConfig : BasePluginConfig
 {
-    [JsonPropertyName("DisableRadio")] public bool DisableRadio { get; set; } = false;
+    [JsonPropertyName("DisableBotRadio")] public bool DisableBotRadio { get; set; } = false;
+    
+    [JsonPropertyName("DisableRadio")] public int DisableRadio { get; set; } = 0;
+    [JsonPropertyName("DisableRadioThreshold")] public int DisableRadioThreshold { get; set; } = 2;
+    [JsonPropertyName("DisableRadioTime")] public int DisableRadioTime { get; set; } = 5;
+
+    [JsonPropertyName("DisableChatWheel")] public int DisableChatWheel { get; set; } = 0;
+    [JsonPropertyName("DisableChatWheelThreshold")] public int DisableChatWheelThreshold { get; set; } = 2;
+    [JsonPropertyName("DisableChatWheelTime")] public int DisableChatWheelTime { get; set; } = 5;
+    
     [JsonPropertyName("DisableGrenadeRadio")] public bool DisableGrenadeRadio { get; set; } = false;
     [JsonPropertyName("DisablePing")] public bool DisablePing { get; set; } = false;
-    [JsonPropertyName("DisableChatWheel")] public bool DisableChatWheel { get; set; } = false;
-    [JsonPropertyName("DisableKillfeed")] public bool DisableKillfeed { get; set; } = false;
+    [JsonPropertyName("DisableKillfeed")] public int DisableKillfeed { get; set; } = 0;
     [JsonPropertyName("DisableRadar")] public bool DisableRadar { get; set; } = false;
     [JsonPropertyName("DisableMoneyHUD")] public bool DisableMoneyHUD { get; set; } = false;
     [JsonPropertyName("DisableTeamMateHeadTag")] public int DisableTeamMateHeadTag { get; set; } = 0;
     [JsonPropertyName("DisableWinOrLosePanel")] public bool DisableWinOrLosePanel { get; set; } = false;
     [JsonPropertyName("DisableWinOrLoseSound")] public bool DisableWinOrLoseSound { get; set; } = false;
     [JsonPropertyName("DisableJumpLandSound")] public bool DisableJumpLandSound { get; set; } = false;
+    [JsonPropertyName("DisableMPVSound")] public bool DisableMPVSound { get; set; } = false;
     [JsonPropertyName("DisableFallDamage")] public bool DisableFallDamage { get; set; } = false;
     [JsonPropertyName("DisableLegs")] public bool DisableLegs { get; set; } = false;
     [JsonPropertyName("DisableSvCheats")] public bool DisableSvCheats { get; set; } = false;
     [JsonPropertyName("DisableRewardMoneyMessages")] public bool DisableRewardMoneyMessages { get; set; } = false;
+    [JsonPropertyName("DisableDeadBody")] public bool DisableDeadBody { get; set; } = false;
+    [JsonPropertyName("DisableBomb")] public bool DisableBomb { get; set; } = false;
 
     [JsonPropertyName("IgnoreDefaultDisconnectMessages")] public bool IgnoreDefaultDisconnectMessages { get; set; } = false;
     [JsonPropertyName("IgnoreDefaultJoinTeamMessages")] public bool IgnoreDefaultJoinTeamMessages { get; set; } = false;
+    [JsonPropertyName("IgnoreTeamMateAttackMessages")] public bool IgnoreTeamMateAttackMessages { get; set; } = false;
 
-    [JsonPropertyName("CustomJoinTeamMessages")] public bool CustomJoinTeamMessages { get; set; } = false;
-    [JsonPropertyName("CustomJoinTeamMessagesCT")] public string CustomJoinTeamMessagesCT { get; set; } = "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Counter-Terrorists";
-    [JsonPropertyName("CustomJoinTeamMessagesT")] public string CustomJoinTeamMessagesT { get; set; } = "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Terrorists";
-    [JsonPropertyName("CustomJoinTeamMessagesSpec")] public string CustomJoinTeamMessagesSpec { get; set; } = "{green}Gold KingZ {grey}| {purple}{PLAYERNAME} {grey}is joining the {lime}Spectators";
+    [JsonPropertyName("CustomJoinTeamMessages")] public int CustomJoinTeamMessages { get; set; } = 0;
 
     [JsonPropertyName("RestartServerMode")] public int RestartServerMode { get; set; } = 0;
     [JsonPropertyName("RestartXTimerInMins")] public int RestartXTimerInMins { get; set; } = 5;  
@@ -41,7 +52,7 @@ public class GameBMangerConfig : BasePluginConfig
     [JsonPropertyName("RotationServerMode")] public int RotationServerMode { get; set; } = 0;
     [JsonPropertyName("RotationXTimerInMins")] public int RotationXTimerInMins { get; set; } = 8;  
     [JsonPropertyName("RotationWhenXPlayersInServerORLess")] public int RotationWhenXPlayersInServerORLess { get; set; } = 0;
-    //[JsonPropertyName("IgnoreTeamMateAttackMessages")] public bool IgnoreTeamMateAttackMessages { get; set; } = false;
+    
     //[JsonPropertyName("IgnorePlayerSavedYouByPlayerMessages")] public bool IgnorePlayerSavedYouByPlayerMessages { get; set; } = false;
 
 }
@@ -51,7 +62,7 @@ public class GameBMangerConfig : BasePluginConfig
 public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig> 
 {
     public override string ModuleName => "Game Manager";
-    public override string ModuleVersion => "1.0.4";
+    public override string ModuleVersion => "1.0.5";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation";
     public GameBMangerConfig Config { get; set; } = new GameBMangerConfig();
@@ -59,6 +70,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     //public CHandle<CBaseEntity> RagdollSource => Schema.GetDeclaredClass<CHandle<CBaseEntity>>(Handle, "CRagdollProp", "m_hRagdollSource");
     //public nint Handle { get; private set; }
     //private HashSet<string> uniqueLines = new HashSet<string>();
+    internal static IStringLocalizer? Stringlocalizer;
     private static string maplist = "";
     private string GmapName = "";
     private static string[] _lines = null!;
@@ -67,26 +79,76 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     public void OnConfigParsed(GameBMangerConfig config)
     {
         Config = config;
-
+        Stringlocalizer = Localizer;
         if (Config.DisableTeamMateHeadTag < 0 || Config.DisableTeamMateHeadTag > 2)
         {
             config.DisableTeamMateHeadTag = 0;
             Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
-            Console.WriteLine("DisableTeamMateHeadTag: is invalid, setting to default value (0) Please Choose 0 or 1 or 2.");
+            Console.WriteLine("DisableTeamMateHeadTag: is invalid, setting to default value (0) Please Choose 0 or 1 or 2");
+            Console.WriteLine("DisableTeamMateHeadTag (0) = No");
+            Console.WriteLine("DisableTeamMateHeadTag (1) = Remove Head Tag Only Behind Wall");
+            Console.WriteLine("DisableTeamMateHeadTag (2) = Remove Head Tag Completely");
             Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
         }
         if (Config.RestartServerMode < 0 || Config.RestartServerMode > 2)
         {
             config.RestartServerMode = 0;
             Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
-            Console.WriteLine("RestartServerMode: is invalid, setting to default value (0) Please Choose 0 or 1 or 2.");
+            Console.WriteLine("RestartServerMode: is invalid, setting to default value (0) Please Choose 0 or 1 or 2");
+            Console.WriteLine("RestartServerMode (0) = No");
+            Console.WriteLine("RestartServerMode (1) = Restart Method");
+            Console.WriteLine("RestartServerMode (2) = Crash Method Sometimes Restart Will Not Work Use This Method Instead");
             Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+
         }
         if (Config.RotationServerMode < 0 || Config.RotationServerMode > 2)
         {
             config.RotationServerMode = 0;
             Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
-            Console.WriteLine("RotationServerMode: is invalid, setting to default value (0) Please Choose 0 or 1 or 2.");
+            Console.WriteLine("RotationServerMode: is invalid, setting to default value (0) Please Choose 0 or 1 or 2");
+            Console.WriteLine("RotationServerMode (0) = No");
+            Console.WriteLine("RotationServerMode (1) = Get Maps From Top To Bottom In RotationServerMapList.txt");
+            Console.WriteLine("RotationServerMode (2) = Get Random Maps In RotationServerMapList.txt");
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+        }
+        if (Config.CustomJoinTeamMessages < 0 || Config.CustomJoinTeamMessages > 2)
+        {
+            config.CustomJoinTeamMessages = 0;
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+            Console.WriteLine("CustomJoinTeamMessages: is invalid, setting to default value (0) Please Choose 0 or 1 or 2");
+            Console.WriteLine("CustomJoinTeamMessages (0) = No");
+            Console.WriteLine("CustomJoinTeamMessages (1) = Enable Custom Join Team Messages");
+            Console.WriteLine("CustomJoinTeamMessages (2) = Enable Custom Join Team Messages Without Bots");
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+        }
+        if (Config.DisableKillfeed < 0 || Config.DisableKillfeed > 2)
+        {
+            config.DisableKillfeed = 0;
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+            Console.WriteLine("DisableKillfeed: is invalid, setting to default value (0) Please Choose 0 or 1 or 2");
+            Console.WriteLine("DisableKillfeed (0) = No");
+            Console.WriteLine("DisableKillfeed (1) = Disable Killfeed Completely");
+            Console.WriteLine("DisableKillfeed (2) = Disable Killfeed And Show Who I Killed Only");
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+        }
+        if (Config.DisableRadio < 0 || Config.DisableRadio > 2)
+        {
+            config.DisableRadio = 0;
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+            Console.WriteLine("DisableRadio: is invalid, setting to default value (0) Please Choose 0 or 1 or 2");
+            Console.WriteLine("DisableRadio (0) = No");
+            Console.WriteLine("DisableRadio (1) = Disable Radio Completely");
+            Console.WriteLine("DisableRadio (2) = Make it Cooldown [DisableRadioThreshold] + [DisableRadioTime]");
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+        }
+        if (Config.DisableChatWheel < 0 || Config.DisableChatWheel > 2)
+        {
+            config.DisableChatWheel = 0;
+            Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
+            Console.WriteLine("DisableChatWheel: is invalid, setting to default value (0) Please Choose 0 or 1 or 2");
+            Console.WriteLine("DisableChatWheel (0) = No");
+            Console.WriteLine("DisableChatWheel (1) = Disable ChatWheel Completely");
+            Console.WriteLine("DisableChatWheel (2) = Make it Cooldown [DisableChatWheelThreshold] + [DisableChatWheelTime]");
             Console.WriteLine("|||||||||||||||||||||||||||||||||||| I N V A L I D ||||||||||||||||||||||||||||||||||||");
         }
 
@@ -95,6 +157,13 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     private CounterStrikeSharp.API.Modules.Timers.Timer? _restartTimer2;
     private CounterStrikeSharp.API.Modules.Timers.Timer? RotationTimer;
     private CounterStrikeSharp.API.Modules.Timers.Timer? RotationTimer2;
+    private Dictionary<int, bool> OnDeadBody = new Dictionary<int, bool>();
+    private Dictionary<int, bool> OnSwitchTeam = new Dictionary<int, bool>();
+    private Dictionary<int, DateTime> lastCommandTimestampsradio = new Dictionary<int, DateTime>();
+    private Dictionary<int, int> commandCountsradio = new Dictionary<int, int>();
+    private Dictionary<int, DateTime> lastCommandTimestampswheel = new Dictionary<int, DateTime>();
+    private Dictionary<int, int> commandCountswheel = new Dictionary<int, int>();
+
     private string[] RadioArray = new string[] {
     "coverme",
     "takepoint",
@@ -205,9 +274,12 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         AddCommandListener("player_ping", CommandListener_Ping);
         AddCommandListener("playerchatwheel", CommandListener_chatwheel);
-
+        AddCommandListener("jointeam", OnJoinTeam, HookMode.Pre);
+        RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
         RegisterListener<Listeners.OnMapStart>(mapName =>
         {
+            ExectueCommands();
+            ExectueCommandsSvCheats();
             Server.NextFrame(() =>
             {
                 _restartTimer?.Kill();
@@ -243,61 +315,19 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             
             return HookResult.Continue;
         }, HookMode.Pre);
-
-        RegisterEventHandler<EventRoundStart>((@event, info) =>
-        {
-            if (@event == null)return HookResult.Continue;
-
-            if(Config.DisableTeamMateHeadTag == 1)
-            {
-                Server.ExecuteCommand("sv_teamid_overhead 1; sv_teamid_overhead_always_prohibit 1");
-            }
-
-            if(Config.DisableTeamMateHeadTag == 2)
-            {
-                Server.ExecuteCommand("sv_teamid_overhead 0");
-            }
-
-            if(Config.DisableSvCheats)
-            {
-                
-                Server.ExecuteCommand("sv_cheats 0");
-            }
-            if(Config.DisableRewardMoneyMessages)
-            {
-                Server.ExecuteCommand("mp_playercashawards 0; cash_team_bonus_shorthanded 0");
-            }
-            if(Config.DisableRadar)
-            {
-                Server.ExecuteCommand("sv_disable_radar 1");
-            }
-
-            if(Config.DisableGrenadeRadio)
-            {
-                Server.ExecuteCommand("sv_ignoregrenaderadio 1");
-            }
-
-            if(Config.DisableFallDamage)
-            {
-                Server.ExecuteCommand("sv_falldamage_scale 0");
-            }
-
-            if(Config.DisableMoneyHUD)
-            {
-                Server.ExecuteCommand("mp_teamcashawards 0");
-            }
-
-            if(Config.DisableJumpLandSound)
-            {
-                Server.ExecuteCommand("sv_min_jump_landing_sound 999999");
-            }
-            
-            return HookResult.Continue;
-        }, HookMode.Post);
         RegisterEventHandler<EventCsWinPanelRound>((@event, info) =>
         {
             if (!Config.DisableWinOrLosePanel || @event == null)return HookResult.Continue;
 
+            info.DontBroadcast = true;
+            
+            return HookResult.Continue;
+        }, HookMode.Pre);
+
+        RegisterEventHandler<EventRoundMvp>((@event, info) =>
+        {
+            if (!Config.DisableMPVSound || @event == null)return HookResult.Continue;
+            
             info.DontBroadcast = true;
             
             return HookResult.Continue;
@@ -323,40 +353,38 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         RegisterEventHandler<EventPlayerTeam>((@event, info) =>
         {
-            if (!Config.CustomJoinTeamMessages || @event == null)return HookResult.Continue;
+            if (Config.CustomJoinTeamMessages == 0 || @event == null)return HookResult.Continue;
 
             CCSPlayerController player = @event.Userid;
 
             if (player == null
-            || !player.IsValid)
+            || !player.IsValid 
+            || (Config.CustomJoinTeamMessages == 2 && player.IsBot))
             {
                 return HookResult.Continue;
             }
 
             int Team = @event.Team;
             var Playername = player.PlayerName;
+            var Playernamewithoutbot = Playername;
 
             if(Team == 1)
             {
-                if (!string.IsNullOrEmpty(Config.CustomJoinTeamMessagesSpec))
+                if (!string.IsNullOrEmpty(Localizer["CustomJoinTeamMessages_SPEC"]))
                 {
-                    var replacer = ReplaceMessages(" " + Config.CustomJoinTeamMessagesSpec, Playername);
-                    Server.PrintToChatAll(replacer);
+                    Server.PrintToChatAll(Localizer["CustomJoinTeamMessages_SPEC", Playername]);
                 }
             }else if(Team == 2)
             {
-                if (!string.IsNullOrEmpty(Config.CustomJoinTeamMessagesT))
+                if (!string.IsNullOrEmpty(Localizer["CustomJoinTeamMessages_T"]))
                 {
-                    var replacer = ReplaceMessages(" " + Config.CustomJoinTeamMessagesT, Playername);
-                    Server.PrintToChatAll(replacer);
+                    Server.PrintToChatAll(Localizer["CustomJoinTeamMessages_T", Playername]);
                 }
             }else if(Team == 3)
             {
-                
-                if (!string.IsNullOrEmpty(Config.CustomJoinTeamMessagesCT))
+                if (!string.IsNullOrEmpty(Localizer["CustomJoinTeamMessages_CT"]))
                 {
-                    var replacer = ReplaceMessages(" " + Config.CustomJoinTeamMessagesCT, Playername);
-                    Server.PrintToChatAll(replacer);
+                    Server.PrintToChatAll(Localizer["CustomJoinTeamMessages_CT", Playername]);
                 }
             }
             
@@ -365,14 +393,61 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         RegisterEventHandler<EventPlayerDeath>((@event, info) =>
         {
-            if (!Config.DisableKillfeed || @event == null)return HookResult.Continue;
+            if (@event == null)return HookResult.Continue;
+            
+            var player = @event.Userid;
+            var Attacker = @event.Attacker;
+            var Assister = @event.Assister;
+            if(Config.DisableKillfeed == 1 || Config.DisableKillfeed == 2)
+            {
+                info.DontBroadcast = true;
+            }
+            if(Config.DisableKillfeed == 2)
+            {
+                @event.FireEventToClient(Attacker);
+            }
+            
+            if (!Config.DisableDeadBody)return HookResult.Continue;
 
-            info.DontBroadcast = true;
+            if (player == null || !player.IsValid || player.PlayerPawn == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.Value.IsValid || !player.UserId.HasValue)return HookResult.Continue;
+
+            if(OnDeadBody.ContainsKey(player.UserId.Value) || OnSwitchTeam.ContainsKey(player.UserId.Value))
+            {
+                info.DontBroadcast = true;
+            }
+
+            if (OnDeadBody.ContainsKey(player.UserId.Value))return HookResult.Continue;
+
+            OnDeadBody.Add(player.UserId.Value, true);
+
+            if (OnDeadBody.ContainsKey(player.UserId.Value))
+            {
+                Server.NextFrame(() =>
+                {
+                    AddTimer(1.30f, () =>
+                    {
+                        player.Respawn();
+                        player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                    }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                    AddTimer(1.50f, () =>
+                    {
+                        player.CommitSuicide(false, true);
+                    }, TimerFlags.STOP_ON_MAPCHANGE);
+                    AddTimer(2.00f, () =>
+                    {
+                        OnDeadBody.Remove(player.UserId.Value);
+                    }, TimerFlags.STOP_ON_MAPCHANGE);
+                    
+                });
+            }
             
             return HookResult.Continue;
         }, HookMode.Pre);
         RegisterEventHandler<EventPlayerSpawn>((@event, info) =>
         {
+            ExectueCommands();
+
             if(!Config.DisableLegs || @event == null)
             {
                 return HookResult.Continue;
@@ -590,15 +665,287 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     }
     private HookResult CommandListener_chatwheel(CCSPlayerController? player, CommandInfo info)
     {
-        if(!Config.DisableChatWheel || player == null || !player.IsValid)return HookResult.Continue;
+        if (Config.DisableChatWheel == 0 || player == null || !player.IsValid || !player.UserId.HasValue)return HookResult.Continue;
 
-        return HookResult.Handled;
+        if(Config.DisableChatWheel == 1)
+        {
+            return HookResult.Handled;
+        }
+
+        if (Config.DisableChatWheel == 2)
+        {
+            int playerId = player.UserId.Value;
+
+            if (lastCommandTimestampswheel.TryGetValue(playerId, out DateTime lastTimestamp))
+            {
+                TimeSpan elapsed = DateTime.Now - lastTimestamp;
+
+                if (elapsed.TotalSeconds < Config.DisableChatWheelThreshold)
+                {
+
+                    if (!commandCountswheel.ContainsKey(playerId))
+                        commandCountswheel[playerId] = 0;
+
+                    commandCountswheel[playerId]++;
+
+                    if (commandCountswheel[playerId] >= Config.DisableChatWheelTime)
+                    {
+                        commandCountswheel[playerId] = 1;
+
+                        if (!string.IsNullOrEmpty(Localizer["ChatWheel_WarningCooldown"]))
+                        {
+                            player.PrintToChat(Localizer["ChatWheel_WarningCooldown", Config.DisableChatWheelTime]);
+                            return HookResult.Handled;
+                        }
+                    }
+                }
+                else
+                {
+                    commandCountswheel[playerId] = 1;
+                }
+            }
+            else
+            {
+                commandCountswheel[playerId] = 1;
+            }
+            lastCommandTimestampswheel[playerId] = DateTime.Now;
+        }
+        return HookResult.Continue;
     }
     private HookResult CommandListener_RadioCommands(CCSPlayerController? player, CommandInfo info)
     {
-        if(!Config.DisableRadio || player == null || !player.IsValid)return HookResult.Continue;
+        if (Config.DisableRadio == 0 || player == null || !player.IsValid || !player.UserId.HasValue)return HookResult.Continue;
 
-        return HookResult.Handled;
+        if(Config.DisableRadio == 1)
+        {
+            return HookResult.Handled;
+        }
+
+        if (Config.DisableRadio == 2)
+        {
+            int playerId = player.UserId.Value;
+
+            if (lastCommandTimestampsradio.TryGetValue(playerId, out DateTime lastTimestamp))
+            {
+                TimeSpan elapsed = DateTime.Now - lastTimestamp;
+
+                if (elapsed.TotalSeconds < Config.DisableRadioThreshold)
+                {
+
+                    if (!commandCountsradio.ContainsKey(playerId))
+                        commandCountsradio[playerId] = 0;
+
+                    commandCountsradio[playerId]++;
+
+                    if (commandCountsradio[playerId] >= Config.DisableRadioTime)
+                    {
+                        commandCountsradio[playerId] = 1;
+
+                        if (!string.IsNullOrEmpty(Localizer["Radio_WarningCooldown"]))
+                        {
+                            player.PrintToChat(Localizer["Radio_WarningCooldown", Config.DisableRadioTime]);
+                            return HookResult.Handled;
+                        }
+                    }
+                }
+                else
+                {
+                    commandCountsradio[playerId] = 1;
+                }
+            }
+            else
+            {
+                commandCountsradio[playerId] = 1;
+            }
+            lastCommandTimestampsradio[playerId] = DateTime.Now;
+        }
+        return HookResult.Continue;
+    }
+    private HookResult OnJoinTeam(CCSPlayerController? player, CommandInfo info)
+    {
+        if (!Config.DisableDeadBody || player == null || !player.IsValid || player.PlayerPawn == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.Value.IsValid || !player.UserId.HasValue)return HookResult.Continue;
+        var goingteam = info.GetArg(1);
+        var wasteam = player.TeamNum; 
+        var alive = player.PlayerPawn.Value.LifeState == (byte)LifeState_t.LIFE_ALIVE;
+        if(alive && wasteam == (Byte)CsTeam.Terrorist && goingteam == "1")
+        {
+            player.ChangeTeam(CsTeam.Terrorist);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))return HookResult.Continue;
+            OnSwitchTeam.Add(player.UserId.Value, true);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))
+            {
+                AddTimer(0.20f, () =>
+                {
+                    player.Respawn();
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.30f, () =>
+                {
+                    player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.40f, () =>
+                {
+                    player.CommitSuicide(false, true);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+                AddTimer(0.50f, () =>
+                {
+                    player.ChangeTeam(CsTeam.Spectator);
+                    OnSwitchTeam.Remove(player.UserId.Value);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+            }
+            return HookResult.Handled;
+        }else if(alive && wasteam == (Byte)CsTeam.CounterTerrorist && goingteam == "1")
+        {
+            player.ChangeTeam(CsTeam.CounterTerrorist);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))return HookResult.Continue;
+            OnSwitchTeam.Add(player.UserId.Value, true);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))
+            {
+                AddTimer(0.20f, () =>
+                {
+                    player.Respawn();
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.30f, () =>
+                {
+                    player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.40f, () =>
+                {
+                    player.CommitSuicide(false, true);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+                AddTimer(0.50f, () =>
+                {
+                    player.ChangeTeam(CsTeam.Spectator);
+                    OnSwitchTeam.Remove(player.UserId.Value);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+            }
+            return HookResult.Handled;
+        }else if(alive && wasteam == (Byte)CsTeam.CounterTerrorist && goingteam == "2")
+        {
+            player.ChangeTeam(CsTeam.CounterTerrorist);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))return HookResult.Continue;
+            OnSwitchTeam.Add(player.UserId.Value, true);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))
+            {
+                AddTimer(0.20f, () =>
+                {
+                    player.Respawn();
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.30f, () =>
+                {
+                    player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.40f, () =>
+                {
+                    player.CommitSuicide(false, true);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+                AddTimer(0.50f, () =>
+                {
+                    player.ChangeTeam(CsTeam.Terrorist);
+                    OnSwitchTeam.Remove(player.UserId.Value);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+            }
+            return HookResult.Handled;
+        }else if(alive && wasteam == (Byte)CsTeam.Terrorist && goingteam == "3")
+        {
+            player.ChangeTeam(CsTeam.Terrorist);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))return HookResult.Continue;
+            OnSwitchTeam.Add(player.UserId.Value, true);
+            if (OnSwitchTeam.ContainsKey(player.UserId.Value))
+            {
+                AddTimer(0.20f, () =>
+                {
+                    player.Respawn();
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.30f, () =>
+                {
+                    player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                AddTimer(0.40f, () =>
+                {
+                    player.CommitSuicide(false, true);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+                AddTimer(0.50f, () =>
+                {
+                    player.ChangeTeam(CsTeam.CounterTerrorist);
+                    OnSwitchTeam.Remove(player.UserId.Value);
+                }, TimerFlags.STOP_ON_MAPCHANGE);
+            }
+            return HookResult.Handled;
+        }
+        return HookResult.Continue;
+    }
+    private void ExectueCommands()
+    {
+        if(Config.DisableTeamMateHeadTag == 1)
+        {
+            Server.ExecuteCommand("sv_teamid_overhead 1; sv_teamid_overhead_always_prohibit 1");
+        }
+
+        if(Config.DisableTeamMateHeadTag == 2)
+        {
+            Server.ExecuteCommand("sv_teamid_overhead 0");
+        }
+
+        if(Config.DisableSvCheats)
+        {
+            
+            Server.ExecuteCommand("sv_cheats 0");
+        }
+
+        if(Config.DisableRewardMoneyMessages)
+        {
+            Server.ExecuteCommand("mp_playercashawards 0; cash_team_bonus_shorthanded 0");
+        }
+
+        if(Config.DisableRadar)
+        {
+            Server.ExecuteCommand("sv_disable_radar 1");
+        }
+
+        if(Config.DisableGrenadeRadio)
+        {
+            Server.ExecuteCommand("sv_ignoregrenaderadio 1");
+        }
+
+        if(Config.DisableFallDamage)
+        {
+            Server.ExecuteCommand("sv_falldamage_scale 0");
+        }
+
+        if(Config.DisableMoneyHUD)
+        {
+            Server.ExecuteCommand("mp_teamcashawards 0");
+        }
+
+        if(Config.DisableJumpLandSound)
+        {
+            Server.ExecuteCommand("sv_min_jump_landing_sound 999999");
+        }
+
+        if(Config.DisableBotRadio)
+        {
+            Server.ExecuteCommand("bot_chatter off");
+        }
+
+        if(Config.DisableBomb)
+        {
+            Server.ExecuteCommand("mp_give_player_c4 0");
+        }
+    }
+    private void ExectueCommandsSvCheats()
+    {
+        if(Config.IgnoreTeamMateAttackMessages)
+        {
+            Server.ExecuteCommand("CS_WarnFriendlyDamageInterval 999999");
+        }
     }
     private static string GetRandomMap()
     {
@@ -644,35 +991,24 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         _currentIndex++;
         return _lines[_currentIndex];
     }
-    private string ReplaceMessages(string Message, string PlayerName)
+    public override void Unload(bool hotReload)
     {
-        var replacedMessage = Message
-                                    .Replace("{PLAYERNAME}", PlayerName.ToString());
-        replacedMessage = ReplaceColors(replacedMessage);
-        return replacedMessage;
+        OnDeadBody.Clear();
+        OnSwitchTeam.Clear();
+        lastCommandTimestampsradio.Clear();
+        commandCountsradio.Clear();
+        lastCommandTimestampswheel.Clear();
+        commandCountswheel.Clear();
     }
-
-    private string ReplaceColors(string input)
+    private void OnMapEnd()
     {
-        string[] colorPatterns =
-        {
-            "{default}", "{white}", "{darkred}", "{green}", "{lightyellow}",
-            "{lightblue}", "{olive}", "{lime}", "{red}", "{lightpurple}",
-            "{purple}", "{grey}", "{yellow}", "{gold}", "{silver}",
-            "{blue}", "{darkblue}", "{bluegrey}", "{magenta}", "{lightred}",
-            "{orange}"
-        };
-        string[] colorReplacements =
-        {
-            "\x01", "\x01", "\x02", "\x04", "\x09", "\x0B", "\x05",
-            "\x06", "\x07", "\x03", "\x0E", "\x08", "\x09", "\x10",
-            "\x0A", "\x0B", "\x0C", "\x0A", "\x0E", "\x0F", "\x10"
-        };
-
-        for (var i = 0; i < colorPatterns.Length; i++)
-            input = input.Replace(colorPatterns[i], colorReplacements[i]);
-
-        return input;
+        ExectueCommandsSvCheats();
+        OnDeadBody.Clear();
+        OnSwitchTeam.Clear();
+        lastCommandTimestampsradio.Clear();
+        commandCountsradio.Clear();
+        lastCommandTimestampswheel.Clear();
+        commandCountswheel.Clear();
     }
 
     /*

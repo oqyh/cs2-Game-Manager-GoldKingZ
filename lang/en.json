@@ -1,0 +1,22 @@
+{
+	//==========================
+	//        Colors
+	//==========================
+	//{Yellow} {Gold} {Silver} {Blue} {DarkBlue} {BlueGrey} {Magenta} {LightRed}
+	//{LightBlue} {Olive} {Lime} {Red} {Purple} {Grey}
+	//{Default} {White} {Darkred} {Green} {LightYellow}
+	//==========================
+	//==========================
+	//    CustomJoinTeamMessages
+	//{0} = Player Join Name
+	//==========================
+	//==========================
+	//    WarningMessages
+	//{0} = CooldownTimer
+	//==========================
+	"CustomJoinTeamMessages_SPEC": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Spectators",
+	"CustomJoinTeamMessages_T": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
+	"CustomJoinTeamMessages_CT": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
+	"Radio_WarningCooldown": "{green}Gold KingZ {grey}| {darkred}Wait {0} Secs Cooldown For Spaming Radio",
+	"ChatWheel_WarningCooldown": "{green}Gold KingZ {grey}| {darkred}Wait {0} Secs Cooldown For Spaming ChatWheel"
+}
