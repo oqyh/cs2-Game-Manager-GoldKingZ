@@ -106,6 +106,10 @@
 
 ## .:[ Change Log ]:.
 ```
+(1.0.6)
+-Fix DisableDeadBody
+
+
 (1.0.5)
 -Added "DisableRadio": 0,// (1) = Disable Radio Completely || (2) = Make it Cooldown [DisableRadioThreshold] + [DisableRadioTime]
 -Added "DisableRadioThreshold": 6, // if DisableRadio (2) How Much Threshold Radio
