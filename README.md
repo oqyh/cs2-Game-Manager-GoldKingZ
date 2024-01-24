@@ -19,11 +19,11 @@
   "DisableBotRadio": false,
   
   "DisableRadio": 0, // (1) = Disable Radio Completely || (2) = Make it Cooldown [DisableRadioThreshold] + [DisableRadioTime]
-  "DisableRadioThreshold": 6, // if DisableRadio (2) How Much Threshold Radio
+  "DisableRadioThreshold": 2, // if DisableRadio (2) How Much Threshold Radio
   "DisableRadioTime": 5, // if DisableRadio (2) Time In Sec Give Cooldown
   
   "DisableChatWheel": 0, // (1) = Disable ChatWheel Completely || (2) = Make it Cooldown [DisableChatWheelThreshold] + [DisableChatWheelTime]
-  "DisableChatWheelThreshold": 6, // if DisableChatWheel (2) How Much Threshold Radio
+  "DisableChatWheelThreshold": 2, // if DisableChatWheel (2) How Much Threshold Radio
   "DisableChatWheelTime": 5, // if DisableChatWheel (2) Time In Sec Give Cooldown
   
   "DisableGrenadeRadio": false,
