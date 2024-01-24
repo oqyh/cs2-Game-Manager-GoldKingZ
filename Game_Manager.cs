@@ -48,6 +48,7 @@ public class GameBMangerConfig : BasePluginConfig
     [JsonPropertyName("RestartServerMode")] public int RestartServerMode { get; set; } = 0;
     [JsonPropertyName("RestartXTimerInMins")] public int RestartXTimerInMins { get; set; } = 5;  
     [JsonPropertyName("RestartWhenXPlayersInServerORLess")] public int RestartWhenXPlayersInServerORLess { get; set; } = 0;
+    [JsonPropertyName("RestartServerDefaultMap")] public string RestartServerDefaultMap { get; set; } = "de_dust2";
     
     [JsonPropertyName("RotationServerMode")] public int RotationServerMode { get; set; } = 0;
     [JsonPropertyName("RotationXTimerInMins")] public int RotationXTimerInMins { get; set; } = 8;  
@@ -62,7 +63,7 @@ public class GameBMangerConfig : BasePluginConfig
 public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig> 
 {
     public override string ModuleName => "Game Manager";
-    public override string ModuleVersion => "1.0.6";
+    public override string ModuleVersion => "1.0.7";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation";
     public GameBMangerConfig Config { get; set; } = new GameBMangerConfig();
@@ -76,6 +77,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     private static string[] _lines = null!;
     private static int _currentIndex = -1;
     private bool onetime = false;
+    private bool onetime2 = false;
     public void OnConfigParsed(GameBMangerConfig config)
     {
         Config = config;
@@ -157,6 +159,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     private CounterStrikeSharp.API.Modules.Timers.Timer? _restartTimer2;
     private CounterStrikeSharp.API.Modules.Timers.Timer? RotationTimer;
     private CounterStrikeSharp.API.Modules.Timers.Timer? RotationTimer2;
+    private CounterStrikeSharp.API.Modules.Timers.Timer? Defaultmap;
     private Dictionary<int, bool> OnDeadBody = new Dictionary<int, bool>();
     private Dictionary<int, bool> OnSwitchTeam = new Dictionary<int, bool>();
     private Dictionary<int, DateTime> lastCommandTimestampsradio = new Dictionary<int, DateTime>();
@@ -282,6 +285,8 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             ExectueCommandsSvCheats();
             Server.NextFrame(() =>
             {
+                
+                onetime2 = false;
                 _restartTimer?.Kill();
                 _restartTimer = null;
                 _restartTimer2?.Kill();
@@ -294,7 +299,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
                 RotationTimer2 = null;
                 RotationTimer = AddTimer(0.1f, RotationTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
 
-                if(Config.RotationServerMode == 1 || Config.RotationServerMode == 2 || Config.RestartServerMode != 0)
+                if(Config.RotationServerMode == 1 || Config.RotationServerMode == 2 || Config.RestartServerMode == 1 || Config.RestartServerMode == 2)
                 {
                     ConVar sv_hibernate_when_empty = ConVar.Find("sv_hibernate_when_empty")!;
                     if (sv_hibernate_when_empty.GetPrimitiveValue<bool>() == true)
@@ -344,9 +349,22 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         RegisterEventHandler<EventPlayerTeam>((@event, info) =>
         {
-            if (!Config.IgnoreDefaultJoinTeamMessages || @event == null)return HookResult.Continue;
+            if (@event == null)return HookResult.Continue;
+            
+            if(Config.IgnoreDefaultJoinTeamMessages)
+            {
+                info.DontBroadcast = true;
+            }
 
-            info.DontBroadcast = true;
+            var player = @event.Userid;
+
+            if (player == null || !player.IsValid || !player.UserId.HasValue)return HookResult.Continue;
+
+            if(Config.IgnoreDefaultJoinTeamMessages || OnDeadBody.ContainsKey(player.UserId.Value) || OnSwitchTeam.ContainsKey(player.UserId.Value))
+            {
+                info.DontBroadcast = true;
+            }
+            
             
             return HookResult.Continue;
         }, HookMode.Pre);
@@ -410,25 +428,43 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             if (!Config.DisableDeadBody)return HookResult.Continue;
 
             if (player == null || !player.IsValid || player.PlayerPawn == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.Value.IsValid || !player.UserId.HasValue)return HookResult.Continue;
+
             if (OnSwitchTeam.ContainsKey(player.UserId.Value))return HookResult.Continue;
+
             if(OnDeadBody.ContainsKey(player.UserId.Value) || OnSwitchTeam.ContainsKey(player.UserId.Value))
             {
                 info.DontBroadcast = true;
             }
-            var playerteam = player.TeamNum;
+            
             
             if (OnDeadBody.ContainsKey(player.UserId.Value))return HookResult.Continue;
-
             OnDeadBody.Add(player.UserId.Value, true);
 
             if (OnDeadBody.ContainsKey(player.UserId.Value))
             {
                 Server.NextFrame(() =>
                 {
+                    var playerteam = player.TeamNum;
                     AddTimer(1.30f, () =>
                     {
-                        player.Respawn();
-                        player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                        var playerteamnow = player.TeamNum;
+                        if(playerteamnow == 1)
+                        {
+                            if(playerteamnow == 2)
+                            {
+                                player.ChangeTeam(CsTeam.Terrorist);
+                            }else if(playerteamnow == 3)
+                            {
+                                player.ChangeTeam(CsTeam.CounterTerrorist);
+                            }
+                            player.Respawn();
+                            player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                        }else
+                        {
+                            player.Respawn();
+                            player.PlayerPawn.Value.Teleport(player.PlayerPawn.Value.AbsOrigin!.With(z: player.PlayerPawn.Value.AbsOrigin.Z - 980), player.PlayerPawn.Value.AbsRotation!, new Vector(IntPtr.Zero));
+                        }
+                        
                     }, TimerFlags.STOP_ON_MAPCHANGE);
 
                     AddTimer(1.50f, () =>
@@ -437,7 +473,10 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
                     }, TimerFlags.STOP_ON_MAPCHANGE);
                     AddTimer(2.00f, () =>
                     {
-                        if(playerteam == 2)
+                        if(playerteam == 1)
+                        {
+                            player.ChangeTeam(CsTeam.Spectator);
+                        }else if(playerteam == 2)
                         {
                             player.ChangeTeam(CsTeam.Terrorist);
                         }else if(playerteam == 3)
@@ -453,6 +492,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             
             return HookResult.Continue;
         }, HookMode.Pre);
+
         RegisterEventHandler<EventPlayerSpawn>((@event, info) =>
         {
             ExectueCommands();
@@ -485,21 +525,21 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
             var playersCount = players.Count();
 
-            if (Config.RestartServerMode != 0)
+            if(Config.RestartServerMode == 1 || Config.RestartServerMode == 2)
             {
                 if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
                 {
-                _restartTimer?.Kill();
-                _restartTimer = null;
-                _restartTimer2?.Kill();
-                _restartTimer2 = null;
-
-                _restartTimer = AddTimer(0.1f, RestartTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-                }else if(playersCount > Config.RestartWhenXPlayersInServerORLess)
-                {
+                    onetime2 = false;
                     _restartTimer?.Kill();
                     _restartTimer = null;
-                    
+                    _restartTimer2?.Kill();
+                    _restartTimer2 = null;
+                    _restartTimer = AddTimer(0.1f, RestartTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+                }else if(playersCount > Config.RestartWhenXPlayersInServerORLess)
+                {
+                    onetime2 = false;
+                    _restartTimer?.Kill();
+                    _restartTimer = null;
                     _restartTimer2?.Kill();
                     _restartTimer2 = null;
                 }
@@ -531,21 +571,21 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
             var playersCount = players.Count();
 
-            if (Config.RestartServerMode != 0)
+            if(Config.RestartServerMode == 1 || Config.RestartServerMode == 2)
             {
                 if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
                 {
-                _restartTimer?.Kill();
-                _restartTimer = null;
-                _restartTimer2?.Kill();
-                _restartTimer2 = null;
-
-                _restartTimer = AddTimer(0.1f, RestartTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-                }else if(playersCount > Config.RestartWhenXPlayersInServerORLess)
-                {
+                    onetime2 = false;
                     _restartTimer?.Kill();
                     _restartTimer = null;
-                    
+                    _restartTimer2?.Kill();
+                    _restartTimer2 = null;
+                    _restartTimer = AddTimer(0.1f, RestartTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+                }else if(playersCount > Config.RestartWhenXPlayersInServerORLess)
+                {
+                    onetime2 = false;
+                    _restartTimer?.Kill();
+                    _restartTimer = null;
                     _restartTimer2?.Kill();
                     _restartTimer2 = null;
                 }
@@ -582,9 +622,17 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
         var playersCount = players.Count();
 
-        if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
+        if(playersCount <= Config.RestartWhenXPlayersInServerORLess && onetime2 == false)
         {
             _restartTimer2 = AddTimer(Config.RestartXTimerInMins * 60, RestartTimer_Callback2, TimerFlags.STOP_ON_MAPCHANGE);
+            onetime2 = true;
+        }else if(playersCount > Config.RestartWhenXPlayersInServerORLess)
+        {
+            onetime2 = false;
+            _restartTimer?.Kill();
+            _restartTimer = null;
+            _restartTimer2?.Kill();
+            _restartTimer2 = null;
         }
     }
     private void RestartTimer_Callback2()
@@ -597,6 +645,13 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             if(Config.RestartServerMode == 1)
             {
                 Server.ExecuteCommand("sv_cheats 1; restart");
+                Defaultmap?.Kill();
+                Defaultmap = null;
+                Defaultmap = AddTimer(10.1f, DefaultmapTimer_Callback);
+                _restartTimer?.Kill();
+                _restartTimer = null;
+                _restartTimer2?.Kill();
+                _restartTimer2 = null;
             }else if(Config.RestartServerMode == 2)
             {
                 Server.ExecuteCommand("sv_cheats 1; crash");
@@ -604,12 +659,32 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         }else if(playersCount > Config.RestartWhenXPlayersInServerORLess)
         {
+            onetime2 = false;
             _restartTimer?.Kill();
             _restartTimer = null;
-            
             _restartTimer2?.Kill();
             _restartTimer2 = null;
         }
+    }
+    private void DefaultmapTimer_Callback()
+    {
+        string DEFAULTMAP = Config.RestartServerDefaultMap;
+
+        if (DEFAULTMAP.StartsWith("ds:") )
+        {
+            string dsworkshop = DEFAULTMAP.TrimStart().Substring("ds:".Length).Trim();
+            Server.ExecuteCommand($"ds_workshop_changelevel {dsworkshop}");
+        }else if (DEFAULTMAP.StartsWith("host:"))
+        {
+            string hostworkshop = DEFAULTMAP.TrimStart().Substring("host:".Length).Trim();
+            Server.ExecuteCommand($"host_workshop_map {hostworkshop}");
+        }else if (!(DEFAULTMAP.StartsWith("ds:") || DEFAULTMAP.StartsWith("host:")))
+        {
+            Server.ExecuteCommand($"changelevel {DEFAULTMAP}");
+        }
+
+        Defaultmap?.Kill();
+        Defaultmap = null;
     }
     private void RotationTimer_Callback()
     {
@@ -776,6 +851,12 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         var goingteam = info.GetArg(1);
         var wasteam = player.TeamNum; 
         var alive = player.PlayerPawn.Value.LifeState == (byte)LifeState_t.LIFE_ALIVE;
+
+        if (OnDeadBody.ContainsKey(player.UserId.Value))
+        {
+            return HookResult.Handled;
+        }
+
         if(alive && wasteam == (Byte)CsTeam.Terrorist && goingteam == "1")
         {
             player.ChangeTeam(CsTeam.Terrorist);
