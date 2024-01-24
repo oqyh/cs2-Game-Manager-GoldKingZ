@@ -1,4 +1,4 @@
-# [CS2] Game-Manager (1.0.6)
+# [CS2] Game-Manager (1.0.7)
 
 ### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation , And More )
 
@@ -19,11 +19,11 @@
   "DisableBotRadio": false,
   
   "DisableRadio": 0, // (1) = Disable Radio Completely || (2) = Make it Cooldown [DisableRadioThreshold] + [DisableRadioTime]
-  "DisableRadioThreshold": 2, // if DisableRadio (2) How Much Threshold Radio
+  "DisableRadioThreshold": 6, // if DisableRadio (2) How Much Threshold Radio
   "DisableRadioTime": 5, // if DisableRadio (2) Time In Sec Give Cooldown
   
   "DisableChatWheel": 0, // (1) = Disable ChatWheel Completely || (2) = Make it Cooldown [DisableChatWheelThreshold] + [DisableChatWheelTime]
-  "DisableChatWheelThreshold": 2, // if DisableChatWheel (2) How Much Threshold Radio
+  "DisableChatWheelThreshold": 6, // if DisableChatWheel (2) How Much Threshold Radio
   "DisableChatWheelTime": 5, // if DisableChatWheel (2) Time In Sec Give Cooldown
   
   "DisableGrenadeRadio": false,
@@ -61,6 +61,11 @@
   "RestartServerMode": 0,
   "RestartXTimerInMins": 5,
   "RestartWhenXPlayersInServerORLess": 0,
+  //if RestartServerMode Is (1) Which Map After Restarting Would You Like To Be
+  //Using ds: Means What map list in ds_workshop_listmaps
+  //Using host: To Get Any Workshop Map example https://steamcommunity.com/sharedfiles/filedetails/?id=3112654794 Means host:3112654794
+  //Using Without any ds: or host: means what inside /../csgo/maps/  de_dust2 de_mirage
+  "RestartServerDefaultMap": "de_dust2",
   
 //-----------------------------------------------------------------------------------------
 
@@ -106,6 +111,11 @@
 
 ## .:[ Change Log ]:.
 ```
+(1.0.7)
+-Added "RestartServerDefaultMap"
+-Fix DisableDeadBody With AFK Plugin Any Plugin
+-Fix RestartServerMode (1) Better Method
+
 (1.0.6)
 -Fix DisableDeadBody
 
