@@ -7,9 +7,11 @@ using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
 using System.Text.Json.Serialization;
 using System.Drawing;
+using CounterStrikeSharp.API.Core.Attributes;
 
 namespace Game_Manager;
 
+[MinimumApiVersion(164)]
 public class GameBMangerConfig : BasePluginConfig
 {
     [JsonPropertyName("DisableBotRadio")] public bool DisableBotRadio { get; set; } = false;
@@ -38,7 +40,10 @@ public class GameBMangerConfig : BasePluginConfig
     [JsonPropertyName("DisableRewardMoneyMessages")] public bool DisableRewardMoneyMessages { get; set; } = false;
     [JsonPropertyName("DisableDeadBody")] public bool DisableDeadBody { get; set; } = false;
     [JsonPropertyName("DisableBomb")] public bool DisableBomb { get; set; } = false;
-
+    
+    [JsonPropertyName("AutoCleanDropWeaponsTimer")] public float AutoCleanDropWeaponsTimer { get; set; } = 0;
+    [JsonPropertyName("AutoCleanDropWeapons")] public string AutoCleanDropWeapons { get; set; } = "1,2,3";
+    
     [JsonPropertyName("IgnoreDefaultDisconnectMessages")] public bool IgnoreDefaultDisconnectMessages { get; set; } = false;
     [JsonPropertyName("IgnoreDefaultJoinTeamMessages")] public bool IgnoreDefaultJoinTeamMessages { get; set; } = false;
     [JsonPropertyName("IgnoreTeamMateAttackMessages")] public bool IgnoreTeamMateAttackMessages { get; set; } = false;
@@ -63,7 +68,7 @@ public class GameBMangerConfig : BasePluginConfig
 public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig> 
 {
     public override string ModuleName => "Game Manager";
-    public override string ModuleVersion => "1.0.7";
+    public override string ModuleVersion => "1.0.8";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation";
     public GameBMangerConfig Config { get; set; } = new GameBMangerConfig();
@@ -160,12 +165,28 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     private CounterStrikeSharp.API.Modules.Timers.Timer? RotationTimer;
     private CounterStrikeSharp.API.Modules.Timers.Timer? RotationTimer2;
     private CounterStrikeSharp.API.Modules.Timers.Timer? Defaultmap;
+    private CounterStrikeSharp.API.Modules.Timers.Timer? CleanerTimer;
     private Dictionary<int, bool> OnDeadBody = new Dictionary<int, bool>();
     private Dictionary<int, bool> OnSwitchTeam = new Dictionary<int, bool>();
     private Dictionary<int, DateTime> lastCommandTimestampsradio = new Dictionary<int, DateTime>();
     private Dictionary<int, int> commandCountsradio = new Dictionary<int, int>();
     private Dictionary<int, DateTime> lastCommandTimestampswheel = new Dictionary<int, DateTime>();
     private Dictionary<int, int> commandCountswheel = new Dictionary<int, int>();
+    readonly string[] WeaponsList =
+    {
+        "ak47", "aug", "awp", "bizon", "cz75a", "deagle", "elite", "famas", "fiveseven", "g3sg1", "galilar",
+        "glock", "hkp2000", "m249", "m4a1", "m4a1_silencer", "mac10", "mag7", "mp5sd", "mp7", "mp9", "negev",
+        "nova", "p250", "p90", "revolver", "sawedoff", "scar20", "sg556", "ssg08", "tec9", "ump45", "usp_silencer", "xm1014"
+    };
+    readonly string[] GrenadesList =
+    {
+        "decoy", "flashbang", "hegrenade", "incgrenade", "molotov", "smokegrenade"
+    };
+
+    readonly string[] ItemsList =
+    {
+        "defuser", "cutters"
+    };
 
     private string[] RadioArray = new string[] {
     "coverme",
@@ -285,7 +306,6 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             ExectueCommandsSvCheats();
             Server.NextFrame(() =>
             {
-                
                 onetime2 = false;
                 _restartTimer?.Kill();
                 _restartTimer = null;
@@ -308,6 +328,15 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
                         Console.WriteLine("[Error] Please Disable (sv_hibernate_when_empty)");
                         Console.WriteLine("|||||||||||||||||||||||||||||| E R R O R ||||||||||||||||||||||||||||||");
                     }
+                }
+            });
+            Server.NextFrame(() =>
+            {
+                if(Config.AutoCleanDropWeaponsTimer != 0)
+                {
+                    CleanerTimer?.Kill();
+                    CleanerTimer = null;
+                    CleanerTimer = AddTimer(Config.AutoCleanDropWeaponsTimer, CleanerTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
                 }
             });
         });
@@ -522,7 +551,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         RegisterListener<Listeners.OnClientConnected>(playerSlot =>
         {
-            var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+            var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot && !x.IsHLTV);
             var playersCount = players.Count();
 
             if(Config.RestartServerMode == 1 || Config.RestartServerMode == 2)
@@ -568,7 +597,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
 
         RegisterListener<Listeners.OnClientDisconnectPost>(playerSlot =>
         {
-            var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+            var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot && !x.IsHLTV);
             var playersCount = players.Count();
 
             if(Config.RestartServerMode == 1 || Config.RestartServerMode == 2)
@@ -617,9 +646,41 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             AddCommandListener(RadioArray[i], CommandListener_RadioCommands);
         }
     }
+    private void CleanerTimer_Callback()
+    {
+        if (Config.AutoCleanDropWeapons.Contains("1"))
+        {
+            RemoveWeapons();
+        }
+
+        if (Config.AutoCleanDropWeapons.Contains("2"))
+        {
+            RemoveGrenades();
+        }
+
+        if (Config.AutoCleanDropWeapons.Contains("3"))
+        {
+            RemoveDefuserKit();
+        }
+
+        if (Config.AutoCleanDropWeapons.Contains("4"))
+        {
+            RemoveTaser();
+        }
+
+        if (Config.AutoCleanDropWeapons.Contains("5"))
+        {
+            RemoveHealthShot();
+        }
+
+        if (Config.AutoCleanDropWeapons.Contains("6"))
+        {
+            RemoveKnifes();
+        }
+    }
     private void RestartTimer_Callback()
     {
-        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot && !x.IsHLTV);
         var playersCount = players.Count();
 
         if(playersCount <= Config.RestartWhenXPlayersInServerORLess && onetime2 == false)
@@ -637,7 +698,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     }
     private void RestartTimer_Callback2()
     {
-        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot && !x.IsHLTV);
         var playersCount = players.Count();
 
         if(playersCount <= Config.RestartWhenXPlayersInServerORLess)
@@ -688,7 +749,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     }
     private void RotationTimer_Callback()
     {
-        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot && !x.IsHLTV);
         var playersCount = players.Count();
 
         if(playersCount <= Config.RotationWhenXPlayersInServerORLess && onetime == false)
@@ -706,7 +767,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
     }
     private void RotationTimer_Callback2()
     {
-        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot);
+        var players = Utilities.GetPlayers().Where(x => x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot && !x.IsHLTV);
         var playersCount = players.Count();
 
         if(playersCount <= Config.RotationWhenXPlayersInServerORLess)
@@ -1080,6 +1141,88 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
         }
         _currentIndex++;
         return _lines[_currentIndex];
+    }
+    private void RemoveWeapons()
+    {
+        foreach (string Weapons in WeaponsList)
+        {
+            foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_" + Weapons))
+            {
+                if (entity == null) continue;
+                if (entity.Entity == null) continue;
+                if (entity.OwnerEntity == null) continue;
+                if(entity.OwnerEntity.IsValid) continue;
+
+                entity.AcceptInput("Kill");
+            }
+        }
+    }
+    private void RemoveGrenades()
+    {
+        foreach (string Grenades in GrenadesList)
+        {
+            foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_" + Grenades))
+            {
+                if (entity == null) continue;
+                if (entity.Entity == null) continue;
+                if (entity.OwnerEntity == null) continue;
+                if(entity.OwnerEntity.IsValid) continue;
+
+                entity.AcceptInput("Kill");
+            }
+        }
+    }
+    private void RemoveKnifes()
+    {
+        foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_knife"))
+        {
+            if (entity == null) continue;
+            if (entity.Entity == null) continue;
+            if (entity.OwnerEntity == null) continue;
+            if(entity.OwnerEntity.IsValid) continue;
+
+            entity.AcceptInput("Kill");
+        }
+    }
+
+    private void RemoveDefuserKit()
+    {
+        foreach (string Items in ItemsList)
+        {
+            foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("item_" + Items))
+            {
+                if (entity == null) continue;
+                if (entity.Entity == null) continue;
+                if (entity.OwnerEntity == null) continue;
+                if(entity.OwnerEntity.IsValid) continue;
+
+                entity.AcceptInput("Kill");
+            }
+        }
+    }
+    private void RemoveTaser()
+    {
+        foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_taser"))
+        {
+            if (entity == null) continue;
+            if (entity.Entity == null) continue;
+            if (entity.OwnerEntity == null) continue;
+            if(entity.OwnerEntity.IsValid) continue;
+
+            entity.AcceptInput("Kill");
+        }
+    }
+    private void RemoveHealthShot()
+    {
+        foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_healthshot"))
+        {
+            if (entity == null) continue;
+            if (entity.Entity == null) continue;
+            if (entity.OwnerEntity == null) continue;
+            if(entity.OwnerEntity.IsValid) continue;
+
+            entity.AcceptInput("Kill");
+        }
     }
     public override void Unload(bool hotReload)
     {
