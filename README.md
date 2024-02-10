@@ -1,4 +1,4 @@
-# [CS2] Game-Manager (1.0.7)
+# [CS2] Game-Manager (1.0.8)
 
 ### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation , And More )
 
@@ -42,17 +42,30 @@
   "DisableRewardMoneyMessages": false,
   "DisableDeadBody": false,
   "DisableBomb": false,
+//-----------------------------------------------------------------------------------------
 
+  "AutoCleanDropWeaponsTimer": 1, // Time In Sec To Clean Drop Weapons
+  
+  //Whats Inside AutoCleanDropWeapons will be Auto Deleted
+  //Add Many As You Like
+  //1 = Weapons (AK,M4,Pistol, etc...)
+  //2 = Grenades (Smoke,Molly, etc...)
+  //3 = DefuserKit
+  //4 = Taser
+  //5 = HealthShot
+  //6 = Knifes
+  "AutoCleanDropWeapons": "1,2,3",
 //-----------------------------------------------------------------------------------------
 
   "IgnoreDefaultDisconnectMessages": false,
   "IgnoreDefaultJoinTeamMessages": false,
   "IgnoreTeamMateAttackMessages": false,
-  
 //-----------------------------------------------------------------------------------------
 
-  "CustomJoinTeamMessages": 0, // (1) Enable Custom Join Team Messages || (2) = Enable Custom Join Team Messages Without Bots
-  
+  //Located in (..\counterstrikesharp\plugins\Game_Manager\lang)
+  //1 = Enable Custom Join Team Messages
+  //2 = Enable Custom Join Team Messages Without Bots
+  "CustomJoinTeamMessages": 0,
 //-----------------------------------------------------------------------------------------
 
   //Restart The Server If (RestartWhenXPlayersInServerORLess) After (RestartXTimerInMins)
@@ -61,12 +74,12 @@
   "RestartServerMode": 0,
   "RestartXTimerInMins": 5,
   "RestartWhenXPlayersInServerORLess": 0,
+  
   //if RestartServerMode Is (1) Which Map After Restarting Would You Like To Be
   //Using ds: Means What map list in ds_workshop_listmaps
   //Using host: To Get Any Workshop Map example https://steamcommunity.com/sharedfiles/filedetails/?id=3112654794 Means host:3112654794
   //Using Without any ds: or host: means what inside /../csgo/maps/  de_dust2 de_mirage
   "RestartServerDefaultMap": "de_dust2",
-  
 //-----------------------------------------------------------------------------------------
 
   //Rotate Maps Server If (RotationWhenXPlayersInServerORLess) After (RotationXTimerInMins)
@@ -75,8 +88,8 @@
   "RotationServerMode": 0,
   "RotationXTimerInMins": 8,
   "RotationWhenXPlayersInServerORLess": 0,
-  
 //-----------------------------------------------------------------------------------------
+
   "ConfigVersion": 1
 }
 ```
@@ -111,6 +124,13 @@
 
 ## .:[ Change Log ]:.
 ```
+(1.0.8)
+-Fix RestartServerMode
+-Fix RotationServerMode
+-Added AutoCleanDropWeaponsTimer
+-Added AutoCleanDropWeapons
+
+
 (1.0.7)
 -Added "RestartServerDefaultMap"
 -Fix DisableDeadBody With AFK Plugin Any Plugin
