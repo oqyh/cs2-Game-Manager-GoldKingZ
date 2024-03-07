@@ -34,12 +34,13 @@ public class GameBMangerConfig : BasePluginConfig
     [JsonPropertyName("DisableWinOrLoseSound")] public bool DisableWinOrLoseSound { get; set; } = false;
     [JsonPropertyName("DisableJumpLandSound")] public bool DisableJumpLandSound { get; set; } = false;
     [JsonPropertyName("DisableMPVSound")] public bool DisableMPVSound { get; set; } = false;
+    [JsonPropertyName("DisableBombPlantedAnnounce")] public bool DisableBombPlantedAnnounce { get; set; } = false;
     [JsonPropertyName("DisableFallDamage")] public bool DisableFallDamage { get; set; } = false;
     [JsonPropertyName("DisableLegs")] public bool DisableLegs { get; set; } = false;
     [JsonPropertyName("DisableSvCheats")] public bool DisableSvCheats { get; set; } = false;
     [JsonPropertyName("DisableRewardMoneyMessages")] public bool DisableRewardMoneyMessages { get; set; } = false;
     [JsonPropertyName("DisableDeadBody")] public bool DisableDeadBody { get; set; } = false;
-    [JsonPropertyName("DisableBomb")] public bool DisableBomb { get; set; } = false;
+    [JsonPropertyName("DisableC4")] public bool DisableC4 { get; set; } = false;
     
     [JsonPropertyName("AutoCleanDropWeaponsTimer")] public float AutoCleanDropWeaponsTimer { get; set; } = 0;
     [JsonPropertyName("AutoCleanDropWeapons")] public string AutoCleanDropWeapons { get; set; } = "1,2,3";
@@ -47,7 +48,7 @@ public class GameBMangerConfig : BasePluginConfig
     [JsonPropertyName("IgnoreDefaultDisconnectMessages")] public bool IgnoreDefaultDisconnectMessages { get; set; } = false;
     [JsonPropertyName("IgnoreDefaultJoinTeamMessages")] public bool IgnoreDefaultJoinTeamMessages { get; set; } = false;
     [JsonPropertyName("IgnoreTeamMateAttackMessages")] public bool IgnoreTeamMateAttackMessages { get; set; } = false;
-
+    
     [JsonPropertyName("CustomJoinTeamMessages")] public int CustomJoinTeamMessages { get; set; } = 0;
 
     [JsonPropertyName("RestartServerMode")] public int RestartServerMode { get; set; } = 0;
@@ -68,7 +69,7 @@ public class GameBMangerConfig : BasePluginConfig
 public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig> 
 {
     public override string ModuleName => "Game Manager";
-    public override string ModuleVersion => "1.0.8";
+    public override string ModuleVersion => "1.0.9";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "Block/Hide , Messages , Ping , Radio , Team , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation";
     public GameBMangerConfig Config { get; set; } = new GameBMangerConfig();
@@ -340,6 +341,11 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
                 }
             });
         });
+        RegisterEventHandler<EventBombPlanted>((@event, info) =>
+        {
+            if (!Config.DisableBombPlantedAnnounce || @event == null)return HookResult.Continue;
+            return HookResult.Handled;
+        }, HookMode.Pre);
 
         RegisterEventHandler<EventRoundEnd>((@event, info) =>
         {
@@ -1086,7 +1092,7 @@ public class GameBManger : BasePlugin, IPluginConfig<GameBMangerConfig>
             Server.ExecuteCommand("bot_chatter off");
         }
 
-        if(Config.DisableBomb)
+        if(Config.DisableC4)
         {
             Server.ExecuteCommand("mp_give_player_c4 0");
         }
