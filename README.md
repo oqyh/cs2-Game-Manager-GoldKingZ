@@ -1,51 +1,173 @@
-# [CS2] Game-Manager (1.0.8)
+# [CS2] Game-Manager-GoldKingZ (2.0.0)
 
-### Game Manager ( Block/Hide , Messages , Ping , Radio , Connect , Disconnect , Sounds , Restart On Last Player Disconnect , Map Rotation , And More )
+### Block/Hide Unnecessaries In Game
 
-![3](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/76d08c47-d838-4867-8410-06b7c8249add)
-![2](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/1d2c9311-3092-4c49-8198-b37d3cb65890)
-![1](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/65c8b2d0-045a-46d2-b75a-a2c235fc6a26)
-![4](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/138b8ff5-df2e-4c3a-a85a-f8996aeda63b)
-![111](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/52c68d54-9981-4c7e-898d-1f423caa621e)
+
+
+![blockchatwheel](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/bbd0bd16-fb65-49f9-b008-cecb190bb4bd)
+
+![decay](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/6960136b-4aef-467e-b1ad-e4ec8c6baf8a)
+
+![teamattack](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/09beefa3-8431-4325-9352-9e2451b0d234)
+
+![blockradio](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/26efd5d8-3c3f-44c1-a0e6-43c6ce2157b8)
+
+![hidechat](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/1b5e2e57-3936-416f-895b-02731780e577)
+
+
 
 ## .:[ Dependencies ]:.
 [Metamod:Source (2.x)](https://www.sourcemm.net/downloads.php/?branch=master)
 
 [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
+[Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
+
+[MySqlConnector](https://www.nuget.org/packages/MySqlConnector)
+
+
 ## .:[ Configuration ]:.
+
+> [!CAUTION]
+> Config Located In ..\addons\counterstrikesharp\plugins\Game-Manager-GoldKingZ\config\config.json                                           
+>
+
 ```json
 {
+  //Enable MySql? Located In Game-Manager-GoldKingZ/config/MySql_Settings.json
+  "Enable_UseMySql": false,
+
+  //Disable Radio
+  "DisableRadio": false,
+
+  //Disable Bot Radio
   "DisableBotRadio": false,
-  
-  "DisableRadio": 0, // (1) = Disable Radio Completely || (2) = Make it Cooldown [DisableRadioThreshold] + [DisableRadioTime]
-  "DisableRadioThreshold": 2, // if DisableRadio (2) How Much Threshold Radio
-  "DisableRadioTime": 5, // if DisableRadio (2) Time In Sec Give Cooldown
-  
-  "DisableChatWheel": 0, // (1) = Disable ChatWheel Completely || (2) = Make it Cooldown [DisableChatWheelThreshold] + [DisableChatWheelTime]
-  "DisableChatWheelThreshold": 2, // if DisableChatWheel (2) How Much Threshold Radio
-  "DisableChatWheelTime": 5, // if DisableChatWheel (2) Time In Sec Give Cooldown
-  
-  "DisableGrenadeRadio": false,
+
+  //Disable ChatWheel
+  "DisableChatWheel": false,
+
+  //Disable Ping
   "DisablePing": false,
-  "DisableKillfeed": 0, // (1) = Disable Killfeed Completely || (2) = Disable Killfeed And Show Who I Killed Only
+
+  //Disable Grenade Radio
+  "DisableGrenadeRadio": false,
+
+  //Disable Radar
   "DisableRadar": false,
-  "DisableMoneyHUD": false,
-  "DisableTeamMateHeadTag": 0, // (1) = Remove Head Tag Only Behind Wall || (2) = Remove Head Tag Completely
-  "DisableWinOrLosePanel": false,
-  "DisableWinOrLoseSound": false,
+
+  //Disable Cash Awards And Money HUD
+  "DisableCashAwardsAndMoneyHUD": false,
+
+  //Disable Jump Land Sound
   "DisableJumpLandSound": false,
-  "DisableMPVSound": false,
+
+  //Disable Fall Damage
   "DisableFallDamage": false,
-  "DisableLegs": false,
-  "DisableSvCheats": false, // Force sv_cheats 0
-  "DisableRewardMoneyMessages": false,
-  "DisableDeadBody": false,
-  "DisableBomb": false,
+
+  //Disable sv_cheats ( if you enable it will make it always sv_cheats 0)
+  "DisableSvCheats": false,
+
+  //Disable C4 ( Will Remove C4 )
+  "DisableC4": false,
+
+  //Disable MPV Sound At End
+  "DisableMPVSound": false,
+
+  //(1) = Disable Killfeed Completely
+  //(2) = Disable Killfeed And Show Who I Killed Only
+  "DisableKillfeedMode": 0,
+
+  //(1) = Remove Head Tag Only Behind Wall
+  //(2) = Remove Head Tag Completely
+  "DisableTeamMateHeadTag": 0,
+
+  //(1) = Remove Dead Body After Death Immediately 
+  //(2) = Remove Dead Body After Death With Delay Mode2_TimeXSecsDelayRemoveDeadBody
+  //(3) = Remove Dead Body After Death Decay Method Mode3_TimeXSecsDecayDeadBody
+  "DisableDeadBodyMode": 0,
+
+  //If DisableDeadBodyMode 2 How Much Time In Secs
+  "Mode2_TimeXSecsDelayRemoveDeadBody": 10,
+
+  //If DisableDeadBodyMode 3 How Much Time In Secs
+  "Mode3_TimeXSecsDecayDeadBody": 0.01,
+
+  //(1) = Disable Legs On FOV + Not Toggleable
+  //(2) = Show Legs By Default On FOV + Toggleable By Toggle_DisableLegsFlags With Commands Toggle_DisableLegsCommandsInGame
+  //(3) = Hide Legs By Default On FOV + Toggleable By Toggle_DisableLegsFlags With Commands Toggle_DisableLegsCommandsInGame
+  "DisableLegsMode": 0,
+
+  //If DisableLegsMode 2 or 3 Who Can Toggle It (Making Empty "" Means Everyone Has Access)
+  "Toggle_DisableLegsFlags": "@css/root,@css/admin,@css/vip,#css/admin,#css/vip",
+
+  //If DisableLegsMode 2 or 3 Which Command You Like It To Be
+  "Toggle_DisableLegsCommandsInGame": "!hidelegs,!hideleg,!hl",
+
+  //(1) = Disable Chat HUD + Not Toggleable
+  //(2) = Show Chat HUD By Default + Toggleable By Toggle_DisableHUDChatFlags With Commands Toggle_DisableHUDChatCommandsInGame
+  //(3) = Hide Chat HUD By Default + Toggleable By Toggle_DisableHUDChatFlags With Commands Toggle_DisableHUDChatCommandsInGame
+  "DisableHUDChatMode": 0,
+
+  //Delay Before Hide Chat HUD Give Warning 
+  "DisableHUDChatModeWarningTimerInSecs": 15,
+
+  //If DisableHUDChatMode 2 or 3 Who Can Toggle It (Making Empty "" Means Everyone Has Access)
+  "Toggle_DisableHUDChatFlags": "@css/root,@css/admin,@css/vip,#css/admin,#css/vip",
+
+  //If DisableHUDChatMode 2 or 3 Which Command You Like It To Be
+  "Toggle_DisableHUDChatCommandsInGame": "!hidechat,!hc",
+
+  //(1) = Disable Weapons HUD + Not Toggleable
+  //(2) = Show Weapons HUD By Default + Toggleable By Toggle_DisableHUDWeaponsFlags With Commands Toggle_DisableHUDWeaponsCommandsInGame
+  //(3) = Hide Weapons HUD By Default + Toggleable By Toggle_DisableHUDWeaponsFlags With Commands Toggle_DisableHUDWeaponsCommandsInGame
+  "DisableHUDWeaponsMode": 0,
+
+  //If DisableHUDWeaponsMode 2 or 3 Who Can Toggle It (Making Empty "" Means Everyone Has Access)
+  "Toggle_DisableHUDWeaponsFlags": "@css/root,@css/admin,@css/vip,#css/admin,#css/vip",
+
+  //If DisableHUDWeaponsMode 2 or 3 Which Command You Like It To Be
+  "Toggle_DisableHUDWeaponsCommandsInGame": "!hideweapons,!hideweapon,!hw",
+
+  //Auto Delete Inactive Players Cookies Older Than X Days plugins/Game-Manager-GoldKingZ/Game_Manager_Cookies.json
+  "Toggle_AutoRemovePlayerCookieOlderThanXDays": 7,
+
+  //Auto Delete Inactive Players Cookies Older Than X Days In MySql
+  "Toggle_AutoRemovePlayerMySqlOlderThanXDays": 7,
+
 //-----------------------------------------------------------------------------------------
 
-  "AutoCleanDropWeaponsTimer": 1, // Time In Sec To Clean Drop Weapons
-  
+  //Ignore Default Bomb Planted Announce
+  "IgnoreDefaultBombPlantedAnnounce": false,
+
+  //Ignore Default TeamMate Attack Messages
+  "IgnoreDefaultTeamMateAttackMessages": false,
+
+  //Ignore Default Join Team Messages
+  "IgnoreDefaultJoinTeamMessages": false,
+
+  //Ignore Default Disconnect Messages
+  "IgnoreDefaultDisconnectMessages": false,
+
+//-----------------------------------------------------------------------------------------
+
+            //Custom Messages Located In Lang Folder
+
+  //(1) = Custom Join Team Messages + Exclude Bots
+  //(2) = Custom Join Team Messages + Include Bots
+  "CustomJoinTeamMessagesMode": 0,
+
+  //(1) = Custom Throw Nade Messages + Exclude Bots
+  //(2) = Custom Throw Nade Messages  + Include Bots
+  //(3) = Custom Throw Nade Messages  + Hide Nade Message From All When (mp_teammates_are_enemies true)
+  "CustomThrowNadeMessagesMode": 0,
+
+//-----------------------------------------------------------------------------------------
+
+  //(1) = Clear Only On Every Round Start With Delay Clear Mode1_TimeXSecsDelayClean
+  //(2) = Clear Only On Every Spawn Or Death With Delay Clear Mode2_TimeXSecsDelayClean
+  //(3) = Clear On AnyTime With Mode3_EveryTimeXSecs
+  "AutoCleanDropWeaponsMode": 0,
+
   //Whats Inside AutoCleanDropWeapons will be Auto Deleted
   //Add Many As You Like
   //1 = Weapons (AK,M4,Pistol, etc...)
@@ -54,47 +176,22 @@
   //4 = Taser
   //5 = HealthShot
   //6 = Knifes
-  "AutoCleanDropWeapons": "1,2,3",
-//-----------------------------------------------------------------------------------------
+  "AutoCleanTheseDroppedWeaponsOnly": "1,2,3",
 
-  "IgnoreDefaultDisconnectMessages": false,
-  "IgnoreDefaultJoinTeamMessages": false,
-  "IgnoreTeamMateAttackMessages": false,
-//-----------------------------------------------------------------------------------------
+  //If AutoCleanDropWeaponsMode 1 How Many In Secs
+  "Mode1_TimeXSecsDelayClean": 10,
 
-  //Located in (..\counterstrikesharp\plugins\Game_Manager\lang)
-  //1 = Enable Custom Join Team Messages
-  //2 = Enable Custom Join Team Messages Without Bots
-  "CustomJoinTeamMessages": 0,
-//-----------------------------------------------------------------------------------------
+  //If AutoCleanDropWeaponsMode 2 How Many In Secs
+  "Mode2_TimeXSecsDelayClean": 10,
 
-  //Restart The Server If (RestartWhenXPlayersInServerORLess) After (RestartXTimerInMins)
-  //RestartServerMode (1) = Restart Method
-  //RestartServerMode (2) = Crash Method Sometimes Restart Will Not Work Use This Method Instead
-  "RestartServerMode": 0,
-  "RestartXTimerInMins": 5,
-  "RestartWhenXPlayersInServerORLess": 0,
-  
-  //if RestartServerMode Is (1) Which Map After Restarting Would You Like To Be
-  //Using ds: Means What map list in ds_workshop_listmaps
-  //Using host: To Get Any Workshop Map example https://steamcommunity.com/sharedfiles/filedetails/?id=3112654794 Means host:3112654794
-  //Using Without any ds: or host: means what inside /../csgo/maps/  de_dust2 de_mirage
-  "RestartServerDefaultMap": "de_dust2",
-//-----------------------------------------------------------------------------------------
+  //If AutoCleanDropWeaponsMode 3 How Many In Secs
+  "Mode3_EveryTimeXSecs": 10,
 
-  //Rotate Maps Server If (RotationWhenXPlayersInServerORLess) After (RotationXTimerInMins)
-  //RotationServerMode (1) = Get Maps From Top To Bottom In RotationServerMapList.txt
-  //RotationServerMode (2) = Get Random Maps In RotationServerMapList.txt
-  "RotationServerMode": 0,
-  "RotationXTimerInMins": 8,
-  "RotationWhenXPlayersInServerORLess": 0,
-//-----------------------------------------------------------------------------------------
-
-  "ConfigVersion": 1
 }
 ```
 
-![colors](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/4035e186-58f5-43ed-a50a-be189a21daaa)
+![329846165-ba02c700-8e0b-4ebe-bc28-103b796c0b2e](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/3df7caa9-34a7-47da-94aa-8d682f59e85d)
+
 
 ## .:[ Language ]:.
 ```json
@@ -106,24 +203,77 @@
 	//{LightBlue} {Olive} {Lime} {Red} {Purple} {Grey}
 	//{Default} {White} {Darkred} {Green} {LightYellow}
 	//==========================
+	//        Other
 	//==========================
-	//    CustomJoinTeamMessages
-	//{0} = Player Join Name
+	//{nextline} = Print On Next Line
 	//==========================
-	//==========================
-	//    WarningMessages
-	//{0} = CooldownTimer
-	//==========================
-	"CustomJoinTeamMessages_SPEC": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Spectators",
-	"CustomJoinTeamMessages_T": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
-	"CustomJoinTeamMessages_CT": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
-	"Radio_WarningCooldown": "{green}Gold KingZ {grey}| {darkred}Wait {0} Secs Cooldown For Spaming Radio",
-	"ChatWheel_WarningCooldown": "{green}Gold KingZ {grey}| {darkred}Wait {0} Secs Cooldown For Spaming ChatWheel"
+	
+	
+	"hidechat.not.allowed": "{green}Gold KingZ {grey}| {darkred}Toggle Hide Chat HUD Is For {lime}VIPS {darkred}Only",
+	"hidechat.enabled.warning": "{darkred}-------------------------------------------------------{nextline}{green}Gold KingZ {grey}| {darkred}Chat HUD Will Be Hidden After {lime}{0} Secs {nextline}{green}Gold KingZ {grey}| {darkred}Please Open The {lime}Chat Box {darkred}On Your Keyboard To See Chat Temporarily{nextline}{darkred}-------------------------------------------------------",
+	"hidechat.enabled": "{green}Gold KingZ {grey}| Chat HUD Now {lime}Visible {grey}Type {yellow}!hidechat {grey}/ {yellow}!hc {grey}To Toggle On/Off",
+	"hidechat.disabled": "{green}Gold KingZ {grey}| Chat HUD Now {darkred}Hidden {grey}Type {yellow}!hidechat {grey}/ {yellow}!hc {grey}To Toggle On/Off",
+	
+	"hidelegs.not.allowed": "{green}Gold KingZ {grey}| {darkred}Toggle Hide Legs Is For {lime}VIPS {darkred}Only",
+	"hidelegs.enabled": "{green}Gold KingZ {grey}| Legs Now {lime}Visible {grey}Type {yellow}!hidelegs {grey}/ {yellow}!hideleg {grey}/ {yellow}!hl {grey}To Toggle On/Off",
+	"hidelegs.disabled": "{green}Gold KingZ {grey}| Legs Now {darkred}Hidden {grey}Type {yellow}!hidelegs {grey}/ {yellow}!hideleg {grey}/ {yellow}!hl {grey}To Toggle On/Off",
+
+	"hideweapons.not.allowed": "{green}Gold KingZ {grey}| {darkred}Toggle Hide Weapons HUD Is For {lime}VIPS {darkred}Only",
+	"hideweapons.enabled": "{green}Gold KingZ {grey}| Weapons HUD Now {lime}Visible {grey}Type {yellow}!hideweapons {grey}/ {yellow}!hw {grey}To Toggle On/Off",
+	"hideweapons.disabled": "{green}Gold KingZ {grey}| Weapons HUD Now {darkred}Hidden {grey}Type {yellow}!hideweapons {grey}/ {yellow}!hw {grey}To Toggle On/Off",
+
+	"custom.jointeam.spec": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Spectators",
+	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
+	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
+
+	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {red}☄ HE Grenade! ☄",
+	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {Olive}☁︎ Smoke! ☁︎",
+	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {orange}♨ Molotov! ♨",
+	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
+	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {orange} ♨ Incendiary! ♨",
+	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {grey}✦ Decoy! ✦"
 }
 ```
 
+
 ## .:[ Change Log ]:.
 ```
+(2.0.0)
+-Upgrade Net.7 To Net.8
+-Fix DisableMPVSound
+-Removed DisableRadio Modes
+-Removed DisableChatWheel Modes
+-Removed DisableWinOrLoseSound (Valve Issue)
+-Removed DisableWinOrLosePanel (Valve Issue)
+-Removed DisableMoneyHUD (Send It To DisableCashAwardsAndMoneyHUD)
+-Removed DisableRewardMoneyMessages (Send It To DisableCashAwardsAndMoneyHUD)
+-Removed RestartServerMode To Saparate Plugin (https://github.com/oqyh/cs2-Auto-Restart-Server-GoldKingZ)
+-Removed RotationServerMode To Saparate Plugin  (Soon)
+-Rework Method DisableDeadBody
+-Added Enable_UseMySql
+-Added DisableCashAwardsAndMoneyHUD
+-Added DisableDeadBodyMode
+-Added Mode2_TimeXSecsDelayRemoveDeadBody
+-Added Mode3_TimeXSecsDecayDeadBody
+-Added DisableLegsMode
+-Added Toggle_DisableLegsFlags
+-Added Toggle_DisableLegsCommandsInGame
+-Added DisableHUDChatMode
+-Added DisableHUDChatModeWarningTimerInSecs
+-Added Toggle_DisableHUDChatFlags
+-Added Toggle_DisableHUDChatCommandsInGame
+-Added DisableHUDWeaponsMode
+-Added Toggle_DisableHUDWeaponsFlags
+-Added Toggle_DisableHUDWeaponsCommandsInGame
+-Added Toggle_AutoRemovePlayerCookieOlderThanXDays
+-Added Toggle_AutoRemovePlayerMySqlOlderThanXDays
+-Added IgnoreDefaultBombPlantedAnnounce
+-Added CustomThrowNadeMessagesMode
+-Added AutoCleanDropWeaponsMode
+-Added Mode1_TimeXSecsDelayClean
+-Added Mode2_TimeXSecsDelayClean
+-Added Mode3_EveryTimeXSecs
+
 (1.0.8)
 -Fix RestartServerMode
 -Fix RotationServerMode
