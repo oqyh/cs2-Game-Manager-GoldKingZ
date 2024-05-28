@@ -601,11 +601,11 @@ public class GameManagerGoldKingZ : BasePlugin
                     {
                         if (player == null
                         ||  !player.IsValid
-                        ||  player.PawnIsAlive
                         ||  player.PlayerPawn == null
                         ||  !player.PlayerPawn.IsValid
                         ||  player.PlayerPawn.Value == null
-                        ||  !player.PlayerPawn.Value.IsValid)
+                        ||  !player.PlayerPawn.Value.IsValid
+                        ||  player.PawnIsAlive)
                         {
                             return;
                         }
