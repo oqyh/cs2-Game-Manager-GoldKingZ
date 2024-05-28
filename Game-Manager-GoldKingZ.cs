@@ -16,7 +16,7 @@ namespace Game_Manager_GoldKingZ;
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.0";
+    public override string ModuleVersion => "2.0.1";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
@@ -599,11 +599,13 @@ public class GameManagerGoldKingZ : BasePlugin
                 {
                     AddTimer(Configs.GetConfigData().Mode2_TimeXSecsDelayRemoveDeadBody, () =>
                     {
-                        if (player.PawnIsAlive
-                        ||player.PlayerPawn == null
-                        || !player.PlayerPawn.IsValid
-                        || player.PlayerPawn.Value == null
-                        || !player.PlayerPawn.Value.IsValid)
+                        if (player == null
+                        ||  !player.IsValid
+                        ||  player.PawnIsAlive
+                        ||  player.PlayerPawn == null
+                        ||  !player.PlayerPawn.IsValid
+                        ||  player.PlayerPawn.Value == null
+                        ||  !player.PlayerPawn.Value.IsValid)
                         {
                             return;
                         }
