@@ -1,4 +1,4 @@
-# [CS2] Game-Manager-GoldKingZ (2.0.0)
+# [CS2] Game-Manager-GoldKingZ (2.0.1)
 
 ### Block/Hide Unnecessaries In Game
 
@@ -238,6 +238,9 @@
 
 ## .:[ Change Log ]:.
 ```
+(2.0.1)
+-Fix Null DisableDeadBodyMode (Mode 2)
+
 (2.0.0)
 -Upgrade Net.7 To Net.8
 -Fix DisableMPVSound
