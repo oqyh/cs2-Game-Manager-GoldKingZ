@@ -16,7 +16,7 @@ namespace Game_Manager_GoldKingZ;
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.1";
+    public override string ModuleVersion => "2.0.2";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
@@ -267,7 +267,7 @@ public class GameManagerGoldKingZ : BasePlugin
         var player = @event.Userid;
         var nade = @event.Weapon;
 
-        if (player == null || !player.IsValid || Configs.GetConfigData().CustomThrowNadeMessagesMode == 1 && player.IsBot)return HookResult.Continue;
+        if (Configs.GetConfigData().CustomThrowNadeMessagesMode == 0 || player == null || !player.IsValid || Configs.GetConfigData().CustomThrowNadeMessagesMode == 1 && player.IsBot)return HookResult.Continue;
 
         Server.NextFrame(() => {
             var playerteam = player.TeamNum;
@@ -280,9 +280,9 @@ public class GameManagerGoldKingZ : BasePlugin
 
                 if (sameTeam && !teammatesAreEnemies) {
                     Helper.SendGrenadeMessage(nade, players, player.PlayerName);
-                } else if (sameTeam && player != players && Configs.GetConfigData().CustomThrowNadeMessagesMode == 3) {
+                } else if (sameTeam && player != players ) {
                     return;
-                } else if (sameTeam) {
+                } else if (sameTeam && (Configs.GetConfigData().CustomThrowNadeMessagesMode == 3 || Configs.GetConfigData().CustomThrowNadeMessagesMode == 4)) {
                     Helper.SendGrenadeMessage(nade, players, player.PlayerName);
                 }
             });

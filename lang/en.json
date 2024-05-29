@@ -16,10 +16,10 @@
 	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
 	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
 
-	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {red}☄ HE Grenade! ☄",
-	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {Olive}☁︎ Smoke! ☁︎",
-	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {orange}♨ Molotov! ♨",
-	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
-	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {orange} ♨ Incendiary! ♨",
-	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {grey}✦ Decoy! ✦"
+	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {red}☄ HE Grenade! ☄",
+	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {Olive}☁︎ Smoke! ☁︎",
+	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {orange}♨ Molotov! ♨",
+	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
+	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {orange} ♨ Incendiary! ♨",
+	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {grey}✦ Decoy! ✦"
 }

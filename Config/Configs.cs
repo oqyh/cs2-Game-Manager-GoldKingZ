@@ -189,8 +189,3 @@ namespace Game_Manager_GoldKingZ.Config
         }
     }
 }
-
-// CustomThrowNadeMessagesMode = 0 // 	DISABLED
-// CustomThrowNadeMessagesMode = 1 // 	Custom Thow Nade + Exclude Bots
-// CustomThrowNadeMessagesMode = 2 // 	Custom Thow Nade + Include Bots
-// CustomThrowNadeMessagesMode = 3 // 	Custom Thow Nade + Hide Nade Message From All When (mp_teammates_are_enemies true)

@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Modules.Cvars;
 
 namespace Game_Manager_GoldKingZ;
 
@@ -231,6 +232,11 @@ public class Helper
         };
 
         if (messages.ContainsKey(nade) && !string.IsNullOrEmpty(Configs.Shared.StringLocalizer![messages[nade]])) {
+            if(Configs.GetConfigData().CustomThrowNadeMessagesMode == 4 && ConVar.Find("mp_teammates_are_enemies")!.GetPrimitiveValue<bool>())
+            {
+                Helper.AdvancedPrintToServer(Configs.Shared.StringLocalizer![messages[nade]], playerName);
+                return;
+            }
             Helper.AdvancedPrintToChat(players, Configs.Shared.StringLocalizer![messages[nade]], playerName);
         }
     }
