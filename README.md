@@ -1,4 +1,4 @@
-# [CS2] Game-Manager-GoldKingZ (2.0.1)
+# [CS2] Game-Manager-GoldKingZ (2.0.2)
 
 ### Block/Hide Unnecessaries In Game
 
@@ -159,6 +159,7 @@
   //(1) = Custom Throw Nade Messages + Exclude Bots
   //(2) = Custom Throw Nade Messages  + Include Bots
   //(3) = Custom Throw Nade Messages  + Hide Nade Message From All When (mp_teammates_are_enemies true)
+  //(4) = Custom Throw Nade Messages  + Show Nade Message To All When (mp_teammates_are_enemies true)
   "CustomThrowNadeMessagesMode": 0,
 
 //-----------------------------------------------------------------------------------------
@@ -208,7 +209,7 @@
 	//{nextline} = Print On Next Line
 	//==========================
 	
-	
+
 	"hidechat.not.allowed": "{green}Gold KingZ {grey}| {darkred}Toggle Hide Chat HUD Is For {lime}VIPS {darkred}Only",
 	"hidechat.enabled.warning": "{darkred}-------------------------------------------------------{nextline}{green}Gold KingZ {grey}| {darkred}Chat HUD Will Be Hidden After {lime}{0} Secs {nextline}{green}Gold KingZ {grey}| {darkred}Please Open The {lime}Chat Box {darkred}On Your Keyboard To See Chat Temporarily{nextline}{darkred}-------------------------------------------------------",
 	"hidechat.enabled": "{green}Gold KingZ {grey}| Chat HUD Now {lime}Visible {grey}Type {yellow}!hidechat {grey}/ {yellow}!hc {grey}To Toggle On/Off",
@@ -226,18 +227,22 @@
 	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
 	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
 
-	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {red}☄ HE Grenade! ☄",
-	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {Olive}☁︎ Smoke! ☁︎",
-	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {orange}♨ Molotov! ♨",
-	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
-	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {orange} ♨ Incendiary! ♨",
-	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {grey}Throwed {grey}✦ Decoy! ✦"
+	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {red}☄ HE Grenade! ☄",
+	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {Olive}☁︎ Smoke! ☁︎",
+	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {orange}♨ Molotov! ♨",
+	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
+	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {orange} ♨ Incendiary! ♨",
+	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {grey}✦ Decoy! ✦"
 }
 ```
 
 
 ## .:[ Change Log ]:.
 ```
+(2.0.2)
+-Fix Null CustomThrowNadeMessagesMode (Mode 0)
+-Added CustomThrowNadeMessagesMode (Mode 4)
+
 (2.0.1)
 -Fix Null DisableDeadBodyMode (Mode 2)
 
