@@ -1,6 +1,5 @@
 ## .:[ Join Our Discord For Support ]:.
-
-![Discord Banner 2](https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2)
+<a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
 ***
 # [CS2] Game-Manager-GoldKingZ (2.0.2)
