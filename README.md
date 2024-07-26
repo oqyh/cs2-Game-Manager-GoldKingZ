@@ -2,7 +2,7 @@
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
 ***
-# [CS2] Game-Manager-GoldKingZ (2.0.2)
+# [CS2] Game-Manager-GoldKingZ (2.0.3)
 
 ### Block/Hide Unnecessaries In Game
 
@@ -149,8 +149,9 @@
   //Ignore Default Join Team Messages
   "IgnoreDefaultJoinTeamMessages": false,
 
-  //Ignore Default Disconnect Messages
-  "IgnoreDefaultDisconnectMessages": false,
+  //(1) = Ignore Default Disconnect Messages
+  //(2) = Ignore Default Disconnect Messages + Remove Disconnect Icon In Killfeed
+  "IgnoreDefaultDisconnectMessagesMode": 0,
 
 //-----------------------------------------------------------------------------------------
 
@@ -243,6 +244,12 @@
 
 ## .:[ Change Log ]:.
 ```
+(2.0.3)
+-Fix DisableLegsMode
+-Fix DisableHUDChatMode
+-Fix DisableHUDWeaponsMode
+-Added IgnoreDefaultDisconnectMessagesMode (Mode 1 / Mode 2)
+
 (2.0.2)
 -Fix Null CustomThrowNadeMessagesMode (Mode 0)
 -Added CustomThrowNadeMessagesMode (Mode 4)
