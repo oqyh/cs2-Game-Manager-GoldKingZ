@@ -123,7 +123,7 @@ namespace Game_Manager_GoldKingZ.Config
             public bool IgnoreDefaultBombPlantedAnnounce  { get; set; }
             public bool IgnoreDefaultTeamMateAttackMessages  { get; set; }
             public bool IgnoreDefaultJoinTeamMessages  { get; set; }
-            public bool IgnoreDefaultDisconnectMessages  { get; set; }
+            public int IgnoreDefaultDisconnectMessagesMode { get; set; }
             
             public string empty2 { get; set; }
             public int CustomJoinTeamMessagesMode { get; set; }
@@ -173,7 +173,7 @@ namespace Game_Manager_GoldKingZ.Config
                 IgnoreDefaultBombPlantedAnnounce = false;
                 IgnoreDefaultTeamMateAttackMessages = false;
                 IgnoreDefaultJoinTeamMessages = false;
-                IgnoreDefaultDisconnectMessages = false;
+                IgnoreDefaultDisconnectMessagesMode = 0;
                 empty2 = "-----------------------------------------------------------------------------------";
                 CustomJoinTeamMessagesMode = 0;
                 CustomThrowNadeMessagesMode = 0;

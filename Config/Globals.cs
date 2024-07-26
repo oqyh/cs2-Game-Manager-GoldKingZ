@@ -13,6 +13,7 @@ public class Globals
     public static Dictionary<ulong, int> Toggle_DisableWeapons = new Dictionary<ulong, int>();
     public static Dictionary<ulong, bool> Toggle_OnDisableWeapons = new Dictionary<ulong, bool>();
     public static Dictionary<ulong, int> Toggle_DisableLegs = new Dictionary<ulong, int>();
+    public static Dictionary<ulong, bool> Remove_Icon = new Dictionary<ulong, bool>();
     public static CounterStrikeSharp.API.Modules.Timers.Timer? CleanerTimer;
     public static Dictionary<CCSPlayerController, CounterStrikeSharp.API.Modules.Timers.Timer> TimerRemoveDeadBody = new Dictionary<CCSPlayerController, CounterStrikeSharp.API.Modules.Timers.Timer>();
 

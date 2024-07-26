@@ -16,7 +16,7 @@ namespace Game_Manager_GoldKingZ;
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.2";
+    public override string ModuleVersion => "2.0.3";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
@@ -84,13 +84,19 @@ public class GameManagerGoldKingZ : BasePlugin
         if (player == null || !player.IsValid || player.IsBot || player.IsHLTV) return HookResult.Continue;
         var playerid = player.SteamID;
 
-        if(Configs.GetConfigData().DisableLegsMode == 2 || Configs.GetConfigData().DisableLegsMode == 3)
+        if(Configs.GetConfigData().DisableLegsMode == 0 || Configs.GetConfigData().DisableLegsMode == 2 || Configs.GetConfigData().DisableLegsMode == 3)
         {
-            if (!string.IsNullOrEmpty(Configs.GetConfigData().Toggle_DisableLegsFlags) && !Helper.IsPlayerInGroupPermission(player, Configs.GetConfigData().Toggle_DisableLegsFlags))
+            if(Configs.GetConfigData().DisableLegsMode == 0)
             {
-                return HookResult.Continue;
-            }
-            if(Configs.GetConfigData().DisableLegsMode == 2)
+                if (!Globals.Toggle_DisableLegs.ContainsKey(playerid))
+                {
+                    Globals.Toggle_DisableLegs.Add(playerid, 0);
+                }
+                if (Globals.Toggle_DisableLegs.ContainsKey(playerid))
+                {
+                    Globals.Toggle_DisableLegs[playerid] = 0;
+                }
+            }else if(Configs.GetConfigData().DisableLegsMode == 2)
             {
                 if (!Globals.Toggle_DisableLegs.ContainsKey(playerid))
                 {
@@ -111,29 +117,22 @@ public class GameManagerGoldKingZ : BasePlugin
                     Globals.Toggle_DisableLegs[playerid] = 4;
                 }
             }
-
-            Helper.PersonData personData = Helper.RetrievePersonDataById(playerid);
-            if (personData.PlayerSteamID != 0)
-            {
-                if (Globals.Toggle_DisableLegs.ContainsKey(playerid) && personData.Disable_Legs != 0)
-                {
-                    Globals.Toggle_DisableLegs[playerid] = personData.Disable_Legs;
-                }
-                if (Globals.Toggle_DisableChat.ContainsKey(playerid) && personData.Disable_Chat != 0)
-                {
-                    Globals.Toggle_DisableChat[playerid] = personData.Disable_Chat;
-                }
-            }
         }
 
 
-        if(Configs.GetConfigData().DisableHUDChatMode == 2 || Configs.GetConfigData().DisableHUDChatMode == 3)
+        if(Configs.GetConfigData().DisableHUDChatMode == 0 || Configs.GetConfigData().DisableHUDChatMode == 2 || Configs.GetConfigData().DisableHUDChatMode == 3)
         {
-            if (!string.IsNullOrEmpty(Configs.GetConfigData().Toggle_DisableHUDChatFlags) && !Helper.IsPlayerInGroupPermission(player, Configs.GetConfigData().Toggle_DisableHUDChatFlags))
+            if(Configs.GetConfigData().DisableHUDChatMode == 0 )
             {
-                return HookResult.Continue;
-            }
-            if(Configs.GetConfigData().DisableHUDChatMode == 2)
+                if (!Globals.Toggle_DisableChat.ContainsKey(playerid))
+                {
+                    Globals.Toggle_DisableChat.Add(playerid, 0);
+                }
+                if (Globals.Toggle_DisableChat.ContainsKey(playerid))
+                {
+                    Globals.Toggle_DisableChat[playerid] = 0;
+                }
+            }else if(Configs.GetConfigData().DisableHUDChatMode == 2)
             {
                 if (!Globals.Toggle_DisableChat.ContainsKey(playerid))
                 {
@@ -154,22 +153,20 @@ public class GameManagerGoldKingZ : BasePlugin
                     Globals.Toggle_DisableChat[playerid] = 4;
                 }
             }
-            Helper.PersonData personData = Helper.RetrievePersonDataById(playerid);
-            if (personData.PlayerSteamID != 0)
-            {
-                if (Globals.Toggle_DisableChat.ContainsKey(playerid))
-                {
-                    Globals.Toggle_DisableChat[playerid] = personData.Disable_Chat;
-                }
-            }
         }
-        if(Configs.GetConfigData().DisableHUDWeaponsMode == 2 || Configs.GetConfigData().DisableHUDWeaponsMode == 3)
+        if(Configs.GetConfigData().DisableHUDWeaponsMode == 0 || Configs.GetConfigData().DisableHUDWeaponsMode == 2 || Configs.GetConfigData().DisableHUDWeaponsMode == 3)
         {
-            if (!string.IsNullOrEmpty(Configs.GetConfigData().Toggle_DisableHUDWeaponsFlags) && !Helper.IsPlayerInGroupPermission(player, Configs.GetConfigData().Toggle_DisableHUDWeaponsFlags))
+            if(Configs.GetConfigData().DisableHUDWeaponsMode == 0)
             {
-                return HookResult.Continue;
-            }
-            if(Configs.GetConfigData().DisableHUDWeaponsMode == 2)
+                if (!Globals.Toggle_DisableWeapons.ContainsKey(playerid))
+                {
+                    Globals.Toggle_DisableWeapons.Add(playerid, 0);
+                }
+                if (Globals.Toggle_DisableWeapons.ContainsKey(playerid))
+                {
+                    Globals.Toggle_DisableWeapons[playerid] = 0;
+                }
+            }else if(Configs.GetConfigData().DisableHUDWeaponsMode == 2)
             {
                 if (!Globals.Toggle_DisableWeapons.ContainsKey(playerid))
                 {
@@ -190,15 +187,28 @@ public class GameManagerGoldKingZ : BasePlugin
                     Globals.Toggle_DisableWeapons[playerid] = 4;
                 }
             }
-            Helper.PersonData personData = Helper.RetrievePersonDataById(playerid);
-            if (personData.PlayerSteamID != 0)
+        }
+
+        Helper.PersonData personData = Helper.RetrievePersonDataById(playerid);
+        if (personData.PlayerSteamID != 0)
+        {
+            if (Configs.GetConfigData().DisableLegsMode != 0 && Globals.Toggle_DisableLegs.ContainsKey(playerid))
             {
-                if (Globals.Toggle_DisableWeapons.ContainsKey(playerid))
-                {
-                    Globals.Toggle_DisableWeapons[playerid] = personData.Disable_Weapons;
-                }
+                Globals.Toggle_DisableLegs[playerid] = personData.Disable_Legs;
+            }
+
+            if (Configs.GetConfigData().DisableHUDChatMode != 0 && Globals.Toggle_DisableChat.ContainsKey(playerid))
+            {
+                Globals.Toggle_DisableChat[playerid] = personData.Disable_Chat;
+            }
+
+            if (Configs.GetConfigData().DisableHUDWeaponsMode != 0 && Globals.Toggle_DisableWeapons.ContainsKey(playerid))
+            {
+                Globals.Toggle_DisableWeapons[playerid] = personData.Disable_Weapons;
             }
         }
+
+        
         if(Configs.GetConfigData().Enable_UseMySql)
         {
             async Task PerformDatabaseOperationAsync()
@@ -221,21 +231,21 @@ public class GameManagerGoldKingZ : BasePlugin
                         var personDataz = await MySqlDataManager.RetrievePersonDataByIdAsync(playerid, connection);
                         if (personDataz.PlayerSteamID != 0)
                         {
-                            if (Globals.Toggle_DisableLegs.ContainsKey(playerid))
+                            if (Configs.GetConfigData().DisableLegsMode != 0 && Globals.Toggle_DisableLegs.ContainsKey(playerid))
                             {
                                 if(personDataz.Disable_Legs != 0)
                                 {
                                     Globals.Toggle_DisableLegs[playerid] = personDataz.Disable_Legs;
                                 }
                             }
-                            if (Globals.Toggle_DisableChat.ContainsKey(playerid))
+                            if (Configs.GetConfigData().DisableHUDChatMode != 0 && Globals.Toggle_DisableChat.ContainsKey(playerid))
                             {
                                 if(personDataz.Disable_Chat != 0)
                                 {
                                     Globals.Toggle_DisableChat[playerid] = personDataz.Disable_Chat;
                                 }
                             }
-                            if (Globals.Toggle_DisableWeapons.ContainsKey(playerid))
+                            if (Configs.GetConfigData().DisableHUDWeaponsMode != 0 && Globals.Toggle_DisableWeapons.ContainsKey(playerid))
                             {
                                 if(personDataz.Disable_Weapons != 0)
                                 {
@@ -579,6 +589,15 @@ public class GameManagerGoldKingZ : BasePlugin
 
         var player = @event.Userid;
         if(player == null || !player.IsValid )return HookResult.Continue;
+
+        if (Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 2)
+        {
+            if (Globals.Remove_Icon.ContainsKey(player.SteamID))
+            {
+                info.DontBroadcast = true;
+                Globals.Remove_Icon.Remove(player.SteamID);
+            }
+        }
 
         if(Configs.GetConfigData().DisableDeadBodyMode == 1)
         {
@@ -1045,7 +1064,7 @@ public class GameManagerGoldKingZ : BasePlugin
     {
         if (@event == null) return HookResult.Continue;
 
-        if (Configs.GetConfigData().IgnoreDefaultDisconnectMessages)
+        if (Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 1 || Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 2)
         {
             info.DontBroadcast = true;
         }
@@ -1054,6 +1073,19 @@ public class GameManagerGoldKingZ : BasePlugin
 
         if (player == null || !player.IsValid || player.IsBot || player.IsHLTV) return HookResult.Continue;
         var playerid = player.SteamID;
+
+        if (Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 2 )
+        {
+            if (!Globals.Remove_Icon.ContainsKey(playerid))
+            {
+                Globals.Remove_Icon.Add(playerid, true);
+            }
+            if (Globals.Remove_Icon.ContainsKey(playerid))
+            {
+                Globals.Remove_Icon[playerid] = true;
+            }
+        }
+
         Helper.FetchAndRemoveOldJsonEntries();
         Helper.PersonData personData = Helper.RetrievePersonDataById(playerid);
 
@@ -1094,21 +1126,7 @@ public class GameManagerGoldKingZ : BasePlugin
 
                         if (personDataz.PlayerSteamID != 0)
                         {
-                            if (valueChangedLegs)
-                            {
-                                await MySqlDataManager.SaveToMySqlAsync(
-                                    playerid, personDataz.Disable_Chat, personDataz.Disable_Legs, personDataz.Disable_Weapons, personDate, connection, connectionSettings
-                                );
-                            }
-
-                            if (valueChangedChat)
-                            {
-                                await MySqlDataManager.SaveToMySqlAsync(
-                                    playerid, personDataz.Disable_Chat, personDataz.Disable_Legs, personDataz.Disable_Weapons, personDate, connection, connectionSettings
-                                );
-                            }
-
-                            if (valueChangedWeapons)
+                            if (valueChangedLegs || valueChangedChat || valueChangedWeapons)
                             {
                                 await MySqlDataManager.SaveToMySqlAsync(
                                     playerid, personDataz.Disable_Chat, personDataz.Disable_Legs, personDataz.Disable_Weapons, personDate, connection, connectionSettings
