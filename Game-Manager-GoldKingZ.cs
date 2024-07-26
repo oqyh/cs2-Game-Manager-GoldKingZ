@@ -1149,6 +1149,7 @@ public class GameManagerGoldKingZ : BasePlugin
         Globals.Toggle_OnDisableChat.Remove(playerid);
         Globals.Toggle_DisableWeapons.Remove(playerid);
         Globals.Toggle_OnDisableWeapons.Remove(playerid);
+        Globals.Remove_Icon.Remove(playerid);
         Globals.TimerRemoveDeadBody.Remove(player);
         Globals.PlayerAlpha.Remove(player);
         return HookResult.Continue;

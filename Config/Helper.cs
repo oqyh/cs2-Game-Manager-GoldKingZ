@@ -247,6 +247,7 @@ public class Helper
         Globals.Toggle_OnDisableChat.Clear();
         Globals.Toggle_DisableWeapons.Clear();
         Globals.Toggle_OnDisableWeapons.Clear();
+        Globals.Remove_Icon.Clear();
         Globals.TimerRemoveDeadBody.Clear();
         Globals.PlayerAlpha.Clear();
     }
