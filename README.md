@@ -2,7 +2,7 @@
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
 ***
-# [CS2] Game-Manager-GoldKingZ (2.0.3)
+# [CS2] Game-Manager-GoldKingZ (2.0.4)
 
 ### Block/Hide Unnecessaries In Game
 
@@ -18,6 +18,8 @@
 
 ![hidechat](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/1b5e2e57-3936-416f-895b-02731780e577)
 
+![dm](https://github.com/user-attachments/assets/8e7e1631-bd94-4f8c-be22-20e3175eddec)
+![reward](https://github.com/user-attachments/assets/6964f35e-daa9-4132-9d47-52dfd1947abf)
 
 
 ## .:[ Dependencies ]:.
@@ -40,6 +42,11 @@
 {
   //Enable MySql? Located In Game-Manager-GoldKingZ/config/MySql_Settings.json
   "Enable_UseMySql": false,
+
+  //Make All Gun Sound:
+  //(1) = m4 Silencer
+  //(2) = Usp Silencer
+  "Mute_GunShotsMode": 0,
 
   //Disable Radio
   "DisableRadio": false,
@@ -146,6 +153,12 @@
   //Ignore Default TeamMate Attack Messages
   "IgnoreDefaultTeamMateAttackMessages": false,
 
+  //Ignore Default Awards Money Messages
+  "IgnoreDefaultAwardsMoneyMessages": false,
+
+  //Ignore Default Saved You By Player Messages
+  "IgnorePlayerSavedYouByPlayerMessages": false,
+
   //Ignore Default Join Team Messages
   "IgnoreDefaultJoinTeamMessages": false,
 
@@ -244,6 +257,13 @@
 
 ## .:[ Change Log ]:.
 ```
+(2.0.4)
+-Fix IgnoreDefaultTeamMateAttackMessages
+-Added Mute_GunShotsMode //(1) = m4 Silencer //(2) = Usp Silencer
+-Added IgnoreDefaultAwardsMoneyMessages ignore rather than Disabling
+-Added IgnorePlayerSavedYouByPlayerMessages
+-Removed DisableCashAwardsAndMoneyHUD
+
 (2.0.3)
 -Fix DisableLegsMode
 -Fix DisableHUDChatMode
