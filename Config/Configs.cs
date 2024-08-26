@@ -89,13 +89,13 @@ namespace Game_Manager_GoldKingZ.Config
         public class ConfigData
         {
             public bool Enable_UseMySql { get; set; }
+            public int Mute_GunShotsMode { get; set; }
             public bool DisableRadio { get; set; }
             public bool DisableBotRadio { get; set; }
             public bool DisableChatWheel { get; set; }
             public bool DisablePing { get; set; }
             public bool DisableGrenadeRadio { get; set; }
             public bool DisableRadar { get; set; }
-            public bool DisableCashAwardsAndMoneyHUD { get; set; }
             public bool DisableJumpLandSound { get; set; }
             public bool DisableFallDamage  { get; set; }
             public bool DisableSvCheats  { get; set; }
@@ -122,6 +122,8 @@ namespace Game_Manager_GoldKingZ.Config
             public string empty { get; set; }
             public bool IgnoreDefaultBombPlantedAnnounce  { get; set; }
             public bool IgnoreDefaultTeamMateAttackMessages  { get; set; }
+            public bool IgnoreDefaultAwardsMoneyMessages  { get; set; }
+            public bool IgnorePlayerSavedYouByPlayerMessages  { get; set; }
             public bool IgnoreDefaultJoinTeamMessages  { get; set; }
             public int IgnoreDefaultDisconnectMessagesMode { get; set; }
             
@@ -140,13 +142,13 @@ namespace Game_Manager_GoldKingZ.Config
             public ConfigData()
             {
                 Enable_UseMySql = false;
+                Mute_GunShotsMode = 0;
                 DisableRadio = false;
                 DisableBotRadio = false;
                 DisableChatWheel = false;
                 DisablePing = false;
                 DisableGrenadeRadio = false;
                 DisableRadar = false;
-                DisableCashAwardsAndMoneyHUD = false;
                 DisableJumpLandSound = false;
                 DisableFallDamage = false;
                 DisableSvCheats = false;
@@ -172,6 +174,8 @@ namespace Game_Manager_GoldKingZ.Config
                 empty = "-----------------------------------------------------------------------------------";
                 IgnoreDefaultBombPlantedAnnounce = false;
                 IgnoreDefaultTeamMateAttackMessages = false;
+                IgnoreDefaultAwardsMoneyMessages = false;
+                IgnorePlayerSavedYouByPlayerMessages = false;
                 IgnoreDefaultJoinTeamMessages = false;
                 IgnoreDefaultDisconnectMessagesMode = 0;
                 empty2 = "-----------------------------------------------------------------------------------";

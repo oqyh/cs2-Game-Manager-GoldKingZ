@@ -12,11 +12,11 @@ using CounterStrikeSharp.API.Core.Attributes;
 
 namespace Game_Manager_GoldKingZ;
 
-[MinimumApiVersion(234)]
+[MinimumApiVersion(260)]
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.3";
+    public override string ModuleVersion => "2.0.4";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
@@ -40,6 +40,65 @@ public class GameManagerGoldKingZ : BasePlugin
         RegisterEventHandler<EventRoundStart>(OnEventRoundStart, HookMode.Post);
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
         RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
+
+        HookUserMessage(124, um =>
+        {
+            for (int i = 0; i < um.GetRepeatedFieldCount("param"); i++)
+            {
+                var message = um.ReadString("param", i);
+                
+                if(Configs.GetConfigData().IgnoreDefaultTeamMateAttackMessages)
+                {
+                    for (int X = 0; X < Helper.TeamWarningArray.Length; X++)
+                    {
+                        if (message.Contains(Helper.TeamWarningArray[X]))
+                        {
+                            return HookResult.Stop;
+                        }
+                    }
+                }
+                
+                if(Configs.GetConfigData().IgnoreDefaultAwardsMoneyMessages)
+                {
+                    for (int X = 0; X < Helper.MoneyMessageArray.Length; X++)
+                    {
+                        if (message.Contains(Helper.MoneyMessageArray[X]))
+                        {
+                            return HookResult.Stop;
+                        }
+                    }
+                }
+
+                if(Configs.GetConfigData().IgnorePlayerSavedYouByPlayerMessages)
+                {
+                    for (int X = 0; X < Helper.SavedbyArray.Length; X++)
+                    {
+                        if (message.Contains(Helper.SavedbyArray[X]))
+                        {
+                            return HookResult.Stop;
+                        }
+                    }
+                }
+            }
+            return HookResult.Continue;
+        },HookMode.Pre);
+
+        HookUserMessage(452, um =>
+        {
+            if(Configs.GetConfigData().Mute_GunShotsMode == 1)
+            {
+                um.SetUInt("weapon_id", 0);
+                um.SetInt("sound_type", 9);
+                um.SetUInt("item_def_index", 60);
+            }else if(Configs.GetConfigData().Mute_GunShotsMode == 2)
+            {
+                um.SetUInt("weapon_id", 0);
+                um.SetInt("sound_type", 9);
+                um.SetUInt("item_def_index", 61);
+            }
+            return HookResult.Continue;
+        }, HookMode.Pre);
+        
         AddCommandListener("playerchatwheel", CommandListener_Chatwheel);
         AddCommandListener("player_ping", CommandListener_Ping);
         for (int i = 0; i < Helper.RadioArray.Length; i++)
@@ -48,7 +107,6 @@ public class GameManagerGoldKingZ : BasePlugin
         }
 
         Helper.ExectueCommands();
-        Helper.ExectueCommandsSvCheats();
 
         if(Configs.GetConfigData().AutoCleanDropWeaponsMode == 3)
         {
