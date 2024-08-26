@@ -87,10 +87,13 @@ public class GameManagerGoldKingZ : BasePlugin
         {
             if(Configs.GetConfigData().Mute_GunShotsMode == 1)
             {
+                um.SetInt("sound_type", 0);
+            }else if(Configs.GetConfigData().Mute_GunShotsMode == 2)
+            {
                 um.SetUInt("weapon_id", 0);
                 um.SetInt("sound_type", 9);
                 um.SetUInt("item_def_index", 60);
-            }else if(Configs.GetConfigData().Mute_GunShotsMode == 2)
+            }else if(Configs.GetConfigData().Mute_GunShotsMode == 3)
             {
                 um.SetUInt("weapon_id", 0);
                 um.SetInt("sound_type", 9);
