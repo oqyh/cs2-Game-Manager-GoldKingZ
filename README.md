@@ -44,8 +44,9 @@
   "Enable_UseMySql": false,
 
   //Make All Gun Sound:
-  //(1) = m4 Silencer
-  //(2) = Usp Silencer
+  //(1) = Completely Mute
+  //(2) = m4 Silencer
+  //(3) = Usp Silencer
   "Mute_GunShotsMode": 0,
 
   //Disable Radio
@@ -259,7 +260,7 @@
 ```
 (2.0.4)
 -Fix IgnoreDefaultTeamMateAttackMessages
--Added Mute_GunShotsMode //(1) = m4 Silencer //(2) = Usp Silencer
+-Added Mute_GunShotsMode //(1) = Completely Mute //(2) = m4 Silencer //(3) = Usp Silencer
 -Added IgnoreDefaultAwardsMoneyMessages ignore rather than Disabling
 -Added IgnorePlayerSavedYouByPlayerMessages
 -Removed DisableCashAwardsAndMoneyHUD
