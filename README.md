@@ -2,7 +2,7 @@
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
 ***
-# [CS2] Game-Manager-GoldKingZ (2.0.4)
+# [CS2] Game-Manager-GoldKingZ (2.0.5)
 
 ### Block/Hide Unnecessaries In Game
 
@@ -85,6 +85,9 @@
   //Disable MPV Sound At End
   "DisableMPVSound": false,
 
+  //Disable Blood And HeadShot Spark Decals/Effects
+  "DisableBloodAndHsSpark": false,
+
   //(1) = Disable Killfeed Completely
   //(2) = Disable Killfeed And Show Who I Killed Only
   "DisableKillfeedMode": 0,
@@ -160,6 +163,9 @@
   //Ignore Default Saved You By Player Messages
   "IgnorePlayerSavedYouByPlayerMessages": false,
 
+  //Ignore Default You Chicken Has Been Killed Messages
+  "IgnoreChickenKilledMessages": false,
+
   //Ignore Default Join Team Messages
   "IgnoreDefaultJoinTeamMessages": false,
 
@@ -207,6 +213,10 @@
   //If AutoCleanDropWeaponsMode 3 How Many In Secs
   "Mode3_EveryTimeXSecs": 10,
 
+//-----------------------------------------------------------------------------------------
+	
+  //Enable Debug Will Print Server Console If You Face Any Issue
+  "EnableDebug": false,
 }
 ```
 
@@ -258,6 +268,12 @@
 
 ## .:[ Change Log ]:.
 ```
+(2.0.5)
+-Fix DisableDeadBodyMode (1) (2) (3) Gloves Not Cleared
+-Added DisableBloodAndHsSpark
+-Added IgnoreChickenKilledMessages
+-Added EnableDebug
+
 (2.0.4)
 -Fix IgnoreDefaultTeamMateAttackMessages
 -Added Mute_GunShotsMode //(1) = Completely Mute //(2) = m4 Silencer //(3) = Usp Silencer
