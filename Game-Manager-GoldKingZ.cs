@@ -21,7 +21,6 @@ public class GameManagerGoldKingZ : BasePlugin
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
-    public static Dictionary<uint, bool> Collector = new Dictionary<uint, bool>();
     public override void Load(bool hotReload)
     {
         Configs.Load(ModuleDirectory);
@@ -141,16 +140,6 @@ public class GameManagerGoldKingZ : BasePlugin
                 Globals.CleanerTimer = null;
                 Globals.CleanerTimer = AddTimer(Configs.GetConfigData().Mode3_EveryTimeXSecs, Helper.CleanerTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
             }
-        }
-    }
-    [ConsoleCommand("css_test", "clear clan tags")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    public void GetPluginzzz(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if(player == null || !player.IsValid)return;
-        foreach(var test in Collector.Keys)
-        {
-            Server.PrintToConsole($"Debug: {test}");
         }
     }
     private void OnMapStart(string Map)
