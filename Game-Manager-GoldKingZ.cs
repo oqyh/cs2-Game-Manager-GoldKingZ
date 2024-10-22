@@ -9,18 +9,19 @@ using Microsoft.Extensions.Localization;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Core.Attributes;
-
+using System.Numerics;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 namespace Game_Manager_GoldKingZ;
 
-[MinimumApiVersion(260)]
+[MinimumApiVersion(276)]
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.4";
+    public override string ModuleVersion => "2.0.5";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
-
+    public static Dictionary<uint, bool> Collector = new Dictionary<uint, bool>();
     public override void Load(bool hotReload)
     {
         Configs.Load(ModuleDirectory);
@@ -40,7 +41,22 @@ public class GameManagerGoldKingZ : BasePlugin
         RegisterEventHandler<EventRoundStart>(OnEventRoundStart, HookMode.Post);
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
         RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
+        
+        if(Configs.GetConfigData().DisableBloodAndHsSpark)
+        {
+            HookUserMessage(400, um =>
+            {
+                um.Recipients.Clear();
+                return HookResult.Continue;
+            },HookMode.Pre);
 
+            HookUserMessage(411, um =>
+            {
+                um.Recipients.Clear();
+                return HookResult.Continue;
+            },HookMode.Pre);
+        }
+        
         HookUserMessage(124, um =>
         {
             for (int i = 0; i < um.GetRepeatedFieldCount("param"); i++)
@@ -79,6 +95,11 @@ public class GameManagerGoldKingZ : BasePlugin
                         }
                     }
                 }
+                
+                if (Configs.GetConfigData().IgnoreChickenKilledMessages && message.Contains("Pet_Killed"))
+                {
+                    return HookResult.Stop;
+                }
             }
             return HookResult.Continue;
         },HookMode.Pre);
@@ -104,6 +125,7 @@ public class GameManagerGoldKingZ : BasePlugin
         
         AddCommandListener("playerchatwheel", CommandListener_Chatwheel);
         AddCommandListener("player_ping", CommandListener_Ping);
+        
         for (int i = 0; i < Helper.RadioArray.Length; i++)
         {
             AddCommandListener(Helper.RadioArray[i], CommandListener_RadioCommands);
@@ -119,6 +141,16 @@ public class GameManagerGoldKingZ : BasePlugin
                 Globals.CleanerTimer = null;
                 Globals.CleanerTimer = AddTimer(Configs.GetConfigData().Mode3_EveryTimeXSecs, Helper.CleanerTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
             }
+        }
+    }
+    [ConsoleCommand("css_test", "clear clan tags")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void GetPluginzzz(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if(player == null || !player.IsValid)return;
+        foreach(var test in Collector.Keys)
+        {
+            Server.PrintToConsole($"Debug: {test}");
         }
     }
     private void OnMapStart(string Map)
@@ -320,9 +352,7 @@ public class GameManagerGoldKingZ : BasePlugin
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"======================== ERROR =============================");
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                    Console.WriteLine($"======================== ERROR =============================");
+                    Helper.DebugMessage(ex.Message);
                 }
             }
 
@@ -669,6 +699,9 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 return HookResult.Continue;
             }
+            string orginalmodel = player.PlayerPawn.Value.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.ModelName;
+            player.PlayerPawn.Value.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+            player.PlayerPawn.Value.SetModel(orginalmodel);
             player.PlayerPawn.Value.Render = Color.FromArgb(0, 255, 255, 255);
             Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
         }else if(Configs.GetConfigData().DisableDeadBodyMode == 2)
@@ -689,6 +722,9 @@ public class GameManagerGoldKingZ : BasePlugin
                         {
                             return;
                         }
+                        string orginalmodel = player.PlayerPawn.Value.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.ModelName;
+                        player.PlayerPawn.Value.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+                        player.PlayerPawn.Value.SetModel(orginalmodel);
                         player.PlayerPawn.Value.Render = Color.FromArgb(0, 255, 255, 255);
                         Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
                     }, TimerFlags.STOP_ON_MAPCHANGE);
@@ -703,6 +739,9 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 return HookResult.Continue;
             }
+            string orginalmodel = player.PlayerPawn.Value.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.ModelName;
+            player.PlayerPawn.Value.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+            player.PlayerPawn.Value.SetModel(orginalmodel);
             if (!Globals.PlayerAlpha.ContainsKey(player))
             {
                 Globals.PlayerAlpha.Add(player, 255);
@@ -1198,9 +1237,7 @@ public class GameManagerGoldKingZ : BasePlugin
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"======================== ERROR =============================");
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                    Console.WriteLine($"======================== ERROR =============================");
+                    Helper.DebugMessage(ex.Message);
                 }
             });
         }

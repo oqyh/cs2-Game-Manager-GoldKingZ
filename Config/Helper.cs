@@ -267,8 +267,9 @@ public class Helper
             var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
             return gameRulesEntities.First().GameRules;
         }
-        catch
+        catch (Exception ex)
         {
+            DebugMessage(ex.Message);
             return null;
         }
     }
@@ -462,6 +463,13 @@ public class Helper
             File.WriteAllText(jsonFilePath, json);
         }
     }
+    public static void DebugMessage(string message)
+    {
+        if(!Configs.GetConfigData().EnableDebug)return;
+        Console.WriteLine($"================================= [ Debug Game Manager  ] =================================");
+        Console.WriteLine(message);
+        Console.WriteLine("=========================================================================================");
+    }
     
     public class PersonData
     {
@@ -523,14 +531,14 @@ public class Helper
             {
                 File.WriteAllText(Fpathc, updatedJsonData);
             }
-            catch
+            catch (Exception ex)
             {
-                // Handle exception
+                DebugMessage(ex.Message);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Handle exception
+            DebugMessage(ex.Message);
         }
     }
 
@@ -560,18 +568,18 @@ public class Helper
                     {
                         File.WriteAllText(Fpathc, updatedJsonData);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Handle exception
+                        DebugMessage(ex.Message);
                     }
                 }
                 
                 
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Handle exception
+            DebugMessage(ex.Message);
         }
         return new PersonData();
     }
@@ -594,15 +602,15 @@ public class Helper
                 {
                     File.WriteAllText(Fpathc, updatedJsonData);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Handle exception
+                    DebugMessage(ex.Message);
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Handle exception
+            DebugMessage(ex.Message);
         }
     }
 }

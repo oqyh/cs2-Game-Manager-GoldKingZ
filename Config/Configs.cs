@@ -101,6 +101,7 @@ namespace Game_Manager_GoldKingZ.Config
             public bool DisableSvCheats  { get; set; }
             public bool DisableC4  { get; set; }
             public bool DisableMPVSound  { get; set; }
+            public bool DisableBloodAndHsSpark  { get; set; }
             public int DisableKillfeedMode { get; set; }
             public int DisableTeamMateHeadTag { get; set; }
             public int DisableDeadBodyMode { get; set; }
@@ -124,6 +125,7 @@ namespace Game_Manager_GoldKingZ.Config
             public bool IgnoreDefaultTeamMateAttackMessages  { get; set; }
             public bool IgnoreDefaultAwardsMoneyMessages  { get; set; }
             public bool IgnorePlayerSavedYouByPlayerMessages  { get; set; }
+            public bool IgnoreChickenKilledMessages  { get; set; }
             public bool IgnoreDefaultJoinTeamMessages  { get; set; }
             public int IgnoreDefaultDisconnectMessagesMode { get; set; }
             
@@ -137,6 +139,8 @@ namespace Game_Manager_GoldKingZ.Config
             public float Mode2_TimeXSecsDelayClean { get; set; }
             public float Mode3_EveryTimeXSecs { get; set; }
             public string empty4 { get; set; }
+            public bool EnableDebug { get; set; }
+            public string empty5 { get; set; }
             public string Information_For_You_Dont_Delete_it { get; set; }
             
             public ConfigData()
@@ -154,6 +158,7 @@ namespace Game_Manager_GoldKingZ.Config
                 DisableSvCheats = false;
                 DisableC4 = false;
                 DisableMPVSound = false;
+                DisableBloodAndHsSpark = false;
                 DisableKillfeedMode = 0;
                 DisableTeamMateHeadTag = 0;
                 DisableDeadBodyMode = 0;
@@ -176,6 +181,7 @@ namespace Game_Manager_GoldKingZ.Config
                 IgnoreDefaultTeamMateAttackMessages = false;
                 IgnoreDefaultAwardsMoneyMessages = false;
                 IgnorePlayerSavedYouByPlayerMessages = false;
+                IgnoreChickenKilledMessages = false;
                 IgnoreDefaultJoinTeamMessages = false;
                 IgnoreDefaultDisconnectMessagesMode = 0;
                 empty2 = "-----------------------------------------------------------------------------------";
@@ -188,6 +194,8 @@ namespace Game_Manager_GoldKingZ.Config
                 Mode2_TimeXSecsDelayClean = 10;
                 Mode3_EveryTimeXSecs = 10;
                 empty4 = "-----------------------------------------------------------------------------------";
+                EnableDebug = false;
+                empty5 = "-----------------------------------------------------------------------------------";
                 Information_For_You_Dont_Delete_it = " Vist  [https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/tree/main?tab=readme-ov-file#-configuration-] To Understand All Above";
             }
         }
