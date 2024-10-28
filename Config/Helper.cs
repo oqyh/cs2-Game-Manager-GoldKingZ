@@ -131,8 +131,10 @@ public class Helper
     "SFUI_Notice_Hint_careful_around_teammates",
     "SFUI_Notice_Killed_Teammate"
     };
-    public static void AdvancedPrintToChat(CCSPlayerController player, string message, params object[] args)
+    public static void AdvancedPlayerPrintToChat(CCSPlayerController player, string message, params object[] args)
     {
+        if (string.IsNullOrEmpty(message))return;
+
         for (int i = 0; i < args.Length; i++)
         {
             message = message.Replace($"{{{i}}}", args[i].ToString());
@@ -150,8 +152,10 @@ public class Helper
             player.PrintToChat(message);
         }
     }
-    public static void AdvancedPrintToServer(string message, params object[] args)
+    public static void AdvancedServerPrintToChatAll(string message, params object[] args)
     {
+        if (string.IsNullOrEmpty(message))return;
+
         for (int i = 0; i < args.Length; i++)
         {
             message = message.Replace($"{{{i}}}", args[i].ToString());
@@ -169,58 +173,78 @@ public class Helper
             Server.PrintToChatAll(message);
         }
     }
+    public static void AdvancedPlayerPrintToConsole(CCSPlayerController player, string message, params object[] args)
+    {
+        if (string.IsNullOrEmpty(message))return;
+        
+        for (int i = 0; i < args.Length; i++)
+        {
+            message = message.Replace($"{{{i}}}", args[i].ToString());
+        }
+        if (Regex.IsMatch(message, "{nextline}", RegexOptions.IgnoreCase))
+        {
+            string[] parts = Regex.Split(message, "{nextline}", RegexOptions.IgnoreCase);
+            foreach (string part in parts)
+            {
+                string messages = part.Trim();
+                player.PrintToConsole(" " + messages);
+            }
+        }else
+        {
+            player.PrintToConsole(message);
+        }
+    }
     
     public static bool IsPlayerInGroupPermission(CCSPlayerController player, string groups)
     {
         var excludedGroups = groups.Split(',');
         foreach (var group in excludedGroups)
         {
-            if (group.StartsWith(""))
+            switch (group[0])
             {
-                if (AdminManager.PlayerInGroup(player, group))
-                    return true;
-            }
-            else if (group.StartsWith("@"))
-            {
-                if (AdminManager.PlayerHasPermissions(player, group))
-                    return true;
+                case '#':
+                    if (AdminManager.PlayerInGroup(player, group))
+                        return true;
+                    break;
+
+                case '@':
+                    if (AdminManager.PlayerHasPermissions(player, group))
+                        return true;
+                    break;
+
+                default:
+                    return false;
             }
         }
         return false;
     }
-    public static List<CCSPlayerController> GetCounterTerroristController() 
+    public static List<CCSPlayerController> GetPlayersController(bool IncludeBots = false, bool IncludeSPEC = true, bool IncludeCT = true, bool IncludeT = true) 
     {
-        var playerList = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller").Where(p => p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected && p.Team == CsTeam.CounterTerrorist).ToList();
+        var playerList = Utilities
+            .FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller")
+            .Where(p => p != null && p.IsValid && 
+                        (IncludeBots || (!p.IsBot && !p.IsHLTV)) && 
+                        p.Connected == PlayerConnectedState.PlayerConnected && 
+                        ((IncludeCT && p.TeamNum == (byte)CsTeam.CounterTerrorist) || 
+                        (IncludeT && p.TeamNum == (byte)CsTeam.Terrorist) || 
+                        (IncludeSPEC && p.TeamNum == (byte)CsTeam.Spectator)))
+            .ToList();
+
         return playerList;
     }
-    public static List<CCSPlayerController> GetTerroristController() 
+    public static int GetPlayersCount(bool IncludeBots = false, bool IncludeSPEC = true, bool IncludeCT = true, bool IncludeT = true)
     {
-        var playerList = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller").Where(p => p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected && p.Team == CsTeam.Terrorist).ToList();
-        return playerList;
+        return Utilities.GetPlayers().Count(p => 
+            p != null && 
+            p.IsValid && 
+            p.Connected == PlayerConnectedState.PlayerConnected && 
+            (IncludeBots || (!p.IsBot && !p.IsHLTV)) && 
+            ((IncludeCT && p.TeamNum == (byte)CsTeam.CounterTerrorist) || 
+            (IncludeT && p.TeamNum == (byte)CsTeam.Terrorist) || 
+            (IncludeSPEC && p.TeamNum == (byte)CsTeam.Spectator))
+        );
     }
-    public static List<CCSPlayerController> GetAllController() 
-    {
-        var playerList = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller").Where(p => p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected).ToList();
-        return playerList;
-    }
-    public static List<CCSPlayerController> GetAllController2() 
-    {
-        var playerList = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller").Where(p => p != null && p.IsValid && p.Connected == PlayerConnectedState.PlayerConnected).ToList();
-        return playerList;
-    }
-    public static int GetCounterTerroristCount()
-    {
-        return Utilities.GetPlayers().Count(p => p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected && p.TeamNum == (byte)CsTeam.CounterTerrorist);
-    }
-    public static int GetTerroristCount()
-    {
-        return Utilities.GetPlayers().Count(p => p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected && p.TeamNum == (byte)CsTeam.Terrorist);
-    }
-    public static int GetAllCount()
-    {
-        return Utilities.GetPlayers().Count(p => p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected);
-    }
-    public static void SendGrenadeMessage(string nade, CCSPlayerController players, string playerName)
+    public static void SendGrenadeMessage(string nade, CCSPlayerController players, string playerName, string nadelocation)
     {
         var messages = new Dictionary<string, string> {
             {"hegrenade", "custom.hegrenade"},
@@ -231,13 +255,13 @@ public class Helper
             {"decoy", "custom.decoy"}
         };
 
-        if (messages.ContainsKey(nade) && !string.IsNullOrEmpty(Configs.Shared.StringLocalizer![messages[nade]])) {
+        if (messages.ContainsKey(nade)) {
             if(Configs.GetConfigData().CustomThrowNadeMessagesMode == 4 && ConVar.Find("mp_teammates_are_enemies")!.GetPrimitiveValue<bool>())
             {
-                Helper.AdvancedPrintToServer(Configs.Shared.StringLocalizer![messages[nade]], playerName);
+                Helper.AdvancedServerPrintToChatAll(Configs.Shared.StringLocalizer![messages[nade]], playerName, nadelocation);
                 return;
             }
-            Helper.AdvancedPrintToChat(players, Configs.Shared.StringLocalizer![messages[nade]], playerName);
+            Helper.AdvancedPlayerPrintToChat(players, Configs.Shared.StringLocalizer![messages[nade]], playerName, nadelocation);
         }
     }
     public static void ClearVariables()
@@ -248,8 +272,17 @@ public class Helper
         Globals.Toggle_DisableWeapons.Clear();
         Globals.Toggle_OnDisableWeapons.Clear();
         Globals.Remove_Icon.Clear();
+        Globals.StabedHisTeamMate.Clear();
+
+        foreach (var timer in Globals.TimerRemoveDeadBody.Values)
+        {
+            timer?.Kill();
+        }
         Globals.TimerRemoveDeadBody.Clear();
+
         Globals.PlayerAlpha.Clear();
+        Globals.CleanerTimer?.Kill();
+        Globals.CleanerTimer = null;
     }
     public static string RemoveLeadingSpaces(string content)
     {

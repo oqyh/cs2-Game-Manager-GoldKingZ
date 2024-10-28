@@ -83,24 +83,25 @@ namespace Game_Manager_GoldKingZ.Config
             string json = JsonSerializer.Serialize(configData, SerializationOptions);
 
 
-            File.WriteAllText(_configFilePath, json);
+            json = System.Text.RegularExpressions.Regex.Unescape(json);
+            File.WriteAllText(_configFilePath, json, System.Text.Encoding.UTF8);
         }
 
         public class ConfigData
         {
             public bool Enable_UseMySql { get; set; }
-            public int Mute_GunShotsMode { get; set; }
+            
             public bool DisableRadio { get; set; }
             public bool DisableBotRadio { get; set; }
             public bool DisableChatWheel { get; set; }
             public bool DisablePing { get; set; }
             public bool DisableGrenadeRadio { get; set; }
             public bool DisableRadar { get; set; }
-            public bool DisableJumpLandSound { get; set; }
+            
             public bool DisableFallDamage  { get; set; }
             public bool DisableSvCheats  { get; set; }
             public bool DisableC4  { get; set; }
-            public bool DisableMPVSound  { get; set; }
+            
             public bool DisableBloodAndHsSpark  { get; set; }
             public int DisableKillfeedMode { get; set; }
             public int DisableTeamMateHeadTag { get; set; }
@@ -119,8 +120,21 @@ namespace Game_Manager_GoldKingZ.Config
             public string Toggle_DisableHUDWeaponsCommandsInGame { get; set; }
             public int Toggle_AutoRemovePlayerCookieOlderThanXDays { get; set; }
             public int Toggle_AutoRemovePlayerMySqlOlderThanXDays { get; set; }
-            
             public string empty { get; set; }
+            public bool DisableMPVSound  { get; set; }
+            public bool DisableJumpLandSound { get; set; }
+            public int Sounds_MuteGunShotsMode { get; set; }
+            public uint Mode4_Sounds_GunShots_weapon_id { get; set; }
+            public int Mode4_Sounds_GunShots_sound_type { get; set; }
+            public uint Mode4_Sounds_GunShots_item_def_index { get; set; }
+            public int Sounds_MuteKnifesMode { get; set; }
+            public bool Sounds_MuteHeadShot { get; set; }
+            public bool Sounds_MuteBodyShot { get; set; }
+            public bool Sounds_MutePlayerDeathVoice { get; set; }
+            public bool Sounds_MuteAfterDeathCrackling { get; set; }
+            public bool Sounds_MuteSwitchModeSemiToAuto { get; set; }
+            public string Sounds_MuteDropWeapons { get; set; }
+            public string empty1 { get; set; }
             public bool IgnoreDefaultBombPlantedAnnounce  { get; set; }
             public bool IgnoreDefaultTeamMateAttackMessages  { get; set; }
             public bool IgnoreDefaultAwardsMoneyMessages  { get; set; }
@@ -146,18 +160,15 @@ namespace Game_Manager_GoldKingZ.Config
             public ConfigData()
             {
                 Enable_UseMySql = false;
-                Mute_GunShotsMode = 0;
                 DisableRadio = false;
                 DisableBotRadio = false;
                 DisableChatWheel = false;
                 DisablePing = false;
                 DisableGrenadeRadio = false;
                 DisableRadar = false;
-                DisableJumpLandSound = false;
                 DisableFallDamage = false;
                 DisableSvCheats = false;
                 DisableC4 = false;
-                DisableMPVSound = false;
                 DisableBloodAndHsSpark = false;
                 DisableKillfeedMode = 0;
                 DisableTeamMateHeadTag = 0;
@@ -176,7 +187,21 @@ namespace Game_Manager_GoldKingZ.Config
                 Toggle_DisableHUDWeaponsCommandsInGame = "!hideweapons,!hideweapon,!hw";
                 Toggle_AutoRemovePlayerCookieOlderThanXDays = 7;
                 Toggle_AutoRemovePlayerMySqlOlderThanXDays = 7;
-                empty = "-----------------------------------------------------------------------------------";
+                empty = "----------------------------[ ↓ Default CS2 Sounds ↓ ]---------------------------------";
+                DisableMPVSound = false;
+                DisableJumpLandSound = false;
+                Sounds_MuteGunShotsMode = 0;
+                Mode4_Sounds_GunShots_weapon_id = 0;
+                Mode4_Sounds_GunShots_sound_type = 9;
+                Mode4_Sounds_GunShots_item_def_index = 61;
+                Sounds_MuteKnifesMode = 0;
+                Sounds_MuteHeadShot = false;
+                Sounds_MuteBodyShot = false;
+                Sounds_MutePlayerDeathVoice = false;
+                Sounds_MuteAfterDeathCrackling = false;
+                Sounds_MuteSwitchModeSemiToAuto = false;
+                Sounds_MuteDropWeapons = "";
+                empty1 = "----------------------------[ ↓ Default CS2 Messages ↓ ]-------------------------------";
                 IgnoreDefaultBombPlantedAnnounce = false;
                 IgnoreDefaultTeamMateAttackMessages = false;
                 IgnoreDefaultAwardsMoneyMessages = false;
@@ -184,18 +209,18 @@ namespace Game_Manager_GoldKingZ.Config
                 IgnoreChickenKilledMessages = false;
                 IgnoreDefaultJoinTeamMessages = false;
                 IgnoreDefaultDisconnectMessagesMode = 0;
-                empty2 = "-----------------------------------------------------------------------------------";
+                empty2 = "----------------------------[ ↓ Custom Messages ↓ ]------------------------------------";
                 CustomJoinTeamMessagesMode = 0;
                 CustomThrowNadeMessagesMode = 0;
-                empty3 = "-----------------------------------------------------------------------------------";
+                empty3 = "----------------------------[ ↓ Auto Clean Drop Weapons ↓ ]----------------------------";
                 AutoCleanDropWeaponsMode = 0;
                 AutoCleanTheseDroppedWeaponsOnly = "1,2,3";
                 Mode1_TimeXSecsDelayClean = 10;
                 Mode2_TimeXSecsDelayClean = 10;
                 Mode3_EveryTimeXSecs = 10;
-                empty4 = "-----------------------------------------------------------------------------------";
+                empty4 = "----------------------------[ ↓ Debug ↓ ]----------------------------------------------";
                 EnableDebug = false;
-                empty5 = "-----------------------------------------------------------------------------------";
+                empty5 = "----------------------------[ ↓ Info For All Configs Above ↓ ]----------------------------";
                 Information_For_You_Dont_Delete_it = " Vist  [https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/tree/main?tab=readme-ov-file#-configuration-] To Understand All Above";
             }
         }

@@ -10,6 +10,7 @@ public class Globals
     public static uint CROSSHAIRANDNAMETAGS = 256;
     public static Dictionary<ulong, int> Toggle_DisableChat = new Dictionary<ulong, int>();
     public static Dictionary<ulong, bool> Toggle_OnDisableChat = new Dictionary<ulong, bool>();
+    public static Dictionary<CCSPlayerController, bool> StabedHisTeamMate = new Dictionary<CCSPlayerController, bool>();
     public static Dictionary<ulong, int> Toggle_DisableWeapons = new Dictionary<ulong, int>();
     public static Dictionary<ulong, bool> Toggle_OnDisableWeapons = new Dictionary<ulong, bool>();
     public static Dictionary<ulong, int> Toggle_DisableLegs = new Dictionary<ulong, int>();

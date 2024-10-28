@@ -9,15 +9,17 @@ using Microsoft.Extensions.Localization;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Core.Attributes;
-using System.Numerics;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
+using CounterStrikeSharp.API.Modules.Entities;
+
 namespace Game_Manager_GoldKingZ;
 
 [MinimumApiVersion(276)]
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.5";
+    public override string ModuleVersion => "2.0.6";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
@@ -37,9 +39,94 @@ public class GameManagerGoldKingZ : BasePlugin
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect, HookMode.Pre);
         RegisterEventHandler<EventPlayerTeam>(OnEventPlayerTeam, HookMode.Pre);
         RegisterEventHandler<EventPlayerChat>(OnEventPlayerChat, HookMode.Post);
-        RegisterEventHandler<EventRoundStart>(OnEventRoundStart, HookMode.Post);
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
         RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
+
+        if(Configs.GetConfigData().Sounds_MuteKnifesMode == 2)
+        {
+            VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
+        }
+        
+        HookUserMessage(208, um =>
+        {
+            var soundevent = um.ReadUInt("soundevent_hash");
+            
+            uint PlayerPOVScreen_Got_Damage_ClientSide = 3124768561;
+            uint Player_Got_Damage_ServerSide = 524041390;
+            uint Player_Got_Damage_ClientSide = 708038349;
+            uint Player_Got_Damage_FriendlyDamage_ServerSide = 427534867;
+
+            uint HeadShotHit_ClientSide = 2831007164;
+            uint HeadShotKill_ClientSide = 3535174312;
+            uint HeadShotHit_ServerSide = 3663896169;
+            uint HeadShotKill_ServerSide = 2310318859;
+
+            uint DeathScream_ServerSide = 46413566;
+            uint DeathScream_ClientSide = 1815352525;
+
+            uint AfterDeathCracklingSound_ClientSide = 2323025056;
+            uint AfterDeathCracklingSound_ServerSide = 3396420465;
+
+            uint Knife_Rightstab_BothSides = 3475734633;
+            uint Knife_leftstab_BothSides = 1769891506;
+            uint Knife_SwingAir_BothSides = 3634660983;
+            uint SwitchToSemi_BothSides = 576815311;
+            
+            uint DropWeapon_C4_BothSides = 1346129716;
+            uint DropWeapon_PistolAndTaser_BothSides = 1842263658;
+            uint DropWeapon_Shotguns_BothSides = 4003696900;
+            uint DropWeapon_SMGs_BothSides = 3003881917;
+            uint DropWeapon_AssaultRifles_BothSides = 449069384;
+            uint DropWeapon_Snipers_BothSides = 2125410722;
+            uint DropWeapon_FlashAndDecoy_BothSides = 95362054;
+            uint DropWeapon_SmokeAndInNade_BothSides = 910752207;
+            uint DropWeapon_HENade_BothSides = 1252397774;
+            uint DropWeapon_Molly_BothSides = 1601161479;
+
+            bool MuteKnife = Configs.GetConfigData().Sounds_MuteKnifesMode == 1 ?
+            soundevent == Knife_Rightstab_BothSides || soundevent == Knife_leftstab_BothSides || soundevent == Knife_SwingAir_BothSides :
+            Configs.GetConfigData().Sounds_MuteKnifesMode == 2 ? Globals.StabedHisTeamMate.Any( player => player.Value == true) &&
+            (soundevent == PlayerPOVScreen_Got_Damage_ClientSide || soundevent == Player_Got_Damage_ServerSide ||
+            soundevent == Player_Got_Damage_ClientSide || soundevent == Player_Got_Damage_FriendlyDamage_ServerSide || 
+            soundevent == Knife_Rightstab_BothSides || soundevent == Knife_leftstab_BothSides) : false;
+
+            bool MuteHeadShot = Configs.GetConfigData().Sounds_MuteHeadShot == true ? 
+            soundevent == HeadShotHit_ClientSide || soundevent == HeadShotKill_ClientSide ||
+            soundevent == HeadShotHit_ServerSide || soundevent == HeadShotKill_ServerSide : false;
+
+            bool MuteBodyShot = Configs.GetConfigData().Sounds_MuteBodyShot == true ? 
+            soundevent == PlayerPOVScreen_Got_Damage_ClientSide || soundevent == Player_Got_Damage_ServerSide ||
+            soundevent == Player_Got_Damage_ClientSide || soundevent == Player_Got_Damage_FriendlyDamage_ServerSide : false;
+
+            bool MuteDeath = Configs.GetConfigData().Sounds_MutePlayerDeathVoice == true ? 
+            soundevent == DeathScream_ServerSide || soundevent == DeathScream_ClientSide : false;
+
+            bool MuteCrackling = Configs.GetConfigData().Sounds_MuteAfterDeathCrackling == true ? 
+            soundevent == AfterDeathCracklingSound_ClientSide || soundevent == AfterDeathCracklingSound_ServerSide : false;
+
+            bool MuteSwitchToSemi = Configs.GetConfigData().Sounds_MuteSwitchModeSemiToAuto == true ? 
+            soundevent == SwitchToSemi_BothSides : false;
+
+            bool MuteDropWeapons = 
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("A", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_C4_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("B", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_PistolAndTaser_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("C", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Shotguns_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("D", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_SMGs_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("E", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_AssaultRifles_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("F", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Snipers_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("G", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_FlashAndDecoy_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("H", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_SmokeAndInNade_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("I", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_HENade_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("J", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Molly_BothSides);
+
+            if(MuteKnife || MuteHeadShot || MuteBodyShot || MuteDeath || MuteCrackling || MuteSwitchToSemi || MuteDropWeapons)
+            {
+                return HookResult.Stop; 
+            }
+            
+            return HookResult.Continue; 
+            
+        }, HookMode.Pre);
         
         if(Configs.GetConfigData().DisableBloodAndHsSpark)
         {
@@ -105,19 +192,24 @@ public class GameManagerGoldKingZ : BasePlugin
 
         HookUserMessage(452, um =>
         {
-            if(Configs.GetConfigData().Mute_GunShotsMode == 1)
+            if(Configs.GetConfigData().Sounds_MuteGunShotsMode == 1)
             {
                 um.SetInt("sound_type", 0);
-            }else if(Configs.GetConfigData().Mute_GunShotsMode == 2)
+            }else if(Configs.GetConfigData().Sounds_MuteGunShotsMode == 2)
             {
                 um.SetUInt("weapon_id", 0);
                 um.SetInt("sound_type", 9);
                 um.SetUInt("item_def_index", 60);
-            }else if(Configs.GetConfigData().Mute_GunShotsMode == 3)
+            }else if(Configs.GetConfigData().Sounds_MuteGunShotsMode == 3)
             {
                 um.SetUInt("weapon_id", 0);
                 um.SetInt("sound_type", 9);
                 um.SetUInt("item_def_index", 61);
+            }else if(Configs.GetConfigData().Sounds_MuteGunShotsMode == 4)
+            {
+                um.SetUInt("weapon_id", Configs.GetConfigData().Mode4_Sounds_GunShots_weapon_id);
+                um.SetInt("sound_type", Configs.GetConfigData().Mode4_Sounds_GunShots_sound_type);
+                um.SetUInt("item_def_index", Configs.GetConfigData().Mode4_Sounds_GunShots_item_def_index);
             }
             return HookResult.Continue;
         }, HookMode.Pre);
@@ -142,6 +234,86 @@ public class GameManagerGoldKingZ : BasePlugin
             }
         }
     }
+    private HookResult OnTakeDamage(DynamicHook hook)
+    {
+        var ent = hook.GetParam<CEntityInstance>(0);
+        if (ent == null || !ent.IsValid || ent.DesignerName != "player") { return HookResult.Continue; }
+
+        var damageinfo = hook.GetParam<CTakeDamageInfo>(1);
+        if (damageinfo == null) { return HookResult.Continue; }
+
+        var GetAttacker = damageinfo.Attacker.Value!.As<CBasePlayerPawn>().Controller.Value;
+        if (GetAttacker == null || !GetAttacker.IsValid) { return HookResult.Continue; }
+
+        var pawn = ent.As<CCSPlayerPawn>();
+        if (pawn == null || !pawn.IsValid) { return HookResult.Continue; }
+
+        var attacker = Utilities.GetPlayerFromIndex((int)GetAttacker.Index);
+        if (attacker == null || !attacker.IsValid) { return HookResult.Continue; }
+
+        var Victim = pawn.OriginalController.Get();
+        if (Victim == null || !Victim.IsValid) { return HookResult.Continue; }
+
+        if (Victim.TeamNum == attacker.TeamNum)
+        {
+            if(attacker.PlayerPawn.Value != null && attacker.PlayerPawn.Value.IsValid && attacker.PlayerPawn.Value.WeaponServices != null && attacker.PlayerPawn.Value.WeaponServices.MyWeapons != null)
+            {
+                var myWeapons = attacker.PlayerPawn.Value.WeaponServices.MyWeapons;
+                if (myWeapons != null)
+                {
+                    foreach (var gun in myWeapons)
+                    {
+                        if(gun == null || !gun.IsValid)continue;
+                        if(gun.Value == null || !gun.Value.IsValid)continue;
+                        if(gun.Value.DesignerName == null || string.IsNullOrEmpty(gun.Value.DesignerName))continue;
+
+                        var WeaponName = gun.Value.DesignerName;
+                        if(WeaponName.Contains("weapon_knife") || WeaponName.Contains("weapon_bayonet"))
+                        {
+                            if (!Globals.StabedHisTeamMate.ContainsKey(attacker))
+                            {
+                                Globals.StabedHisTeamMate.Add(attacker,true);
+                            }
+                            if (Globals.StabedHisTeamMate.ContainsKey(attacker))
+                            {
+                                Globals.StabedHisTeamMate[attacker] = true;
+                            }
+
+                            AddTimer(0.01f, () =>
+                            {
+                                if(attacker != null && attacker.IsValid)
+                                {
+                                    if (!Globals.StabedHisTeamMate.ContainsKey(attacker))
+                                    {
+                                        Globals.StabedHisTeamMate.Add(attacker,false);
+                                    }
+                                    if (Globals.StabedHisTeamMate.ContainsKey(attacker))
+                                    {
+                                        Globals.StabedHisTeamMate[attacker] = false;
+                                    }
+                                }
+                                
+                            },TimerFlags.STOP_ON_MAPCHANGE);
+                        }
+                        
+                    }
+                }
+            }
+            
+        }else if (Victim.TeamNum != attacker.TeamNum)
+        {
+            if (!Globals.StabedHisTeamMate.ContainsKey(attacker))
+            {
+                Globals.StabedHisTeamMate.Add(attacker,false);
+            }
+            if (Globals.StabedHisTeamMate.ContainsKey(attacker))
+            {
+                Globals.StabedHisTeamMate[attacker] = false;
+            }
+        }
+        return HookResult.Continue;
+    }
+    
     private void OnMapStart(string Map)
     {
         if(Configs.GetConfigData().AutoCleanDropWeaponsMode == 3)
@@ -360,20 +532,26 @@ public class GameManagerGoldKingZ : BasePlugin
         if (Configs.GetConfigData().CustomThrowNadeMessagesMode == 0 || player == null || !player.IsValid || Configs.GetConfigData().CustomThrowNadeMessagesMode == 1 && player.IsBot)return HookResult.Continue;
 
         Server.NextFrame(() => {
+        
+            
             var playerteam = player.TeamNum;
-            var allplayers = Helper.GetAllController2();
+            var allplayers = Helper.GetPlayersController(true,false);
 
             allplayers.ForEach(players => {
+                if(players == null || !players.IsValid ||
+                players.PlayerPawn == null || !players.PlayerPawn.IsValid ||
+                players.PlayerPawn.Value == null || !players.PlayerPawn.Value.IsValid)return;
                 var otherteam = players.TeamNum;
                 bool sameTeam = playerteam == otherteam;
                 bool teammatesAreEnemies = ConVar.Find("mp_teammates_are_enemies")!.GetPrimitiveValue<bool>();
+                var Nadelocation = players.PlayerPawn.Value.LastPlaceName;
 
                 if (sameTeam && !teammatesAreEnemies) {
-                    Helper.SendGrenadeMessage(nade, players, player.PlayerName);
+                    Helper.SendGrenadeMessage(nade, players, player.PlayerName, Nadelocation.ToString());
                 } else if (sameTeam && player != players ) {
                     return;
                 } else if (sameTeam && (Configs.GetConfigData().CustomThrowNadeMessagesMode == 3 || Configs.GetConfigData().CustomThrowNadeMessagesMode == 4)) {
-                    Helper.SendGrenadeMessage(nade, players, player.PlayerName);
+                    Helper.SendGrenadeMessage(nade, players, player.PlayerName, Nadelocation.ToString());
                 }
             });
         });
@@ -565,10 +743,9 @@ public class GameManagerGoldKingZ : BasePlugin
                         Globals.Toggle_OnDisableChat[PlayerSteamID] = true;
                     }
 
-                    if (!string.IsNullOrEmpty(Localizer["hidechat.enabled.warning"]))
-                    {
-                        Helper.AdvancedPrintToChat(player, Localizer["hidechat.enabled.warning"], Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(player, Localizer["hidechat.enabled.warning"], Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs);
+                    
                     AddTimer(Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs, () =>
                     {
                         if (player == null || !player.IsValid)return;
@@ -588,10 +765,9 @@ public class GameManagerGoldKingZ : BasePlugin
 
                 if(Configs.GetConfigData().DisableHUDChatMode == 1)
                 {
-                    if (!string.IsNullOrEmpty(Localizer["hidechat.enabled.warning"]))
-                    {
-                        Helper.AdvancedPrintToChat(player, Localizer["hidechat.enabled.warning"], Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(player, Localizer["hidechat.enabled.warning"], Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs);
+                    
                     AddTimer(Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs, () =>
                     {
                         if (player == null || !player.IsValid)return;
@@ -669,6 +845,13 @@ public class GameManagerGoldKingZ : BasePlugin
 
         var player = @event.Userid;
         if(player == null || !player.IsValid )return HookResult.Continue;
+        if (player.PlayerPawn == null
+            || !player.PlayerPawn.IsValid
+            || player.PlayerPawn.Value == null
+            || !player.PlayerPawn.Value.IsValid)
+            {
+                return HookResult.Continue;
+            }
 
         if (Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 2)
         {
@@ -677,6 +860,28 @@ public class GameManagerGoldKingZ : BasePlugin
                 info.DontBroadcast = true;
                 Globals.Remove_Icon.Remove(player.SteamID);
             }
+        }
+        
+        if(Configs.GetConfigData().DisableDeadBodyMode == 1 || Configs.GetConfigData().DisableDeadBodyMode == 2 || Configs.GetConfigData().DisableDeadBodyMode == 3)
+        {
+            Server.NextFrame(() =>
+            {
+                if (player == null
+                ||  !player.IsValid
+                ||  player.PlayerPawn == null
+                ||  !player.PlayerPawn.IsValid
+                ||  player.PlayerPawn.Value == null
+                ||  !player.PlayerPawn.Value.IsValid)
+                {
+                    return;
+                }
+                var orginalmodel = player.PlayerPawn.Value.CBodyComponent?.SceneNode?.GetSkeletonInstance()?.ModelState.ModelName ?? string.Empty;
+                if (!string.IsNullOrEmpty(orginalmodel ))
+                {
+                    player.PlayerPawn.Value.SetModel("characters/models/tm_jumpsuit/tm_jumpsuit_varianta.vmdl");
+                    player.PlayerPawn.Value.SetModel(orginalmodel);
+                }
+            });
         }
 
         if(Configs.GetConfigData().DisableDeadBodyMode == 1)
@@ -688,9 +893,6 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 return HookResult.Continue;
             }
-            string orginalmodel = player.PlayerPawn.Value.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.ModelName;
-            player.PlayerPawn.Value.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
-            player.PlayerPawn.Value.SetModel(orginalmodel);
             player.PlayerPawn.Value.Render = Color.FromArgb(0, 255, 255, 255);
             Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
         }else if(Configs.GetConfigData().DisableDeadBodyMode == 2)
@@ -711,9 +913,6 @@ public class GameManagerGoldKingZ : BasePlugin
                         {
                             return;
                         }
-                        string orginalmodel = player.PlayerPawn.Value.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.ModelName;
-                        player.PlayerPawn.Value.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
-                        player.PlayerPawn.Value.SetModel(orginalmodel);
                         player.PlayerPawn.Value.Render = Color.FromArgb(0, 255, 255, 255);
                         Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
                     }, TimerFlags.STOP_ON_MAPCHANGE);
@@ -728,9 +927,6 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 return HookResult.Continue;
             }
-            string orginalmodel = player.PlayerPawn.Value.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.ModelName;
-            player.PlayerPawn.Value.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
-            player.PlayerPawn.Value.SetModel(orginalmodel);
             if (!Globals.PlayerAlpha.ContainsKey(player))
             {
                 Globals.PlayerAlpha.Add(player, 255);
@@ -808,37 +1004,26 @@ public class GameManagerGoldKingZ : BasePlugin
             if (Globals.PlayerAlpha.ContainsKey(player))
             {
                 Globals.PlayerAlpha[player]--;
-                if (Globals.PlayerAlpha[player] < 0)
-                {
-                    Server.NextFrame(() =>
-                    {
-                        if(Globals.TimerRemoveDeadBody.ContainsKey(player))
-                        {
-                            Globals.TimerRemoveDeadBody[player]?.Kill();
-                            Globals.TimerRemoveDeadBody[player] = null!;
-                            Globals.TimerRemoveDeadBody.Remove(player);
-                        }
-                        if(Globals.PlayerAlpha.ContainsKey(player))
-                        {
-                            Globals.PlayerAlpha.Remove(player);
-                        }
-                    });
-                }
                 Color newColor = Color.FromArgb(Globals.PlayerAlpha[player], 255, 255, 255);
                 player.PlayerPawn.Value.Render = newColor;
                 Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
+
+                if (Globals.PlayerAlpha[player] <= 0)
+                {
+                    if(Globals.TimerRemoveDeadBody.ContainsKey(player))
+                    {
+                        Globals.TimerRemoveDeadBody[player]?.Kill();
+                        Globals.TimerRemoveDeadBody[player] = null!;
+                        Globals.TimerRemoveDeadBody.Remove(player);
+                    }
+                    Globals.PlayerAlpha.Remove(player);
+                }
             }
         }, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
 
         return timer;
     }
 
-    public HookResult OnEventRoundStart(EventRoundStart @event, GameEventInfo info)
-    {
-        if(@event == null)return HookResult.Continue;
-
-        return HookResult.Continue;
-    }
     public HookResult OnEventPlayerChat(EventPlayerChat @event, GameEventInfo info)
     {
         if(@event == null)return HookResult.Continue;
@@ -864,41 +1049,36 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 if (!string.IsNullOrEmpty(Configs.GetConfigData().Toggle_DisableLegsFlags) && !Helper.IsPlayerInGroupPermission(Player, Configs.GetConfigData().Toggle_DisableLegsFlags))
                 {
-                    if (!string.IsNullOrEmpty(Localizer["hidelegs.not.allowed"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidelegs.not.allowed"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidelegs.not.allowed"]);
+                    
                     return HookResult.Continue;
                 }
 
                 if (Globals.Toggle_DisableLegs.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableLegs[PlayerSteamID] == 1 || Globals.Toggle_DisableLegs.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableLegs[PlayerSteamID] == 3)
                 {
                     Globals.Toggle_DisableLegs[PlayerSteamID] = 2;
-                    if (!string.IsNullOrEmpty(Localizer["hidelegs.disabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidelegs.disabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidelegs.disabled"]);
+                    
                 }else if (Globals.Toggle_DisableLegs.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableLegs[PlayerSteamID] == 4 || Globals.Toggle_DisableLegs.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableLegs[PlayerSteamID] == 6)
                 {
                     Globals.Toggle_DisableLegs[PlayerSteamID] = 5;
-                    if (!string.IsNullOrEmpty(Localizer["hidelegs.enabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidelegs.enabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidelegs.enabled"]);
+                    
                 }else if (Globals.Toggle_DisableLegs.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableLegs[PlayerSteamID] == 2)
                 {
                     Globals.Toggle_DisableLegs[PlayerSteamID] = 3;
-                    if (!string.IsNullOrEmpty(Localizer["hidelegs.enabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidelegs.enabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidelegs.enabled"]);
+                    
                 }else if (Globals.Toggle_DisableLegs.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableLegs[PlayerSteamID] == 5)
                 {
                     Globals.Toggle_DisableLegs[PlayerSteamID] = 6;
-                    if (!string.IsNullOrEmpty(Localizer["hidelegs.disabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidelegs.disabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidelegs.disabled"]);
+                    
                 }
                 
 
@@ -944,41 +1124,31 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 if (!string.IsNullOrEmpty(Configs.GetConfigData().Toggle_DisableHUDChatFlags) && !Helper.IsPlayerInGroupPermission(Player, Configs.GetConfigData().Toggle_DisableHUDChatFlags))
                 {
-                    if (!string.IsNullOrEmpty(Localizer["hidechat.not.allowed"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidechat.not.allowed"]);
-                    }
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidechat.not.allowed"]);
                     return HookResult.Continue;
                 }
 
                 if (Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 1 || Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 3)
                 {
                     Globals.Toggle_DisableChat[PlayerSteamID] = 2;
-                    if (!string.IsNullOrEmpty(Localizer["hidechat.disabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidechat.disabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidechat.disabled"]);
+                    
                 }else if (Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 4 || Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 6)
                 {
                     Globals.Toggle_DisableChat[PlayerSteamID] = 5;
-                    if (!string.IsNullOrEmpty(Localizer["hidechat.enabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidechat.enabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidechat.enabled"]);
+                    
                 }else if (Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 2)
                 {
                     Globals.Toggle_DisableChat[PlayerSteamID] = 3;
-                    if (!string.IsNullOrEmpty(Localizer["hidechat.enabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidechat.enabled"]);
-                    }
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidechat.enabled"]);
+                    
                 }else if (Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 5)
                 {
                     Globals.Toggle_DisableChat[PlayerSteamID] = 6;
-                    if (!string.IsNullOrEmpty(Localizer["hidechat.disabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hidechat.disabled"]);
-                    }
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidechat.disabled"]);
                 }
 
                 if(Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 2 || Globals.Toggle_DisableChat.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableChat[PlayerSteamID] == 6)
@@ -993,10 +1163,9 @@ public class GameManagerGoldKingZ : BasePlugin
                         {
                             Globals.Toggle_OnDisableChat[Player.SteamID] = true;
                         }
-                        if (!string.IsNullOrEmpty(Localizer["hidechat.enabled.warning"]))
-                        {
-                            Helper.AdvancedPrintToChat(Player, Localizer["hidechat.enabled.warning"], Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs);
-                        }
+                        
+                        Helper.AdvancedPlayerPrintToChat(Player, Localizer["hidechat.enabled.warning"], Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs);
+                        
                         AddTimer(Configs.GetConfigData().DisableHUDChatModeWarningTimerInSecs, () =>
                         {
                             if (Player == null || !Player.IsValid)return;
@@ -1025,41 +1194,36 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 if (!string.IsNullOrEmpty(Configs.GetConfigData().Toggle_DisableHUDWeaponsFlags) && !Helper.IsPlayerInGroupPermission(Player, Configs.GetConfigData().Toggle_DisableHUDWeaponsFlags))
                 {
-                    if (!string.IsNullOrEmpty(Localizer["hideweapons.not.allowed"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hideweapons.not.allowed"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hideweapons.not.allowed"]);
+                    
                     return HookResult.Continue;
                 }
 
                 if (Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 1 || Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 3)
                 {
                     Globals.Toggle_DisableWeapons[PlayerSteamID] = 2;
-                    if (!string.IsNullOrEmpty(Localizer["hideweapons.disabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hideweapons.disabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hideweapons.disabled"]);
+                    
                 }else if (Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 4 || Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 6)
                 {
                     Globals.Toggle_DisableWeapons[PlayerSteamID] = 5;
-                    if (!string.IsNullOrEmpty(Localizer["hideweapons.enabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hideweapons.enabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hideweapons.enabled"]);
+                    
                 }else if (Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 2)
                 {
                     Globals.Toggle_DisableWeapons[PlayerSteamID] = 3;
-                    if (!string.IsNullOrEmpty(Localizer["hideweapons.enabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hideweapons.enabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hideweapons.enabled"]);
+                    
                 }else if (Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 5)
                 {
                     Globals.Toggle_DisableWeapons[PlayerSteamID] = 6;
-                    if (!string.IsNullOrEmpty(Localizer["hideweapons.disabled"]))
-                    {
-                        Helper.AdvancedPrintToChat(Player, Localizer["hideweapons.disabled"]);
-                    }
+                    
+                    Helper.AdvancedPlayerPrintToChat(Player, Localizer["hideweapons.disabled"]);
+                    
                 }
 
                 if(Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 2 || Globals.Toggle_DisableWeapons.ContainsKey(PlayerSteamID) && Globals.Toggle_DisableWeapons[PlayerSteamID] == 6)
@@ -1128,22 +1292,19 @@ public class GameManagerGoldKingZ : BasePlugin
 
             if(JoinTeam == 1)
             {
-                if (!string.IsNullOrEmpty(Localizer["custom.jointeam.spec"]))
-                {
-                    Helper.AdvancedPrintToServer(Localizer["custom.jointeam.spec"], Playername);
-                }
+                
+                Helper.AdvancedServerPrintToChatAll(Localizer["custom.jointeam.spec"], Playername);
+                
             }else if(JoinTeam == 2)
             {
-                if (!string.IsNullOrEmpty(Localizer["custom.jointeam.t"]))
-                {
-                    Helper.AdvancedPrintToServer(Localizer["custom.jointeam.t"], Playername);
-                }
+                
+                Helper.AdvancedServerPrintToChatAll(Localizer["custom.jointeam.t"], Playername);
+                
             }else if(JoinTeam == 3)
             {
-                if (!string.IsNullOrEmpty(Localizer["custom.jointeam.ct"]))
-                {
-                    Helper.AdvancedPrintToServer(Localizer["custom.jointeam.ct"], Playername);
-                }
+                
+                Helper.AdvancedServerPrintToChatAll(Localizer["custom.jointeam.ct"], Playername);
+                
             }
         }
         return HookResult.Continue;
@@ -1231,14 +1392,16 @@ public class GameManagerGoldKingZ : BasePlugin
             });
         }
 
-        Globals.Toggle_DisableLegs.Remove(playerid);
-        Globals.Toggle_DisableChat.Remove(playerid);
-        Globals.Toggle_OnDisableChat.Remove(playerid);
-        Globals.Toggle_DisableWeapons.Remove(playerid);
-        Globals.Toggle_OnDisableWeapons.Remove(playerid);
-        Globals.Remove_Icon.Remove(playerid);
-        Globals.TimerRemoveDeadBody.Remove(player);
-        Globals.PlayerAlpha.Remove(player);
+        if (Globals.Toggle_DisableLegs.ContainsKey(playerid)) Globals.Toggle_DisableLegs.Remove(playerid);
+        if (Globals.Toggle_DisableChat.ContainsKey(playerid)) Globals.Toggle_DisableChat.Remove(playerid);
+        if (Globals.Toggle_OnDisableChat.ContainsKey(playerid)) Globals.Toggle_OnDisableChat.Remove(playerid);
+        if (Globals.Toggle_DisableWeapons.ContainsKey(playerid)) Globals.Toggle_DisableWeapons.Remove(playerid);
+        if (Globals.Toggle_OnDisableWeapons.ContainsKey(playerid)) Globals.Toggle_OnDisableWeapons.Remove(playerid);
+        if (Globals.TimerRemoveDeadBody.ContainsKey(player)) Globals.TimerRemoveDeadBody.Remove(player);
+        if (Globals.PlayerAlpha.ContainsKey(player)) Globals.PlayerAlpha.Remove(player);
+        if (Globals.StabedHisTeamMate.ContainsKey(player)) Globals.StabedHisTeamMate.Remove(player);
+
+
         return HookResult.Continue;
     }
 
@@ -1248,6 +1411,11 @@ public class GameManagerGoldKingZ : BasePlugin
     }
     public override void Unload(bool hotReload)
     {
+        if(Configs.GetConfigData().Sounds_MuteKnifesMode == 2)
+        {
+            VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
+        }
+        
         Helper.ClearVariables();
     }
 }
