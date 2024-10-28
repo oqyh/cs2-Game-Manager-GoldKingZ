@@ -2,10 +2,9 @@
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
 ***
-# [CS2] Game-Manager-GoldKingZ (2.0.5)
+# [CS2] Game-Manager-GoldKingZ (2.0.6)
 
 ### Block/Hide Unnecessaries In Game
-
 
 
 ![blockchatwheel](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/bbd0bd16-fb65-49f9-b008-cecb190bb4bd)
@@ -43,12 +42,6 @@
   //Enable MySql? Located In Game-Manager-GoldKingZ/config/MySql_Settings.json
   "Enable_UseMySql": false,
 
-  //Make All Gun Sound:
-  //(1) = Completely Mute
-  //(2) = m4 Silencer
-  //(3) = Usp Silencer
-  "Mute_GunShotsMode": 0,
-
   //Disable Radio
   "DisableRadio": false,
 
@@ -61,7 +54,7 @@
   //Disable Ping
   "DisablePing": false,
 
-  //Disable Grenade Radio
+  //Disable Grenade Radio + Message
   "DisableGrenadeRadio": false,
 
   //Disable Radar
@@ -69,9 +62,6 @@
 
   //Disable Cash Awards And Money HUD
   "DisableCashAwardsAndMoneyHUD": false,
-
-  //Disable Jump Land Sound
-  "DisableJumpLandSound": false,
 
   //Disable Fall Damage
   "DisableFallDamage": false,
@@ -82,8 +72,6 @@
   //Disable C4 ( Will Remove C4 )
   "DisableC4": false,
 
-  //Disable MPV Sound At End
-  "DisableMPVSound": false,
 
   //Disable Blood And HeadShot Spark Decals/Effects
   "DisableBloodAndHsSpark": false,
@@ -149,7 +137,60 @@
   //Auto Delete Inactive Players Cookies Older Than X Days In MySql
   "Toggle_AutoRemovePlayerMySqlOlderThanXDays": 7,
 
-//-----------------------------------------------------------------------------------------
+//----------------------------[ ↓ Default CS2 Sounds ↓ ]---------------------------------
+  
+  //Disable MPV Sound At End
+  "DisableMPVSound": false,
+
+  //Disable Jump Land Sound
+  "DisableJumpLandSound": false,
+
+  //Make All Gun Sound:
+  //(1) = Completely Mute
+  //(2) = m4 Silencer
+  //(3) = Usp Silencer
+  //(4) = Custom Mode4_Sounds_GunShots_weapon_id , Mode4_Sounds_GunShots_sound_type , Mode4_Sounds_GunShots_item_def_index
+  "Sounds_MuteGunShotsMode": 0,
+
+  //If Sounds_MuteGunShotsMode = 4  Whats (weapon_id , sound_type , item_def_index)
+  "Mode4_Sounds_GunShots_weapon_id": 0,
+  "Mode4_Sounds_GunShots_sound_type": 9,
+  "Mode4_Sounds_GunShots_item_def_index": 61,
+
+  //(1) = Mute Knife Stab
+  //(2) = Mute Knife Stab Only If Stab TeamMates
+  "Sounds_MuteKnifesMode": 0,
+
+  //Mute HeadShot Hit Sounds
+  "Sounds_MuteHeadShot": false,
+
+  //Mute BodyShots Hit Sounds
+  "Sounds_MuteBodyShot": false,
+
+  //Mute After Player Death Voice Sounds
+  "Sounds_MutePlayerDeathVoice": false,
+
+  //Mute After Player Death Crackling Sounds
+  "Sounds_MuteAfterDeathCrackling": false,
+
+  //Mute When Switch Semi To Auto Or Opposite
+  "Sounds_MuteSwitchModeSemiToAuto": false,
+
+  //Which Weapons Do You Want To Mute On Drop Weaponds:
+  //A = C4
+  //B = Pistol And Taser
+  //C = Shotguns
+  //D = SMGs
+  //E = AssaultRifles
+  //F = Snipers
+  //G = Flash And Decoy
+  //H = Smoke And Incendiary Grenade
+  //I = HE Grenade
+  //J = Molotov
+  //Example How to Use "Sounds_MuteDropWeapons": "abcdef"
+  "Sounds_MuteDropWeapons": "",
+
+//----------------------------[ ↓ Default CS2 Messages ↓ ]-------------------------------
 
   //Ignore Default Bomb Planted Announce
   "IgnoreDefaultBombPlantedAnnounce": false,
@@ -173,9 +214,7 @@
   //(2) = Ignore Default Disconnect Messages + Remove Disconnect Icon In Killfeed
   "IgnoreDefaultDisconnectMessagesMode": 0,
 
-//-----------------------------------------------------------------------------------------
-
-            //Custom Messages Located In Lang Folder
+//----------------------------[ ↓ Custom Messages ↓ ]------------------------------------
 
   //(1) = Custom Join Team Messages + Exclude Bots
   //(2) = Custom Join Team Messages + Include Bots
@@ -187,7 +226,7 @@
   //(4) = Custom Throw Nade Messages  + Show Nade Message To All When (mp_teammates_are_enemies true)
   "CustomThrowNadeMessagesMode": 0,
 
-//-----------------------------------------------------------------------------------------
+//----------------------------[ ↓ Auto Clean Drop Weapons ↓ ]----------------------------
 
   //(1) = Clear Only On Every Round Start With Delay Clear Mode1_TimeXSecsDelayClean
   //(2) = Clear Only On Every Spawn Or Death With Delay Clear Mode2_TimeXSecsDelayClean
@@ -213,8 +252,8 @@
   //If AutoCleanDropWeaponsMode 3 How Many In Secs
   "Mode3_EveryTimeXSecs": 10,
 
-//-----------------------------------------------------------------------------------------
-	
+//----------------------------[ ↓ Debug ↓ ]----------------------------------------------
+  
   //Enable Debug Will Print Server Console If You Face Any Issue
   "EnableDebug": false,
 }
@@ -256,18 +295,41 @@
 	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
 	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
 
-	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {red}☄ HE Grenade! ☄",
-	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {Olive}☁︎ Smoke! ☁︎",
-	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {orange}♨ Molotov! ♨",
-	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
-	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {orange} ♨ Incendiary! ♨",
-	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {grey}Threw {grey}✦ Decoy! ✦"
+	//==========================
+	//{0} = Player Name
+	//{1} = Location
+	//==========================
+
+	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {red}☄ HE Grenade! ☄",
+	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {Olive}☁︎ Smoke! ☁︎",
+	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {orange}♨ Molotov! ♨",
+	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
+	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {orange} ♨ Incendiary! ♨",
+	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {grey}✦ Decoy! ✦"
 }
 ```
 
 
 ## .:[ Change Log ]:.
 ```
+(2.0.6)
+-Fix Some Bugs
+-Fix DisableDeadBodyMode 3 System.ArgumentException: Value of '-1' is not valid for 'alpha'
+-Fix DisableDeadBodyMode 1 2 3 Custom Gloves Not Disappear
+-Added CustomThrowNadeMessagesMode Location Nade In lang {1}
+-Added Sounds_MuteGunShotsMode 4
+-Added Mode4_Sounds_GunShots_weapon_id
+-Added Mode4_Sounds_GunShots_sound_type
+-Added Mode4_Sounds_GunShots_item_def_index
+-Added Sounds_MuteKnifesMode 1 Mute Knife Sounds (Stab RightClick + Stab LeftClick + Stab Swing Air)
+-Added Sounds_MuteKnifesMode 2 Mute Knife Sounds Only On TeamMates
+-Added Sounds_MuteHeadShot
+-Added Sounds_MuteBodyShot
+-Added Sounds_MutePlayerDeathVoice
+-Added Sounds_MuteAfterDeathCrackling
+-Added Sounds_MuteSwitchModeSemiToAuto
+-Added Sounds_MuteDropWeapons
+
 (2.0.5)
 -Fix DisableDeadBodyMode (1) (2) (3) Gloves Not Cleared
 -Added DisableBloodAndHsSpark
