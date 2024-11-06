@@ -257,7 +257,7 @@
   "AutoClean_TheseDroppedWeaponsOnly": "A,B,C,D,weapon_hegrenade",
 
   //Do AutoClean_DropWeaponsMode Action When X Weapons In Ground
-  "AutoClean_WhenXWeaponsInGround": "1,2,3",
+  "AutoClean_WhenXWeaponsInGround": 5,
 
 //----------------------------[ ↓ Debug ↓ ]----------------------------------------------
   
