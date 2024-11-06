@@ -43,10 +43,7 @@ public class MySqlDataManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"======================== ERROR =============================");
-            Console.WriteLine($"Error creating Game_Manager_PersonData table: {ex.Message}");
-            Console.WriteLine($"======================== ERROR =============================");
-            throw;
+            Helper.DebugMessage(ex.Message);
         }
     }
 
@@ -84,10 +81,7 @@ public class MySqlDataManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"======================== ERROR =============================");
-            Console.WriteLine($"Error saving data to MySQL: {ex.Message}");
-            Console.WriteLine($"======================== ERROR =============================");
-            throw;
+            Helper.DebugMessage(ex.Message);
         }
     }
     public static async Task RemoveFromMySqlAsync(ulong PlayerSteamID, MySqlConnection connection, MySqlConnectionSettings connectionSettings)
@@ -107,8 +101,7 @@ public class MySqlDataManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error removing data from MySQL: {ex.Message}");
-            throw;
+            Helper.DebugMessage(ex.Message);
         }
         finally
         {
@@ -154,10 +147,7 @@ public class MySqlDataManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"======================== ERROR =============================");
-            Console.WriteLine($"Error retrieving data from MySQL: {ex.Message}");
-            Console.WriteLine($"======================== ERROR =============================");
-            throw;
+            Helper.DebugMessage(ex.Message);
         }
         return personData;
     }

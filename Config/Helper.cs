@@ -43,20 +43,91 @@ public class Helper
     "needrop",
     "deathcry"
     };
+    public static readonly Dictionary<string, string[]> WeaponCategories = new Dictionary<string, string[]>
+    {
+        {"A", new[] { "weapon_awp", "weapon_g3sg1", "weapon_scar20", "weapon_ssg08" }},
+        {"B", new[] { "weapon_ak47", "weapon_aug", "weapon_famas", "weapon_galilar", "weapon_m4a1_silencer", "weapon_m4a1", "weapon_sg556" }},
+        {"C", new[] { "weapon_m249", "weapon_negev" }},
+        {"D", new[] { "weapon_mag7", "weapon_nova", "weapon_sawedoff", "weapon_xm1014" }},
+        {"E", new[] { "weapon_bizon", "weapon_mac10", "weapon_mp5sd", "weapon_mp7", "weapon_mp9", "weapon_p90", "weapon_ump45" }},
+        {"F", new[] { "weapon_cz75a", "weapon_deagle", "weapon_elite", "weapon_fiveseven", "weapon_glock", "weapon_hkp2000", "weapon_p250", "weapon_revolver", "weapon_tec9", "weapon_usp_silencer" }},
+        {"G", new[] { "weapon_smokegrenade", "weapon_hegrenade", "weapon_flashbang", "weapon_decoy", "weapon_molotov", "weapon_incgrenade" }},
+        {"H", new[] { "item_defuser", "item_cutters" }},
+        {"I", new[] { "weapon_taser" }},
+        {"J", new[] { "weapon_healthshot" }},
+        {"K", new[] { "weapon_knife", "weapon_knife_t" }},
+        {"ANY", new[] {
+            "weapon_awp", "weapon_g3sg1", "weapon_scar20", "weapon_ssg08",
+            "weapon_ak47", "weapon_aug", "weapon_famas", "weapon_galilar", "weapon_m4a1_silencer", "weapon_m4a1", "weapon_sg556",
+            "weapon_m249", "weapon_negev",
+            "weapon_mag7", "weapon_nova", "weapon_sawedoff", "weapon_xm1014",
+            "weapon_bizon", "weapon_mac10", "weapon_mp5sd", "weapon_mp7", "weapon_mp9", "weapon_p90", "weapon_ump45",
+            "weapon_cz75a", "weapon_deagle", "weapon_elite", "weapon_fiveseven", "weapon_glock", "weapon_hkp2000", "weapon_p250", "weapon_revolver", "weapon_tec9", "weapon_usp_silencer",
+            "weapon_smokegrenade", "weapon_hegrenade", "weapon_flashbang", "weapon_decoy", "weapon_molotov", "weapon_incgrenade",
+            "item_defuser", "item_cutters",
+            "weapon_taser",
+            "weapon_healthshot",
+            "weapon_knife", "weapon_knife_t"
+        }}
+    };
     public static readonly string[] WeaponsList =
     {
-        "ak47", "aug", "awp", "bizon", "cz75a", "deagle", "elite", "famas", "fiveseven", "g3sg1", "galilar",
-        "glock", "hkp2000", "m249", "m4a1", "m4a1_silencer", "mac10", "mag7", "mp5sd", "mp7", "mp9", "negev",
-        "nova", "p250", "p90", "revolver", "sawedoff", "scar20", "sg556", "ssg08", "tec9", "ump45", "usp_silencer", "xm1014"
-    };
-    public static readonly string[] GrenadesList =
-    {
-        "decoy", "flashbang", "hegrenade", "incgrenade", "molotov", "smokegrenade"
-    };
+        "weapon_awp",
+        "weapon_g3sg1",
+        "weapon_scar20", //Sniper Rifles
+        "weapon_ssg08",
 
-    public static readonly string[] ItemsList =
-    {
-        "defuser", "cutters"
+        "weapon_ak47",
+        "weapon_aug",
+        "weapon_famas",
+        "weapon_galilar",
+        "weapon_m4a1_silencer", //Assault Rifles
+        "weapon_m4a1",
+        "weapon_sg556",
+
+        "weapon_m249",
+        "weapon_negev",  //Machine Guns
+
+        "weapon_mag7",  
+        "weapon_nova",
+        "weapon_sawedoff", //Shotguns
+        "weapon_xm1014",
+
+        "weapon_bizon",
+        "weapon_mac10",
+        "weapon_mp5sd",
+        "weapon_mp7",  //Sub-Machine Guns
+        "weapon_mp9",
+        "weapon_p90",
+        "weapon_ump45",
+
+        "weapon_cz75a",
+        "weapon_deagle",
+        "weapon_elite",
+        "weapon_fiveseven",
+        "weapon_glock",
+        "weapon_hkp2000",  //Pistols
+        "weapon_p250",
+        "weapon_revolver",
+        "weapon_tec9",
+        "weapon_usp_silencer",
+
+        "weapon_smokegrenade",
+        "weapon_hegrenade",
+        "weapon_flashbang", //Grenades
+        "weapon_decoy",
+        "weapon_molotov",
+        "weapon_incgrenade",
+
+        "item_defuser",
+        "item_cutters", //Defuse Kits
+
+        "weapon_taser", //Taser
+
+        "weapon_healthshot", //healthshot
+
+        "weapon_knife",
+        "weapon_knife_t" //Knifes
     };
     public static string[] MoneyMessageArray = new string[] {
     "Player_Cash_Award_Kill_Teammate",
@@ -271,6 +342,7 @@ public class Helper
         Globals.Toggle_OnDisableChat.Clear();
         Globals.Toggle_DisableWeapons.Clear();
         Globals.Toggle_OnDisableWeapons.Clear();
+        Globals.CbaseWeapons.Clear();
         Globals.Remove_Icon.Clear();
         Globals.StabedHisTeamMate.Clear();
 
@@ -281,8 +353,6 @@ public class Helper
         Globals.TimerRemoveDeadBody.Clear();
 
         Globals.PlayerAlpha.Clear();
-        Globals.CleanerTimer?.Kill();
-        Globals.CleanerTimer = null;
     }
     public static string RemoveLeadingSpaces(string content)
     {
@@ -313,6 +383,11 @@ public class Helper
     public static void ExectueCommands()
     {
 
+        if(Configs.GetConfigData().Sounds_MutePlayersFootSteps)
+        {
+            Server.ExecuteCommand("sv_footsteps 0");
+        }
+
         if(Configs.GetConfigData().DisableRadar)
         {
             Server.ExecuteCommand("sv_disable_radar 1");
@@ -338,7 +413,7 @@ public class Helper
             Server.ExecuteCommand("sv_teamid_overhead 0");
         }
 
-        if(Configs.GetConfigData().DisableJumpLandSound)
+        if(Configs.GetConfigData().Sounds_MuteJumpLand)
         {
             Server.ExecuteCommand("sv_min_jump_landing_sound 999999");
         }
@@ -356,121 +431,6 @@ public class Helper
         if(Configs.GetConfigData().DisableC4)
         {
             Server.ExecuteCommand("mp_give_player_c4 0");
-        }
-    }
-    public static void CleanerTimer_Callback()
-    {
-        
-        if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("1"))
-        {
-            RemoveWeapons();
-        }
-
-        if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("2"))
-        {
-            RemoveGrenades();
-        }
-
-        if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("3"))
-        {
-            RemoveDefuserKit();
-        }
-
-        if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("4"))
-        {
-            RemoveTaser();
-        }
-
-        if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("5"))
-        {
-            RemoveHealthShot();
-        }
-
-        if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("6"))
-        {
-            RemoveKnifes();
-        }
-    }
-    public static void RemoveWeapons()
-    {
-        foreach (string Weapons in WeaponsList)
-        {
-            foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_" + Weapons))
-            {
-                if (entity == null) continue;
-                if (entity.Entity == null) continue;
-                if (entity.OwnerEntity == null) continue;
-                if(entity.OwnerEntity.IsValid) continue;
-
-                entity.AcceptInput("Kill");
-            }
-        }
-    }
-    public static void RemoveGrenades()
-    {
-        foreach (string Grenades in GrenadesList)
-        {
-            foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_" + Grenades))
-            {
-                if (entity == null) continue;
-                if (entity.Entity == null) continue;
-                if (entity.OwnerEntity == null) continue;
-                if(entity.OwnerEntity.IsValid) continue;
-
-                entity.AcceptInput("Kill");
-            }
-        }
-    }
-    public static void RemoveKnifes()
-    {
-        foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_knife"))
-        {
-            if (entity == null) continue;
-            if (entity.Entity == null) continue;
-            if (entity.OwnerEntity == null) continue;
-            if(entity.OwnerEntity.IsValid) continue;
-
-            entity.AcceptInput("Kill");
-        }
-    }
-
-    public static void RemoveDefuserKit()
-    {
-        foreach (string Items in ItemsList)
-        {
-            foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("item_" + Items))
-            {
-                if (entity == null) continue;
-                if (entity.Entity == null) continue;
-                if (entity.OwnerEntity == null) continue;
-                if(entity.OwnerEntity.IsValid) continue;
-
-                entity.AcceptInput("Kill");
-            }
-        }
-    }
-    public static void RemoveTaser()
-    {
-        foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_taser"))
-        {
-            if (entity == null) continue;
-            if (entity.Entity == null) continue;
-            if (entity.OwnerEntity == null) continue;
-            if(entity.OwnerEntity.IsValid) continue;
-
-            entity.AcceptInput("Kill");
-        }
-    }
-    public static void RemoveHealthShot()
-    {
-        foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_healthshot"))
-        {
-            if (entity == null) continue;
-            if (entity.Entity == null) continue;
-            if (entity.OwnerEntity == null) continue;
-            if(entity.OwnerEntity.IsValid) continue;
-
-            entity.AcceptInput("Kill");
         }
     }
     public static void CreateDefaultWeaponsJson2(string jsonFilePath)

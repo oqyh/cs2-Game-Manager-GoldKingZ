@@ -11,7 +11,7 @@ using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
-using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 
 namespace Game_Manager_GoldKingZ;
 
@@ -19,10 +19,11 @@ namespace Game_Manager_GoldKingZ;
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.6";
+    public override string ModuleVersion => "2.0.7";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
+    public int countingglobal = 0;
     public override void Load(bool hotReload)
     {
         Configs.Load(ModuleDirectory);
@@ -47,9 +48,24 @@ public class GameManagerGoldKingZ : BasePlugin
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
         }
         
+        HookUserMessage(322, um =>
+        {
+           for (int i = 0; i < um.GetRepeatedFieldCount("params"); i++)
+            {
+                var message = um.ReadString("params", i);
+                if (Configs.GetConfigData().Ignore_PlantingBombMessages && message.Contains("Cstrike_TitlesTXT_Planting_Bomb") ||
+                    Configs.GetConfigData().Ignore_DefusingBombMessages && message.Contains("Cstrike_TitlesTXT_Defusing_Bomb"))
+                {
+                    return HookResult.Stop;
+                }
+            }
+            return HookResult.Continue;
+        }, HookMode.Pre);
+
         HookUserMessage(208, um =>
         {
             var soundevent = um.ReadUInt("soundevent_hash");
+            
             
             uint PlayerPOVScreen_Got_Damage_ClientSide = 3124768561;
             uint Player_Got_Damage_ServerSide = 524041390;
@@ -70,9 +86,11 @@ public class GameManagerGoldKingZ : BasePlugin
             uint Knife_Rightstab_BothSides = 3475734633;
             uint Knife_leftstab_BothSides = 1769891506;
             uint Knife_SwingAir_BothSides = 3634660983;
+            uint Knife_StabWall_BothSides = 2486534908;
             uint SwitchToSemi_BothSides = 576815311;
             
             uint DropWeapon_C4_BothSides = 1346129716;
+            uint DropWeapon_Knife_BothSides = 3208928088;
             uint DropWeapon_PistolAndTaser_BothSides = 1842263658;
             uint DropWeapon_Shotguns_BothSides = 4003696900;
             uint DropWeapon_SMGs_BothSides = 3003881917;
@@ -84,7 +102,7 @@ public class GameManagerGoldKingZ : BasePlugin
             uint DropWeapon_Molly_BothSides = 1601161479;
 
             bool MuteKnife = Configs.GetConfigData().Sounds_MuteKnifesMode == 1 ?
-            soundevent == Knife_Rightstab_BothSides || soundevent == Knife_leftstab_BothSides || soundevent == Knife_SwingAir_BothSides :
+            soundevent == Knife_Rightstab_BothSides || soundevent == Knife_leftstab_BothSides || soundevent == Knife_SwingAir_BothSides || soundevent == Knife_StabWall_BothSides :
             Configs.GetConfigData().Sounds_MuteKnifesMode == 2 ? Globals.StabedHisTeamMate.Any( player => player.Value == true) &&
             (soundevent == PlayerPOVScreen_Got_Damage_ClientSide || soundevent == Player_Got_Damage_ServerSide ||
             soundevent == Player_Got_Damage_ClientSide || soundevent == Player_Got_Damage_FriendlyDamage_ServerSide || 
@@ -117,16 +135,95 @@ public class GameManagerGoldKingZ : BasePlugin
             (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("G", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_FlashAndDecoy_BothSides) ||
             (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("H", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_SmokeAndInNade_BothSides) ||
             (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("I", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_HENade_BothSides) ||
-            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("J", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Molly_BothSides);
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("J", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Molly_BothSides) ||
+            (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("K", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Knife_BothSides);
 
             if(MuteKnife || MuteHeadShot || MuteBodyShot || MuteDeath || MuteCrackling || MuteSwitchToSemi || MuteDropWeapons)
             {
                 return HookResult.Stop; 
             }
-            
+
+            if(Configs.GetConfigData().AutoClean_DropWeaponsMode == 1 ||
+            Configs.GetConfigData().AutoClean_DropWeaponsMode == 2 ||
+            Configs.GetConfigData().AutoClean_DropWeaponsMode == 3)
+            {
+                var selectedWeapons = Configs.GetConfigData().AutoClean_TheseDroppedWeaponsOnly
+                .Split(',')
+                .Select(weapon => weapon.Trim().ToLower())
+                .ToList();
+
+                var selectedCategories = Helper.WeaponCategories.Keys
+                .Where(key => selectedWeapons.Contains(key.ToLower()))
+                .ToList();
+
+                var specificWeapons = selectedWeapons
+                .Where(weapon => !Helper.WeaponCategories.ContainsKey(weapon.ToUpper()))
+                .ToList();
+
+                var allWeaponsToClean = selectedCategories
+                .SelectMany(category => Helper.WeaponCategories[category])
+                .Concat(specificWeapons)
+                .Distinct()
+                .ToList();
+                
+                if (selectedCategories.Any() || specificWeapons.Any())
+                {
+                    Globals.CbaseWeapons.RemoveAll(entity => 
+                    entity == null || 
+                    !entity.IsValid || 
+                    entity.Entity == null || 
+                    (entity.OwnerEntity != null && entity.OwnerEntity.IsValid));
+
+                    foreach (var weapon in allWeaponsToClean)
+                    {
+                        foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>(weapon))
+                        {
+                            if (entity == null || !entity.IsValid || entity.Entity == null || 
+                            (entity.OwnerEntity != null && entity.OwnerEntity.IsValid) ||
+                            Globals.CbaseWeapons.Contains(entity))
+                            {
+                                continue;
+                            }
+                            Globals.CbaseWeapons.Add(entity);
+                        }
+                    }
+                    if (Configs.GetConfigData().AutoClean_DropWeaponsMode == 1 && Globals.CbaseWeapons.Count == Configs.GetConfigData().AutoClean_WhenXWeaponsInGround)
+                    {
+                        foreach (var weapon in Globals.CbaseWeapons.ToList())
+                        {
+                            if (weapon != null && weapon.IsValid && weapon.Entity != null &&
+                                weapon.OwnerEntity != null && !weapon.OwnerEntity.IsValid)
+                            {
+                                weapon.AcceptInput("Kill");
+                                Globals.CbaseWeapons.Remove(weapon);
+                            }
+                        }
+                    }else if (Configs.GetConfigData().AutoClean_DropWeaponsMode == 2 && Globals.CbaseWeapons.Count == Configs.GetConfigData().AutoClean_WhenXWeaponsInGround)
+                    {
+                        var oldestWeapon = Globals.CbaseWeapons[0];
+                        if (oldestWeapon != null && oldestWeapon.IsValid && oldestWeapon.Entity != null && 
+                            oldestWeapon.OwnerEntity != null && !oldestWeapon.OwnerEntity.IsValid)
+                        {
+                            oldestWeapon.AcceptInput("Kill");
+                            Globals.CbaseWeapons.RemoveAt(0);
+                        }
+                    }else if (Configs.GetConfigData().AutoClean_DropWeaponsMode == 3 && Globals.CbaseWeapons.Count == Configs.GetConfigData().AutoClean_WhenXWeaponsInGround)
+                    {
+                        var newestWeapon = Globals.CbaseWeapons[Globals.CbaseWeapons.Count - 1];
+                        if (newestWeapon != null && newestWeapon.IsValid && newestWeapon.Entity != null &&
+                            newestWeapon.OwnerEntity != null && !newestWeapon.OwnerEntity.IsValid)
+                        {
+                            newestWeapon.AcceptInput("Kill");
+                            Globals.CbaseWeapons.RemoveAt(Globals.CbaseWeapons.Count - 1);
+                        }
+                    }
+                }
+            }
+
             return HookResult.Continue; 
             
         }, HookMode.Pre);
+        
         
         if(Configs.GetConfigData().DisableBloodAndHsSpark)
         {
@@ -149,7 +246,7 @@ public class GameManagerGoldKingZ : BasePlugin
             {
                 var message = um.ReadString("param", i);
                 
-                if(Configs.GetConfigData().IgnoreDefaultTeamMateAttackMessages)
+                if(Configs.GetConfigData().Ignore_TeamMateAttackMessages)
                 {
                     for (int X = 0; X < Helper.TeamWarningArray.Length; X++)
                     {
@@ -160,7 +257,7 @@ public class GameManagerGoldKingZ : BasePlugin
                     }
                 }
                 
-                if(Configs.GetConfigData().IgnoreDefaultAwardsMoneyMessages)
+                if(Configs.GetConfigData().Ignore_AwardsMoneyMessages)
                 {
                     for (int X = 0; X < Helper.MoneyMessageArray.Length; X++)
                     {
@@ -171,7 +268,7 @@ public class GameManagerGoldKingZ : BasePlugin
                     }
                 }
 
-                if(Configs.GetConfigData().IgnorePlayerSavedYouByPlayerMessages)
+                if(Configs.GetConfigData().Ignore_PlayerSavedYouByPlayerMessages)
                 {
                     for (int X = 0; X < Helper.SavedbyArray.Length; X++)
                     {
@@ -182,7 +279,7 @@ public class GameManagerGoldKingZ : BasePlugin
                     }
                 }
                 
-                if (Configs.GetConfigData().IgnoreChickenKilledMessages && message.Contains("Pet_Killed"))
+                if (Configs.GetConfigData().Ignore_ChickenKilledMessages && message.Contains("Pet_Killed"))
                 {
                     return HookResult.Stop;
                 }
@@ -223,16 +320,6 @@ public class GameManagerGoldKingZ : BasePlugin
         }
 
         Helper.ExectueCommands();
-
-        if(Configs.GetConfigData().AutoCleanDropWeaponsMode == 3)
-        {
-            if(Configs.GetConfigData().Mode3_EveryTimeXSecs != 0)
-            {
-                Globals.CleanerTimer?.Kill();
-                Globals.CleanerTimer = null;
-                Globals.CleanerTimer = AddTimer(Configs.GetConfigData().Mode3_EveryTimeXSecs, Helper.CleanerTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-            }
-        }
     }
     private HookResult OnTakeDamage(DynamicHook hook)
     {
@@ -316,15 +403,7 @@ public class GameManagerGoldKingZ : BasePlugin
     
     private void OnMapStart(string Map)
     {
-        if(Configs.GetConfigData().AutoCleanDropWeaponsMode == 3)
-        {
-            if(Configs.GetConfigData().Mode3_EveryTimeXSecs != 0)
-            {
-                Globals.CleanerTimer?.Kill();
-                Globals.CleanerTimer = null;
-                Globals.CleanerTimer = AddTimer(Configs.GetConfigData().Mode3_EveryTimeXSecs, Helper.CleanerTimer_Callback, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-            }
-        }
+        
     }
 
     public HookResult OnEventPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
@@ -530,7 +609,7 @@ public class GameManagerGoldKingZ : BasePlugin
         var nade = @event.Weapon;
 
         if (Configs.GetConfigData().CustomThrowNadeMessagesMode == 0 || player == null || !player.IsValid || Configs.GetConfigData().CustomThrowNadeMessagesMode == 1 && player.IsBot)return HookResult.Continue;
-
+        
         Server.NextFrame(() => {
         
             
@@ -562,47 +641,7 @@ public class GameManagerGoldKingZ : BasePlugin
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
         if(@event == null)return HookResult.Continue;
-        Helper.ExectueCommands();
-
-        if(Configs.GetConfigData().AutoCleanDropWeaponsMode != 1)return HookResult.Continue;
-
-        Server.NextFrame(() =>
-        {
-            AddTimer(Configs.GetConfigData().Mode1_TimeXSecsDelayClean, () =>
-            {
-                if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("1"))
-                {
-                    Helper.RemoveWeapons();
-                }
-
-                if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("2"))
-                {
-                    Helper.RemoveGrenades();
-                }
-
-                if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("3"))
-                {
-                    Helper.RemoveDefuserKit();
-                }
-
-                if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("4"))
-                {
-                    Helper.RemoveTaser();
-                }
-
-                if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("5"))
-                {
-                    Helper.RemoveHealthShot();
-                }
-
-                if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("6"))
-                {
-                    Helper.RemoveKnifes();
-                }
-            },TimerFlags.STOP_ON_MAPCHANGE);
-        });
-
-
+        Globals.CbaseWeapons.Clear();
         return HookResult.Continue;
     }
     private HookResult OnEventPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
@@ -635,45 +674,6 @@ public class GameManagerGoldKingZ : BasePlugin
             }
             player.PlayerPawn.Value.Render = Color.FromArgb(255, 255, 255, 255);
             Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
-        }
-        
-        if(Configs.GetConfigData().AutoCleanDropWeaponsMode == 2)
-        {
-            Server.NextFrame(() =>
-            {
-                AddTimer(Configs.GetConfigData().Mode2_TimeXSecsDelayClean, () =>
-                {
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("1"))
-                    {
-                        Helper.RemoveWeapons();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("2"))
-                    {
-                        Helper.RemoveGrenades();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("3"))
-                    {
-                        Helper.RemoveDefuserKit();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("4"))
-                    {
-                        Helper.RemoveTaser();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("5"))
-                    {
-                        Helper.RemoveHealthShot();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("6"))
-                    {
-                        Helper.RemoveKnifes();
-                    }
-                },TimerFlags.STOP_ON_MAPCHANGE);
-            });
         }
 
         if(Configs.GetConfigData().DisableLegsMode == 1 || Configs.GetConfigData().DisableLegsMode == 2 || Configs.GetConfigData().DisableLegsMode == 3)
@@ -825,7 +825,7 @@ public class GameManagerGoldKingZ : BasePlugin
     }
     private HookResult OnEventRoundMvp(EventRoundMvp @event, GameEventInfo info)
     {
-        if (!Configs.GetConfigData().DisableMPVSound || @event == null)return HookResult.Continue;
+        if (!Configs.GetConfigData().Sounds_MuteMVP || @event == null)return HookResult.Continue;
         var Player = @event.Userid;
         if (Player == null || !Player.IsValid)return HookResult.Continue;
         Player.MusicKitID = 0;
@@ -833,7 +833,7 @@ public class GameManagerGoldKingZ : BasePlugin
     }
     private HookResult OnEventBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
-        if (!Configs.GetConfigData().IgnoreDefaultBombPlantedAnnounce || @event == null)return HookResult.Continue;
+        if (!Configs.GetConfigData().Ignore_BombPlantedHUDMessages || @event == null)return HookResult.Continue;
         info.DontBroadcast = true;
         return HookResult.Continue;
     }
@@ -853,7 +853,7 @@ public class GameManagerGoldKingZ : BasePlugin
                 return HookResult.Continue;
             }
 
-        if (Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 2)
+        if (Configs.GetConfigData().Ignore_DisconnectMessagesMode == 2)
         {
             if (Globals.Remove_Icon.ContainsKey(player.SteamID))
             {
@@ -936,45 +936,6 @@ public class GameManagerGoldKingZ : BasePlugin
                 CounterStrikeSharp.API.Modules.Timers.Timer timer = RemoveDeadBody(player);
                 Globals.TimerRemoveDeadBody.Add(player, timer);
             }
-        }
-
-        if(Configs.GetConfigData().AutoCleanDropWeaponsMode == 2)
-        {
-            Server.NextFrame(() =>
-            {
-                AddTimer(Configs.GetConfigData().Mode2_TimeXSecsDelayClean, () =>
-                {
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("1"))
-                    {
-                        Helper.RemoveWeapons();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("2"))
-                    {
-                        Helper.RemoveGrenades();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("3"))
-                    {
-                        Helper.RemoveDefuserKit();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("4"))
-                    {
-                        Helper.RemoveTaser();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("5"))
-                    {
-                        Helper.RemoveHealthShot();
-                    }
-
-                    if (Configs.GetConfigData().AutoCleanTheseDroppedWeaponsOnly.Contains("6"))
-                    {
-                        Helper.RemoveKnifes();
-                    }
-                },TimerFlags.STOP_ON_MAPCHANGE);
-            });
         }
 
         var Attacker = @event.Attacker;
@@ -1277,7 +1238,7 @@ public class GameManagerGoldKingZ : BasePlugin
     {
         if (@event == null) return HookResult.Continue;
 
-        if (Configs.GetConfigData().IgnoreDefaultJoinTeamMessages)
+        if (Configs.GetConfigData().Ignore_JoinTeamMessages)
         {
             info.DontBroadcast = true;
         }
@@ -1314,7 +1275,7 @@ public class GameManagerGoldKingZ : BasePlugin
     {
         if (@event == null) return HookResult.Continue;
 
-        if (Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 1 || Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 2)
+        if (Configs.GetConfigData().Ignore_DisconnectMessagesMode == 1 || Configs.GetConfigData().Ignore_DisconnectMessagesMode == 2)
         {
             info.DontBroadcast = true;
         }
@@ -1324,7 +1285,7 @@ public class GameManagerGoldKingZ : BasePlugin
         if (player == null || !player.IsValid || player.IsBot || player.IsHLTV) return HookResult.Continue;
         var playerid = player.SteamID;
 
-        if (Configs.GetConfigData().IgnoreDefaultDisconnectMessagesMode == 2 )
+        if (Configs.GetConfigData().Ignore_DisconnectMessagesMode == 2 )
         {
             if (!Globals.Remove_Icon.ContainsKey(playerid))
             {
@@ -1415,7 +1376,6 @@ public class GameManagerGoldKingZ : BasePlugin
         {
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
         }
-        
         Helper.ClearVariables();
     }
 }
