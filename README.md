@@ -2,7 +2,7 @@
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
 ***
-# [CS2] Game-Manager-GoldKingZ (2.0.6)
+# [CS2] Game-Manager-GoldKingZ (2.0.7)
 
 ### Block/Hide Unnecessaries In Game
 
@@ -60,9 +60,6 @@
   //Disable Radar
   "DisableRadar": false,
 
-  //Disable Cash Awards And Money HUD
-  "DisableCashAwardsAndMoneyHUD": false,
-
   //Disable Fall Damage
   "DisableFallDamage": false,
 
@@ -71,7 +68,6 @@
 
   //Disable C4 ( Will Remove C4 )
   "DisableC4": false,
-
 
   //Disable Blood And HeadShot Spark Decals/Effects
   "DisableBloodAndHsSpark": false,
@@ -138,12 +134,6 @@
   "Toggle_AutoRemovePlayerMySqlOlderThanXDays": 7,
 
 //----------------------------[ ↓ Default CS2 Sounds ↓ ]---------------------------------
-  
-  //Disable MPV Sound At End
-  "DisableMPVSound": false,
-
-  //Disable Jump Land Sound
-  "DisableJumpLandSound": false,
 
   //Make All Gun Sound:
   //(1) = Completely Mute
@@ -157,9 +147,18 @@
   "Mode4_Sounds_GunShots_sound_type": 9,
   "Mode4_Sounds_GunShots_item_def_index": 61,
 
+  //Mute MVP Sounds
+  "Sounds_MuteMVP": false,
+
+  //Mute Jump Land Sounds
+  "Sounds_MuteJumpLand": false,
+
   //(1) = Mute Knife Stab
   //(2) = Mute Knife Stab Only If Stab TeamMates
   "Sounds_MuteKnifesMode": 0,
+
+  //Mute Players FootSteps Sounds
+  "Sounds_MutePlayersFootSteps": false,
 
   //Mute HeadShot Hit Sounds
   "Sounds_MuteHeadShot": false,
@@ -187,32 +186,39 @@
   //H = Smoke And Incendiary Grenade
   //I = HE Grenade
   //J = Molotov
-  //Example How to Use "Sounds_MuteDropWeapons": "abcdef"
+  //K = Knife
+  //Example How to Use "Sounds_MuteDropWeapons": "ABCDEF"
   "Sounds_MuteDropWeapons": "",
 
 //----------------------------[ ↓ Default CS2 Messages ↓ ]-------------------------------
 
-  //Ignore Default Bomb Planted Announce
-  "IgnoreDefaultBombPlantedAnnounce": false,
+  //Ignore Bomb Planted HUD Messages
+  "Ignore_BombPlantedHUDMessages": false,
 
-  //Ignore Default TeamMate Attack Messages
-  "IgnoreDefaultTeamMateAttackMessages": false,
+  //Ignore TeamMate Attack Messages
+  "Ignore_TeamMateAttackMessages": false,
 
-  //Ignore Default Awards Money Messages
-  "IgnoreDefaultAwardsMoneyMessages": false,
+  //Ignore Awards Money Messages
+  "Ignore_AwardsMoneyMessages": false,
 
-  //Ignore Default Saved You By Player Messages
-  "IgnorePlayerSavedYouByPlayerMessages": false,
+  //Ignore Saved You By Player Messages
+  "Ignore_PlayerSavedYouByPlayerMessages": false,
 
-  //Ignore Default You Chicken Has Been Killed Messages
-  "IgnoreChickenKilledMessages": false,
+  //Ignore You Chicken Has Been Killed Messages
+  "Ignore_ChickenKilledMessages": false,
 
-  //Ignore Default Join Team Messages
-  "IgnoreDefaultJoinTeamMessages": false,
+  //Ignore Join Team Messages
+  "Ignore_JoinTeamMessages": false,
 
-  //(1) = Ignore Default Disconnect Messages
-  //(2) = Ignore Default Disconnect Messages + Remove Disconnect Icon In Killfeed
-  "IgnoreDefaultDisconnectMessagesMode": 0,
+  //Ignore Planting Bomb Messages
+  "Ignore_PlantingBombMessages": false,
+
+  //Ignore Defusing Bomb Messages
+  "Ignore_DefusingBombMessages": false,
+
+  //(1) = Ignore Disconnect Messages
+  //(2) = Ignore Disconnect Messages + Remove Disconnect Icon In Killfeed
+  "Ignore_DisconnectMessagesMode": 0,
 
 //----------------------------[ ↓ Custom Messages ↓ ]------------------------------------
 
@@ -228,29 +234,30 @@
 
 //----------------------------[ ↓ Auto Clean Drop Weapons ↓ ]----------------------------
 
-  //(1) = Clear Only On Every Round Start With Delay Clear Mode1_TimeXSecsDelayClean
-  //(2) = Clear Only On Every Spawn Or Death With Delay Clear Mode2_TimeXSecsDelayClean
-  //(3) = Clear On AnyTime With Mode3_EveryTimeXSecs
-  "AutoCleanDropWeaponsMode": 0,
+  //(1) = Clear AutoClean_TheseDroppedWeaponsOnly ((All Weapons In The Map)) When AutoClean_WhenXWeaponsInGround
+  //(2) = Clear AutoClean_TheseDroppedWeaponsOnly ((Oldest Weapon Only In The Map)) When AutoClean_WhenXWeaponsInGround
+  //(3) = Clear AutoClean_TheseDroppedWeaponsOnly ((Newest Weapon Only In The Map)) When AutoClean_WhenXWeaponsInGround
+  "AutoClean_DropWeaponsMode": 0,
 
-  //Whats Inside AutoCleanDropWeapons will be Auto Deleted
+  //Whats Inside AutoClean_TheseDroppedWeaponsOnly will be Auto Deleted
   //Add Many As You Like
-  //1 = Weapons (AK,M4,Pistol, etc...)
-  //2 = Grenades (Smoke,Molly, etc...)
-  //3 = DefuserKit
-  //4 = Taser
-  //5 = HealthShot
-  //6 = Knifes
-  "AutoCleanTheseDroppedWeaponsOnly": "1,2,3",
+  //A = (weapon_awp, weapon_g3sg1, weapon_scar20, weapon_ssg08)
+  //B = (weapon_ak47, weapon_aug, weapon_famas, weapon_galilar, weapon_m4a1_silencer, weapon_m4a1, weapon_sg556)
+  //C = (weapon_m249, weapon_negev)
+  //D = (weapon_mag7, weapon_nova, weapon_sawedoff, weapon_xm1014)
+  //E = (weapon_bizon, weapon_mac10, weapon_mp5sd, weapon_mp7, weapon_mp9, weapon_p90, weapon_ump45)
+  //F = (weapon_cz75a, weapon_deagle, weapon_elite, weapon_fiveseven, weapon_glock, weapon_hkp2000, weapon_p250, weapon_revolver, weapon_tec9, weapon_usp_silencer)
+  //G = (weapon_smokegrenade, weapon_hegrenade, weapon_flashbang, weapon_decoy, weapon_molotov, weapon_incgrenade)
+  //H = (item_defuser, item_cutters)
+  //I = (weapon_taser)
+  //J = (weapon_healthshot)
+  //K = (weapon_knife, weapon_knife_t)
+  //ANY = Means All Weapons
+  //Or You Can Add Weapon Name Manually Like This (Example "AutoCleanTheseDroppedWeaponsOnly": "A,B,weapon_taser,weapon_healthshot,weapon_knife")
+  "AutoClean_TheseDroppedWeaponsOnly": "A,B,C,D,weapon_hegrenade",
 
-  //If AutoCleanDropWeaponsMode 1 How Many In Secs
-  "Mode1_TimeXSecsDelayClean": 10,
-
-  //If AutoCleanDropWeaponsMode 2 How Many In Secs
-  "Mode2_TimeXSecsDelayClean": 10,
-
-  //If AutoCleanDropWeaponsMode 3 How Many In Secs
-  "Mode3_EveryTimeXSecs": 10,
+  //Do AutoClean_DropWeaponsMode Action When X Weapons In Ground
+  "AutoClean_WhenXWeaponsInGround": "1,2,3",
 
 //----------------------------[ ↓ Debug ↓ ]----------------------------------------------
   
@@ -312,6 +319,21 @@
 
 ## .:[ Change Log ]:.
 ```
+(2.0.7)
+-Some CleanUp
+-Added Sounds_MutePlayersFootSteps
+-Added Sounds_MuteDropWeapons (K) Drop Knife Sound
+-Added Ignore_PlantingBombMessages
+-Added Ignore_DefusingBombMessages
+-Added AutoCleanDropWeaponsOnXWeaponsInGround
+-Remove Mode1_TimeXSecsDelayClean
+-Remove Mode2_TimeXSecsDelayClean
+-Remove Mode3_EveryTimeXSecs
+-Rework On AutoCleanTheseDroppedWeaponsOnly
+-Rework On AutoCleanDropWeaponsMode 1
+-Rework On AutoCleanDropWeaponsMode 2
+-Rework On AutoCleanDropWeaponsMode 3
+
 (2.0.6)
 -Fix Some Bugs
 -Fix DisableDeadBodyMode 3 System.ArgumentException: Value of '-1' is not valid for 'alpha'
