@@ -2,7 +2,7 @@
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
 ***
-# [CS2] Game-Manager-GoldKingZ (2.0.7)
+# [CS2] Game-Manager-GoldKingZ (2.0.8)
 
 ### Block/Hide Unnecessaries In Game
 
@@ -319,6 +319,10 @@
 
 ## .:[ Change Log ]:.
 ```
+(2.0.7)
+-Fix Bug On Bots Join ("System.ArgumentException: Player with slot X not found")
+-Fix Nade Locations {1} In Lang
+
 (2.0.7)
 -Some CleanUp
 -Added Sounds_MutePlayersFootSteps
