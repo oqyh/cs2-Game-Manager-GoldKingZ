@@ -12,14 +12,12 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-
 namespace Game_Manager_GoldKingZ;
 
-[MinimumApiVersion(276)]
 public class GameManagerGoldKingZ : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.7";
+    public override string ModuleVersion => "2.0.8";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     internal static IStringLocalizer? Stringlocalizer;
@@ -61,6 +59,7 @@ public class GameManagerGoldKingZ : BasePlugin
             }
             return HookResult.Continue;
         }, HookMode.Pre);
+
 
         HookUserMessage(208, um =>
         {
@@ -611,8 +610,6 @@ public class GameManagerGoldKingZ : BasePlugin
         if (Configs.GetConfigData().CustomThrowNadeMessagesMode == 0 || player == null || !player.IsValid || Configs.GetConfigData().CustomThrowNadeMessagesMode == 1 && player.IsBot)return HookResult.Continue;
         
         Server.NextFrame(() => {
-        
-            
             var playerteam = player.TeamNum;
             var allplayers = Helper.GetPlayersController(true,false);
 
@@ -623,14 +620,15 @@ public class GameManagerGoldKingZ : BasePlugin
                 var otherteam = players.TeamNum;
                 bool sameTeam = playerteam == otherteam;
                 bool teammatesAreEnemies = ConVar.Find("mp_teammates_are_enemies")!.GetPrimitiveValue<bool>();
-                var Nadelocation = players.PlayerPawn.Value.LastPlaceName;
+                
+                string Nadelocation = player?.PlayerPawn?.Value?.LastPlaceName ?? "Unknown";
 
                 if (sameTeam && !teammatesAreEnemies) {
-                    Helper.SendGrenadeMessage(nade, players, player.PlayerName, Nadelocation.ToString());
+                    Helper.SendGrenadeMessage(nade, players, player!.PlayerName, Nadelocation.ToString());
                 } else if (sameTeam && player != players ) {
                     return;
                 } else if (sameTeam && (Configs.GetConfigData().CustomThrowNadeMessagesMode == 3 || Configs.GetConfigData().CustomThrowNadeMessagesMode == 4)) {
-                    Helper.SendGrenadeMessage(nade, players, player.PlayerName, Nadelocation.ToString());
+                    Helper.SendGrenadeMessage(nade, players, player!.PlayerName, Nadelocation!.ToString());
                 }
             });
         });
