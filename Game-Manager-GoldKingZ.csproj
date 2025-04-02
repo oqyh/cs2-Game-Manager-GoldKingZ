@@ -14,7 +14,6 @@
   <ItemGroup>
     <PackageReference Include="CounterStrikeSharp.API" Version="*" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="*" />
     <PackageReference Include="MySqlConnector" Version="2.3.7" />
   </ItemGroup>
 

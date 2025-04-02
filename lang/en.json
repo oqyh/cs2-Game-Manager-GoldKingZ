@@ -1,17 +1,6 @@
 {
-	"hidechat.not.allowed": "{green}Gold KingZ {grey}| {darkred}Toggle Hide Chat HUD Is For {lime}VIPS {darkred}Only",
 	"hidechat.enabled.warning": "{darkred}-------------------------------------------------------{nextline}{green}Gold KingZ {grey}| {darkred}Chat HUD Will Be Hidden After {lime}{0} Secs {nextline}{green}Gold KingZ {grey}| {darkred}Please Open The {lime}Chat Box {darkred}On Your Keyboard To See Chat Temporarily{nextline}{darkred}-------------------------------------------------------",
-	"hidechat.enabled": "{green}Gold KingZ {grey}| Chat HUD Now {lime}Visible {grey}Type {yellow}!hidechat {grey}/ {yellow}!hc {grey}To Toggle On/Off",
-	"hidechat.disabled": "{green}Gold KingZ {grey}| Chat HUD Now {darkred}Hidden {grey}Type {yellow}!hidechat {grey}/ {yellow}!hc {grey}To Toggle On/Off",
 	
-	"hidelegs.not.allowed": "{green}Gold KingZ {grey}| {darkred}Toggle Hide Legs Is For {lime}VIPS {darkred}Only",
-	"hidelegs.enabled": "{green}Gold KingZ {grey}| Legs Now {lime}Visible {grey}Type {yellow}!hidelegs {grey}/ {yellow}!hideleg {grey}/ {yellow}!hl {grey}To Toggle On/Off",
-	"hidelegs.disabled": "{green}Gold KingZ {grey}| Legs Now {darkred}Hidden {grey}Type {yellow}!hidelegs {grey}/ {yellow}!hideleg {grey}/ {yellow}!hl {grey}To Toggle On/Off",
-
-	"hideweapons.not.allowed": "{green}Gold KingZ {grey}| {darkred}Toggle Hide Weapons HUD Is For {lime}VIPS {darkred}Only",
-	"hideweapons.enabled": "{green}Gold KingZ {grey}| Weapons HUD Now {lime}Visible {grey}Type {yellow}!hideweapons {grey}/ {yellow}!hw {grey}To Toggle On/Off",
-	"hideweapons.disabled": "{green}Gold KingZ {grey}| Weapons HUD Now {darkred}Hidden {grey}Type {yellow}!hideweapons {grey}/ {yellow}!hw {grey}To Toggle On/Off",
-
 	"custom.jointeam.spec": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Spectators",
 	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
 	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
