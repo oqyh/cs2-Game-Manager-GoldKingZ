@@ -1,0 +1,64 @@
+{
+	//==========================
+	//        Colors
+	//==========================
+	//{Yellow} {Gold} {Silver} {Blue} {DarkBlue} {BlueGrey} {Magenta} {LightRed}
+	//{LightBlue} {Olive} {Lime} {Red} {Purple} {Grey}
+	//{Default} {White} {Darkred} {Green} {LightYellow}
+	//==========================
+	//        Other
+	//==========================
+	//{0} = Player Name
+	//{1} = Player Location
+	//{2} = Player Message
+	//@Player Flag
+	//#Player Group
+	//!Player SteamID
+	//==========================
+	
+    "ANY":
+	{
+        "CT_ALIVE_ALL": "{LightYellow}[ALL] {darkblue}{0}{white}: {grey}{2}",
+        "CT_ALIVE_TEAM": "{LightYellow}[CT] {darkblue}{0} {green}@{1}{white}: {grey}{2}",
+        "CT_DEAD_ALL": "{LightYellow}[ALL] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+        "CT_DEAD_TEAM": "{LightYellow}[CT] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+        
+        "T_ALIVE_ALL": "{LightYellow}[ALL] {orange}{0}{white}: {grey}{2}",
+        "T_ALIVE_TEAM": "{LightYellow}[T] {orange}{0} {green}@{1}{white}: {grey}{2}",
+        "T_DEAD_ALL": "{LightYellow}[ALL] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+        "T_DEAD_TEAM": "{LightYellow}[T] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+        
+        "SPEC_ALL": "{LightYellow}[ALL] {Olive}{0}{white}: {grey}{2}",
+        "SPEC_TEAM": "{LightYellow}[SPEC] {Olive}{0}{white}: {grey}{2}"
+    },
+    "@css/admins,#css/admins":
+	{
+        "CT_ALIVE_ALL": "{Magenta}[ADMIN-ALL] {darkblue}{0}{white}: {grey}{2}",
+        "CT_ALIVE_TEAM": "{Magenta}[ADMIN-CT] {darkblue}{0} {green}@{1}{white}: {grey}{2}",
+        "CT_DEAD_ALL": "{Magenta}[ADMIN-ALL] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+        "CT_DEAD_TEAM": "{Magenta}[ADMIN-CT] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+        
+        "T_ALIVE_ALL": "{Magenta}[ADMIN-ALL] {orange}{0}{white}: {grey}{2}",
+        "T_ALIVE_TEAM": "{Magenta}[ADMIN-T] {orange}{0} {green}@{1}{white}: {grey}{2}",
+        "T_DEAD_ALL": "{Magenta}[ADMIN-ALL] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+        "T_DEAD_TEAM": "{Magenta}[ADMIN-T] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+        
+        "SPEC_ALL": "{Magenta}[ADMIN-ALL] {grey}{0}{white}: {grey}{2}",
+        "SPEC_TEAM": "{Magenta}[ADMIN-SPEC] {grey}{0}{white}: {grey}{2}"
+    },
+	"!76561198206086993,!76561198974936845":
+	{
+        "CT_ALIVE_ALL": "{darkred}[OWNER-ALL] {darkblue}{0}{white}: {grey}{2}",
+        "CT_ALIVE_TEAM": "{darkred}[OWNER-CT] {darkblue}{0} {green}@{1}{white}: {grey}{2}",
+        "CT_DEAD_ALL": "{darkred}[OWNER-ALL] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+        "CT_DEAD_TEAM": "{darkred}[OWNER-CT] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+        
+        "T_ALIVE_ALL": "{darkred}[OWNER-ALL] {orange}{0}{white}: {grey}{2}",
+        "T_ALIVE_TEAM": "{darkred}[OWNER-T] {orange}{0} {green}@{1}{white}: {grey}{2}",
+        "T_DEAD_ALL": "{darkred}[OWNER-ALL] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+        "T_DEAD_TEAM": "{darkred}[OWNER-T] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+        
+        "SPEC_ALL": "{darkred}[OWNER-ALL] {purple}{0}{white}: {grey}{2}",
+        "SPEC_TEAM": "{darkred}[OWNER-SPEC] {purple}{0}{white}: {grey}{2}"
+    }
+}
