@@ -107,6 +107,17 @@ Block/Hide Unnecessaries In Game
 
 </details>
 
+<details>
+<summary><b>Custom Messages Config</b> (Click to expand 🔽)</summary>
+
+| Property | Description | Values | Required |  
+|----------|-------------|--------|----------|
+| `Custom_JoinTeamMessages` | Customize team join messages | `0`-No<br>`1`-Yes (Exclude bots)<br>`2`-Yes (Include bots) | - |
+| `Custom_ThrowNadeMessages` | Customize grenade throw messages | `0`-No<br>`1`-Yes (Exclude bots)<br>`2`-Yes (Include bots)<br>`3`-Hide when (mp_teammates_are_enemies true)<br>`4`-Show when (mp_teammates_are_enemies true) | - |
+| `Custom_ChatMessages` | Enable custom chat messages (via `chat_processor.json`) | `true`/`false` | - |
+| `Custom_ChatMessages_ExcludeStartWith` | Exclude chat messages starting with these prefixes | Array of strings (e.g., `"!"`, `"."`, `"/"`, `"rtv"`) | `Custom_ChatMessages=true` |
+
+</details>
 
 <details>
 <summary><b>Auto Clean Drop Weapons Config</b> (Click to expand 🔽)</summary>
