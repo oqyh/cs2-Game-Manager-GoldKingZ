@@ -1,0 +1,11 @@
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\bin\Release\addons\counterstrikesharp\plugins\Game-Manager-GoldKingZ\lang\en.json
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\bin\Release\addons\counterstrikesharp\plugins\Game-Manager-GoldKingZ\lang\zh-Hans.json
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\bin\Release\addons\counterstrikesharp\plugins\Game-Manager-GoldKingZ\Newtonsoft.Json.dll
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\bin\Release\addons\counterstrikesharp\plugins\Game-Manager-GoldKingZ\Game-Manager-GoldKingZ.deps.json
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\bin\Release\addons\counterstrikesharp\plugins\Game-Manager-GoldKingZ\Game-Manager-GoldKingZ.dll
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\obj\Release\Game-Manager-GoldKingZ.csproj.AssemblyReference.cache
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\obj\Release\Game-Manager-GoldKingZ.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\obj\Release\Game-Manager-GoldKingZ.csproj.CoreCompileInputs.cache
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\obj\Release\Game-Manager-GoldKingZ.dll
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\obj\Release\refint\Game-Manager-GoldKingZ.dll
+C:\Users\micka\Documents\GitHub\cs2-Game-Manager-GoldKingZ\obj\Release\ref\Game-Manager-GoldKingZ.dll
