@@ -2639,7 +2639,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "CounterStrikeSharp.API >= *",
+      "CounterStrikeSharp.API >= 1.0.342",
       "MySqlConnector >= 2.3.7",
       "Newtonsoft.Json >= 13.0.3"
     ]
@@ -2689,7 +2689,7 @@
         "dependencies": {
           "CounterStrikeSharp.API": {
             "target": "Package",
-            "version": "[*, )"
+            "version": "[1.0.342, )"
           },
           "MySqlConnector": {
             "target": "Package",
