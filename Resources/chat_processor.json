@@ -28,19 +28,17 @@
     "SPEC_ALL": "{LightYellow}[ALL] {Olive}{0}{white}: {grey}{2}",
     "SPEC_TEAM": "{LightYellow}[SPEC] {Olive}{0}{white}: {grey}{2}"
   },
-  "SteamIDs:  | Flags: @css/admins,@css/admin,admins | Groups: #css/admins,#css/admin,admins ": {
-	"CT_ALIVE_ALL": "{Magenta}[ADMIN-ALL] {darkblue}{0}{white}: {grey}{2}",
-	"CT_ALIVE_TEAM": "{Magenta}[ADMIN-CT] {darkblue}{0} {green}@{1}{white}: {grey}{2}",
-	"CT_DEAD_ALL": "{Magenta}[ADMIN-ALL] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
-	"CT_DEAD_TEAM": "{Magenta}[ADMIN-CT] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
-
-	"T_ALIVE_ALL": "{Magenta}[ADMIN-ALL] {orange}{0}{white}: {grey}{2}",
-	"T_ALIVE_TEAM": "{Magenta}[ADMIN-T] {orange}{0} {green}@{1}{white}: {grey}{2}",
-	"T_DEAD_ALL": "{Magenta}[ADMIN-ALL] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
-	"T_DEAD_TEAM": "{Magenta}[ADMIN-T] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
-
-	"SPEC_ALL": "{Magenta}[ADMIN-ALL] {grey}{0}{white}: {grey}{2}",
-	"SPEC_TEAM": "{Magenta}[ADMIN-SPEC] {grey}{0}{white}: {grey}{2}"
+  "SteamIDs:  | Flags: @css/admins,@css/admin,admins | Groups: #css/admins,#css/admin,admins": {
+    "CT_ALIVE_ALL": "{Magenta}[ADMIN-ALL] {darkblue}{0}{white}: {grey}{2}",
+    "CT_ALIVE_TEAM": "{Magenta}[ADMIN-CT] {darkblue}{0} {green}@{1}{white}: {grey}{2}",
+    "CT_DEAD_ALL": "{Magenta}[ADMIN-ALL] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+    "CT_DEAD_TEAM": "{Magenta}[ADMIN-CT] {darkblue}{0} {grey}[☠︎]{white}: {grey}{2}",
+    "T_ALIVE_ALL": "{Magenta}[ADMIN-ALL] {orange}{0}{white}: {grey}{2}",
+    "T_ALIVE_TEAM": "{Magenta}[ADMIN-T] {orange}{0} {green}@{1}{white}: {grey}{2}",
+    "T_DEAD_ALL": "{Magenta}[ADMIN-ALL] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+    "T_DEAD_TEAM": "{Magenta}[ADMIN-T] {orange}{0} {grey}[☠︎]{white}: {grey}{2}",
+    "SPEC_ALL": "{Magenta}[ADMIN-ALL] {grey}{0}{white}: {grey}{2}",
+    "SPEC_TEAM": "{Magenta}[ADMIN-SPEC] {grey}{0}{white}: {grey}{2}"
   },
   "SteamIDs: 76561198206086993,STEAM_0:1:507335558 | Flags:  | Groups: ": {
     "CT_ALIVE_ALL": "{darkred}[OWNER-ALL] {darkblue}{0}{white}: {grey}{2}",
