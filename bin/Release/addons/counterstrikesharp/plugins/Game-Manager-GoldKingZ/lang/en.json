@@ -1,0 +1,14 @@
+{
+	"hidechat.enabled.warning": "{darkred}-------------------------------------------------------{nextline}{green}Gold KingZ {grey}| {darkred}Chat HUD Will Be Hidden After {lime}{0} Secs {nextline}{green}Gold KingZ {grey}| {darkred}Please Open The {lime}Chat Box {darkred}On Your Keyboard To See Chat Temporarily{nextline}{darkred}-------------------------------------------------------",
+	
+	"custom.jointeam.spec": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Spectators",
+	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
+	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
+
+	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {red}☄ HE Grenade! ☄",
+	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {Olive}☁︎ Smoke! ☁︎",
+	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {orange}♨ Molotov! ♨",
+	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
+	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {orange} ♨ Incendiary! ♨",
+	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {grey}✦ Decoy! ✦"
+}

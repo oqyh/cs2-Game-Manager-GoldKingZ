@@ -1,0 +1,14 @@
+{
+	"hidechat.enabled.warning": "{darkred}-------------------------------------------------------{nextline}{green}Gold KingZ {grey}| {darkred}聊天 HUD 将在 {lime}{0} 秒后隐藏 {nextline}{green}Gold KingZ {grey}| {darkred}请在键盘上打开 {lime}聊天框 {darkred}以暂时查看聊天{nextline}{darkred}-------------------------------------------------------",
+
+	"custom.jointeam.spec": "{green}Gold KingZ {grey}| {purple}{0} {grey}正在加入 {lime}观察者",
+	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}正在加入 {lime}恐怖分子",
+	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}正在加入 {lime}反恐精英",
+	
+	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}投掷了 {red}☄ 高爆手雷！☄",
+	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}投掷了 {Olive}☁︎ 烟雾弹！☁︎",
+	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {grey}投掷了 {orange}♨ 燃烧瓶！♨",
+	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {grey}投掷了 {Blue}˗ˏˋ★ 闪光弹！★ˎˊ˗",
+	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {grey}投掷了 {orange} ♨ 燃烧弹！♨",
+	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {grey}投掷了 {grey}✦ 诱饵弹！✦"
+}
