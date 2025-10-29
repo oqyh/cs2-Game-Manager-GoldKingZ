@@ -17,11 +17,21 @@ Block/Hide Unnecessaries In Game
 ---
 
 ## 📦 Dependencies
+
 [![Metamod:Source](https://img.shields.io/badge/Metamod:Source-2d2d2d?logo=sourceengine)](https://www.sourcemm.net)
 
 [![CounterStrikeSharp](https://img.shields.io/badge/CounterStrikeSharp-83358F)](https://github.com/roflmuffin/CounterStrikeSharp)
 
+
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)](https://dev.mysql.com/doc/connector-net/en/) [Included in zip]
+
 [![JSON](https://img.shields.io/badge/JSON-000000?logo=json)](https://www.newtonsoft.com/json) [Included in zip]
+
+[![GeoLite2-City.mmdb](https://img.shields.io/badge/GeoLite2--City.mmdb-181717?logo=github&logoColor=white)](https://github.com/P3TERX/GeoLite.mmdb) [Included in zip]
+
+[![MaxMind.Db](https://img.shields.io/badge/MaxMind.Db-2A4365?logo=database&logoColor=white)](https://www.nuget.org/packages/MaxMind.Db) [Included in zip]
+
+[![MaxMind.GeoIP2](https://img.shields.io/badge/MaxMind.GeoIP2-2A4365?logo=database&logoColor=white)](https://www.nuget.org/packages/MaxMind.GeoIP2) [Included in zip]
 
 ---
 
@@ -37,9 +47,14 @@ Block/Hide Unnecessaries In Game
 
 ## ⚙️ Configuration
 
-> [!NOTE]
-> Located In ..\Game-Manager-GoldKingZ\config\config.json                                           
->
+> [!IMPORTANT]
+> **Main Configuration**  
+> `../Game-Manager-GoldKingZ/config/config.json`  
+> **Chat Configuration**  
+> `../Game-Manager-GoldKingZ/config/chat_processor.json`
+
+
+## 🛠️ `config/config.json`
 
 <details open>
 <summary><b>Main Config</b> (Click to expand 🔽)</summary>
@@ -239,6 +254,70 @@ Block/Hide Unnecessaries In Game
 |----------|-------------|--------|----------|
 | `AutoUpdateGeoLocation` | Auto update GeoLocation data | `true`/`false` | - |
 | `EnableDebug` | Enable Debug Mode | `0`-No<br>`1`-Debug everything<br>`2`-Custom_MuteSounds only<br>`3`-Sounds_MuteGunShots only<br>`4`-Ignore_Custom messages only | - |
+
+</details>
+
+## 🛠️ `config/chat_processor.json`
+
+<details open>
+<summary><b>Chat Processor Config</b> (Click to expand 🔽)</summary>
+
+## Configuration Placeholders
+| Placeholder | Description |
+|-------------|-------------|
+| `{ClanTag_ScoreBoard}` | Clan Tag At ScoreBoard |
+| `{ClanTag_Chat}` | Clan Tag At Chat |
+| `{CT_ALIVE_ALL}` | CT Alive To All Message |
+| `{CT_ALIVE_TEAM}` | CT Alive To TeamSide Message |
+| `{CT_DEAD_ALL}` | CT Dead To All Message |
+| `{CT_DEAD_TEAM}` | CT Dead To TeamSide Message |
+| `{T_ALIVE_ALL}` | T Alive To All Message |
+| `{T_ALIVE_TEAM}` | T Alive To TeamSide Message |
+| `{T_DEAD_ALL}` | T Dead To All Message |
+| `{T_DEAD_TEAM}` | T Dead To TeamSide Message |
+| `{SPEC_ALL}` | Spectator To All Message |
+| `{SPEC_TEAM}` | Spectator To TeamSide Message |
+| `{BotTakeOver}` | Bot Take Over Message |
+| `{JoinTeam_SPEC}` | Join Spectators Message |
+| `{JoinTeam_CT}` | Join Counter-Terrorists Message |
+| `{JoinTeam_T}` | Join Terrorists Message |
+| `{Nade_Hegrenade}` | HE Grenade Throw Message |
+| `{Nade_Smokegrenade}` | Smoke Grenade Throw Message |
+| `{Nade_Molotov}` | Molotov Throw Message |
+| `{Nade_Incgrenade}` | Incendiary Grenade Throw Message |
+| `{Nade_Flashbang}` | Flashbang Throw Message |
+| `{Nade_Decoy}` | Decoy Grenade Throw Message |
+
+## Message Placeholders
+| Placeholder | Description |
+|-------------|-------------|
+| `{PLAYER_NAME}` | Player Name |
+| `{BOT_NAME}` | BOT Controlled Name |
+| `{ClanTag_ScoreBoard}` | Clan Tag At ScoreBoard |
+| `{ClanTag_Chat}` | Clan Tag At Chat |
+| `{PLAYER_LOCATION}` | Player Location |
+| `{PLAYER_MSG}` | Player Message |
+
+## Available Colors
+| Color | Code | Color | Code |
+|-------|------|-------|------|
+| Default | `{Default}` | White | `{White}` |
+| Darkred | `{Darkred}` | Green | `{Green}` |
+| LightYellow | `{LightYellow}` | LightBlue | `{LightBlue}` |
+| Olive | `{Olive}` | Lime | `{Lime}` |
+| Red | `{Red}` | LightPurple | `{LightPurple}` |
+| Purple | `{Purple}` | Grey | `{Grey}` |
+| Yellow | `{Yellow}` | Gold | `{Gold}` |
+| Silver | `{Silver}` | Blue | `{Blue}` |
+| DarkBlue | `{DarkBlue}` | BlueGrey | `{BlueGrey}` |
+| Magenta | `{Magenta}` | LightRed | `{LightRed}` |
+| Orange | `{Orange}` | Team Color | `{team_color}` |
+
+**Special Color Notes:**
+- `{team_color}` = Dynamically changes color based on team:
+  - Spectator = LightPurple
+  - Terrorist = Orange  
+  - Counter-Terrorist = LightBlue
 
 </details>
 
