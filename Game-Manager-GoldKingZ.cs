@@ -1,742 +1,609 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes;
+using Game_Manager_GoldKingZ.Config;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Timers;
+using System.Text.RegularExpressions;
+using System.Text;
+using Microsoft.Extensions.Localization;
 using CounterStrikeSharp.API.Modules.Cvars;
+using MySqlConnector;
+using CounterStrikeSharp.API.Modules.Admin;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Modules.Menu;
+using CounterStrikeSharp.API.Modules.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
-using Game_Manager_GoldKingZ.Config;
+using CounterStrikeSharp.API.Core.Capabilities;
+using CounterStrikeSharp.API.Modules.Timers;
+using System.Diagnostics;
+using System.IO;
+using CounterStrikeSharp.API.ValveConstants.Protobuf;
+using System.Xml.Linq;
+using CounterStrikeSharp.API.Core.Translations;
+using System.Globalization;
+
 
 namespace Game_Manager_GoldKingZ;
 
-public class GameManagerGoldKingZ : BasePlugin
+public class MainPlugin : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.0.9";
+    public override string ModuleVersion => "2.1.0";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
-    public static GameManagerGoldKingZ Instance { get; set; } = new();
+    public static MainPlugin Instance { get; set; } = new();
     public Globals g_Main = new();
-    private readonly PlayerChat _PlayerChat = new();
-
+    public readonly Game_Listeners Game_Listeners = new();
+    public readonly Game_UserMessages Game_UserMessages = new();
+    public readonly Game_Hook Game_Hook = new();
     public override void Load(bool hotReload)
     {
         Instance = this;
         Configs.Load(ModuleDirectory);
 
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await Helper.DownloadMissingFiles();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DownloadMissingFiles failed: {ex}");
-            }
-        });
-
+        _ = Task.Run(Helper.DownloadMissingFilesAsync);
+        Helper.RemoveRegisterCommandsAndHooks();
         Helper.LoadJson();
+        Helper.RegisterCommandsAndHooks(true);
+        Helper.ExectueCommands();
+        Helper.StartTimer();
+
+        RegisterListener<Listeners.OnClientAuthorized>(OnClientAuthorized);
+        RegisterListener<Listeners.OnMapStart>(OnMapStart);
+        RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
 
         RegisterEventHandler<EventRoundStart>(OnRoundStart);
         RegisterEventHandler<EventPlayerSpawn>(OnEventPlayerSpawn);
         RegisterEventHandler<EventPlayerDeath>(OnEventPlayerDeath, HookMode.Pre);
         RegisterEventHandler<EventRoundMvp>(OnEventRoundMvp, HookMode.Pre);
-        RegisterEventHandler<EventBombPlanted>(OnEventBombPlanted, HookMode.Pre);
         RegisterEventHandler<EventPlayerConnectFull>(OnEventPlayerConnectFull);
-        RegisterEventHandler<EventGrenadeThrown>(OnEventGrenadeThrown);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect, HookMode.Pre);
+        RegisterEventHandler<EventBombPlanted>(OnEventBombPlanted, HookMode.Pre);
         RegisterEventHandler<EventPlayerTeam>(OnEventPlayerTeam, HookMode.Pre);
-        RegisterListener<Listeners.OnMapStart>(OnMapStart);
-        RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
+        RegisterEventHandler<EventGrenadeThrown>(OnEventGrenadeThrown);
+        RegisterEventHandler<EventBotTakeover>(OnEventBotTakeover);
 
-        if(Configs.GetConfigData().Custom_ChatMessages)
-        {
-            AddCommandListener("say", OnPlayerChat, HookMode.Post);
-            AddCommandListener("say_team", OnPlayerChatTeam, HookMode.Post);
-        }
-
-        if(Configs.GetConfigData().Custom_ChatMessages)
-        {
-            HookUserMessage(118, um =>
-            {
-                var entityindex = um.ReadInt("entityindex");
-                var player = Utilities.GetPlayerFromIndex(entityindex);
-                if (!player.IsValid() || player.IsBot) return HookResult.Continue;
-                Helper.AddPlayerToGlobal(player);
-                
-                var messagename = um.ReadString("messagename");
-                var playername = um.ReadString("param1");
-                var playermessage = um.ReadString("param2");
-
-                if(messagename.Equals("Cstrike_Chat_All") || messagename.Equals("Cstrike_Chat_CT_Loc") || messagename.Equals("Cstrike_Chat_AllDead")
-                || messagename.Equals("Cstrike_Chat_CT_Dead") || messagename.Equals("Cstrike_Chat_T_Loc") || messagename.Equals("Cstrike_Chat_T_Dead")
-                || messagename.Equals("Cstrike_Chat_AllSpec") || messagename.Equals("Cstrike_Chat_Spec"))
-                {
-                    if (Configs.GetConfigData().Custom_ChatMessages_ExcludeStartWith.Any(prefix => 
-                    playermessage.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        return HookResult.Continue;
-                    }
-
-                    if (g_Main.Player_Data.ContainsKey(player))
-                    {
-                        g_Main.Player_Data[player].Messagename = messagename;
-                    }
-                    um.Recipients.Clear();
-                }
-                return HookResult.Continue;
-            }, HookMode.Pre);
-        }
         
-        if(Configs.GetConfigData().Sounds_MuteKnifeStab == 2)
+
+        if (hotReload)
         {
-            VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
-        }
-        
-        if(Configs.GetConfigData().Ignore_PlantingBombMessages || Configs.GetConfigData().Ignore_DefusingBombMessages)
-        {
-            HookUserMessage(322, um =>
-            {
-                for (int i = 0; i < um.GetRepeatedFieldCount("params"); i++)
-                {
-                    var message = um.ReadString("params", i);
-                    if (Configs.GetConfigData().Ignore_PlantingBombMessages && message.Contains("Cstrike_TitlesTXT_Planting_Bomb") ||
-                        Configs.GetConfigData().Ignore_DefusingBombMessages && message.Contains("Cstrike_TitlesTXT_Defusing_Bomb"))
-                    {
-                        return HookResult.Stop;
-                    }
-                }
-                return HookResult.Continue;
-            }, HookMode.Pre);
-        }
-        
-        if(Configs.GetConfigData().Sounds_MuteKnifeStab > 0 || Configs.GetConfigData().Sounds_MuteHeadShot
-        || Configs.GetConfigData().Sounds_MuteBodyShot || Configs.GetConfigData().Sounds_MutePlayerDeathVoice
-        || Configs.GetConfigData().Sounds_MuteAfterDeathCrackling || Configs.GetConfigData().Sounds_MuteSwitchModeSemiToAuto
-        || !string.IsNullOrEmpty(Configs.GetConfigData().Sounds_MuteDropWeapons) || Configs.GetConfigData().AutoClean_Enable)
-        {
-            HookUserMessage(208, um =>
-            {
-                var soundevent = um.ReadUInt("soundevent_hash");
-
-                uint PlayerPOVScreen_Got_Damage_ClientSide = 3124768561;
-                uint Player_Got_Damage_ServerSide = 524041390;
-                uint Player_Got_Damage_ClientSide = 708038349;
-                uint Player_Got_Damage_FriendlyDamage_ServerSide = 427534867;
-
-                uint HeadShotHit_ClientSide = 2831007164;
-                uint HeadShotKill_ClientSide = 3535174312;
-                uint HeadShotHit_ServerSide = 3663896169;
-                uint HeadShotKill_ServerSide = 2310318859;
-
-                uint DeathScream_ServerSide = 46413566;
-                uint DeathScream_ClientSide = 1815352525;
-
-                uint AfterDeathCracklingSound_ClientSide = 2323025056;
-                uint AfterDeathCracklingSound_ServerSide = 3396420465;
-
-                uint Knife_Rightstab_BothSides = 3475734633;
-                uint Knife_leftstab_BothSides = 1769891506;
-                uint Knife_SwingAir_BothSides = 3634660983;
-                uint Knife_StabWall_BothSides = 2486534908;
-                uint SwitchToSemi_BothSides = 576815311;
-                
-                uint DropWeapon_C4_BothSides = 1346129716;
-                uint DropWeapon_Knife_BothSides = 3208928088;
-                uint DropWeapon_PistolAndTaser_BothSides = 1842263658;
-                uint DropWeapon_Shotguns_BothSides = 4003696900;
-                uint DropWeapon_SMGs_BothSides = 3003881917;
-                uint DropWeapon_AssaultRifles_BothSides = 449069384;
-                uint DropWeapon_Snipers_BothSides = 2125410722;
-                uint DropWeapon_FlashAndDecoy_BothSides = 95362054;
-                uint DropWeapon_SmokeAndInNade_BothSides = 910752207;
-                uint DropWeapon_HENade_BothSides = 1252397774;
-                uint DropWeapon_Molly_BothSides = 1601161479;
-
-                bool MuteKnife = Configs.GetConfigData().Sounds_MuteKnifeStab == 1 ?
-                soundevent == Knife_Rightstab_BothSides || soundevent == Knife_leftstab_BothSides || soundevent == Knife_SwingAir_BothSides || soundevent == Knife_StabWall_BothSides :
-                Configs.GetConfigData().Sounds_MuteKnifeStab == 2 ? g_Main.Player_Data.Values.Any( player => player.StabedHisTeamMate == true) &&
-                (soundevent == PlayerPOVScreen_Got_Damage_ClientSide || soundevent == Player_Got_Damage_ServerSide ||
-                soundevent == Player_Got_Damage_ClientSide || soundevent == Player_Got_Damage_FriendlyDamage_ServerSide || 
-                soundevent == Knife_Rightstab_BothSides || soundevent == Knife_leftstab_BothSides) : false;
-
-                bool MuteHeadShot = Configs.GetConfigData().Sounds_MuteHeadShot == true ? 
-                soundevent == HeadShotHit_ClientSide || soundevent == HeadShotKill_ClientSide ||
-                soundevent == HeadShotHit_ServerSide || soundevent == HeadShotKill_ServerSide : false;
-
-                bool MuteBodyShot = Configs.GetConfigData().Sounds_MuteBodyShot == true ? 
-                soundevent == PlayerPOVScreen_Got_Damage_ClientSide || soundevent == Player_Got_Damage_ServerSide ||
-                soundevent == Player_Got_Damage_ClientSide || soundevent == Player_Got_Damage_FriendlyDamage_ServerSide : false;
-
-                bool MuteDeath = Configs.GetConfigData().Sounds_MutePlayerDeathVoice == true ? 
-                soundevent == DeathScream_ServerSide || soundevent == DeathScream_ClientSide : false;
-
-                bool MuteCrackling = Configs.GetConfigData().Sounds_MuteAfterDeathCrackling == true ? 
-                soundevent == AfterDeathCracklingSound_ClientSide || soundevent == AfterDeathCracklingSound_ServerSide : false;
-
-                bool MuteSwitchToSemi = Configs.GetConfigData().Sounds_MuteSwitchModeSemiToAuto == true ? 
-                soundevent == SwitchToSemi_BothSides : false;
-
-                bool MuteDropWeapons = 
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("A", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_C4_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("B", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_PistolAndTaser_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("C", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Shotguns_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("D", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_SMGs_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("E", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_AssaultRifles_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("F", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Snipers_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("G", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_FlashAndDecoy_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("H", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_SmokeAndInNade_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("I", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_HENade_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("J", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Molly_BothSides) ||
-                (Configs.GetConfigData().Sounds_MuteDropWeapons.Contains("K", StringComparison.OrdinalIgnoreCase) && soundevent == DropWeapon_Knife_BothSides);
-
-                if(Configs.GetConfigData().AutoClean_Enable)
-                {
-                    var selectedWeapons = Configs.GetConfigData().AutoClean_TheseDroppedWeaponsOnly
-                    .Split(',')
-                    .Select(weapon => weapon.Trim().ToLower())
-                    .ToList();
-
-                    var selectedCategories = Helper.WeaponCategories.Keys
-                    .Where(key => selectedWeapons.Contains(key.ToLower()))
-                    .ToList();
-
-                    var specificWeapons = selectedWeapons
-                    .Where(weapon => !Helper.WeaponCategories.ContainsKey(weapon.ToUpper()))
-                    .ToList();
-
-                    var allWeaponsToClean = selectedCategories
-                    .SelectMany(category => Helper.WeaponCategories[category])
-                    .Concat(specificWeapons)
-                    .Distinct()
-                    .ToList();
-                    
-                    if (selectedCategories.Any() || specificWeapons.Any())
-                    {
-                        g_Main.CbaseWeapons.RemoveAll(entity => 
-                        entity == null || 
-                        !entity.IsValid || 
-                        entity.Entity == null || 
-                        (entity.OwnerEntity != null && entity.OwnerEntity.IsValid));
-
-                        foreach (var weapon in allWeaponsToClean)
-                        {
-                            foreach (var entity in Utilities.FindAllEntitiesByDesignerName<CBaseEntity>(weapon))
-                            {
-                                if (entity == null || !entity.IsValid || entity.Entity == null || 
-                                (entity.OwnerEntity != null && entity.OwnerEntity.IsValid) ||
-                                g_Main.CbaseWeapons.Contains(entity))
-                                {
-                                    continue;
-                                }
-                                g_Main.CbaseWeapons.Add(entity);
-                            }
-                        }
-                        if (Configs.GetConfigData().AutoClean_DropWeapons == 1 && g_Main.CbaseWeapons.Count == Configs.GetConfigData().AutoClean_WhenXWeaponsInGround)
-                        {
-                            foreach (var weapon in g_Main.CbaseWeapons.ToList())
-                            {
-                                if (weapon != null && weapon.IsValid && weapon.Entity != null &&
-                                    weapon.OwnerEntity != null && !weapon.OwnerEntity.IsValid)
-                                {
-                                    weapon.AcceptInput("Kill");
-                                    g_Main.CbaseWeapons.Remove(weapon);
-                                }
-                            }
-                        }else if (Configs.GetConfigData().AutoClean_DropWeapons == 2 && g_Main.CbaseWeapons.Count == Configs.GetConfigData().AutoClean_WhenXWeaponsInGround)
-                        {
-                            var oldestWeapon = g_Main.CbaseWeapons[0];
-                            if (oldestWeapon != null && oldestWeapon.IsValid && oldestWeapon.Entity != null && 
-                                oldestWeapon.OwnerEntity != null && !oldestWeapon.OwnerEntity.IsValid)
-                            {
-                                oldestWeapon.AcceptInput("Kill");
-                                g_Main.CbaseWeapons.RemoveAt(0);
-                            }
-                        }else if (Configs.GetConfigData().AutoClean_DropWeapons == 3 && g_Main.CbaseWeapons.Count == Configs.GetConfigData().AutoClean_WhenXWeaponsInGround)
-                        {
-                            var newestWeapon = g_Main.CbaseWeapons[g_Main.CbaseWeapons.Count - 1];
-                            if (newestWeapon != null && newestWeapon.IsValid && newestWeapon.Entity != null &&
-                                newestWeapon.OwnerEntity != null && !newestWeapon.OwnerEntity.IsValid)
-                            {
-                                newestWeapon.AcceptInput("Kill");
-                                g_Main.CbaseWeapons.RemoveAt(g_Main.CbaseWeapons.Count - 1);
-                            }
-                        }
-                    }
-                }
-
-                if(MuteKnife || MuteHeadShot || MuteBodyShot || MuteDeath || MuteCrackling || MuteSwitchToSemi || MuteDropWeapons)
-                {
-                    return HookResult.Stop; 
-                }
-
-                return HookResult.Continue; 
-                
-            }, HookMode.Pre);
-        }
-
-        if(Configs.GetConfigData().DisableBloodAndHsSpark)
-        {
-            HookUserMessage(400, um =>
-            {
-                um.Recipients.Clear();
-                return HookResult.Continue;
-            },HookMode.Pre);
-
-            HookUserMessage(411, um =>
-            {
-                um.Recipients.Clear();
-                return HookResult.Continue;
-            },HookMode.Pre);
-        }
-
-        if(Configs.GetConfigData().Ignore_TeamMateAttackMessages)
-        {
-            HookUserMessage(323, um =>
-            {
-
-                var message = um.ReadString("message");
-                for (int X = 0; X < Helper.TeamWarningArray.Length; X++)
-                {
-                    if (message.Contains(Helper.TeamWarningArray[X]))
-                    {
-                        return HookResult.Stop;
-                    }
-                }
-                
-                return HookResult.Continue;
-            },HookMode.Pre);
-        }
-        
-        if(Configs.GetConfigData().Ignore_TeamMateAttackMessages || Configs.GetConfigData().Ignore_AwardsMoneyMessages 
-        || Configs.GetConfigData().Ignore_PlayerSavedYouByPlayerMessages || Configs.GetConfigData().Ignore_ChickenKilledMessages)
-        {
-            HookUserMessage(124, um =>
-            {
-                for (int i = 0; i < um.GetRepeatedFieldCount("param"); i++)
-                {
-                    var message = um.ReadString("param", i);
-                    
-                    if(Configs.GetConfigData().Ignore_TeamMateAttackMessages)
-                    {
-                        for (int X = 0; X < Helper.TeamWarningArray.Length; X++)
-                        {
-                            if (message.Contains(Helper.TeamWarningArray[X]))
-                            {
-                                return HookResult.Stop;
-                            }
-                        }
-                    }
-                    
-                    if(Configs.GetConfigData().Ignore_AwardsMoneyMessages)
-                    {
-                        for (int X = 0; X < Helper.MoneyMessageArray.Length; X++)
-                        {
-                            if (message.Contains(Helper.MoneyMessageArray[X]))
-                            {
-                                return HookResult.Stop;
-                            }
-                        }
-                    }
-
-                    if(Configs.GetConfigData().Ignore_PlayerSavedYouByPlayerMessages)
-                    {
-                        for (int X = 0; X < Helper.SavedbyArray.Length; X++)
-                        {
-                            if (message.Contains(Helper.SavedbyArray[X]))
-                            {
-                                return HookResult.Stop;
-                            }
-                        }
-                    }
-                    
-                    if (Configs.GetConfigData().Ignore_ChickenKilledMessages && message.Contains("Pet_Killed"))
-                    {
-                        return HookResult.Stop;
-                    }
-                }
-                return HookResult.Continue;
-            },HookMode.Pre);
-        }
-        
-        if(Configs.GetConfigData().Sounds_MuteGunShots > 0)
-        {
-            HookUserMessage(452, um =>
-            {
-                if(Configs.GetConfigData().Sounds_MuteGunShots == 1)
-                {
-                    um.SetInt("sound_type", 0);
-                }else if(Configs.GetConfigData().Sounds_MuteGunShots == 2)
-                {
-                    um.SetUInt("weapon_id", 0);
-                    um.SetInt("sound_type", 9);
-                    um.SetUInt("item_def_index", 60);
-                }else if(Configs.GetConfigData().Sounds_MuteGunShots == 3)
-                {
-                    um.SetUInt("weapon_id", 0);
-                    um.SetInt("sound_type", 9);
-                    um.SetUInt("item_def_index", 61);
-                }else if(Configs.GetConfigData().Sounds_MuteGunShots == 4)
-                {
-                    um.SetUInt("weapon_id", Configs.GetConfigData().Sounds_MuteGunShots_weapon_id);
-                    um.SetInt("sound_type", Configs.GetConfigData().Sounds_MuteGunShots_sound_type);
-                    um.SetUInt("item_def_index", Configs.GetConfigData().Sounds_MuteGunShots_item_def_index);
-                }
-                return HookResult.Continue;
-            }, HookMode.Pre);
-        }
-        
-        if(Configs.GetConfigData().DisableChatWheel)
-        {
-            AddCommandListener("playerchatwheel", CommandListener_Chatwheel);
-        }
-        
-        if(Configs.GetConfigData().DisablePing)
-        {
-            AddCommandListener("player_ping", CommandListener_Ping);
-        }
-        
-        if(Configs.GetConfigData().DisableRadio)
-        {
-            for (int i = 0; i < Helper.RadioArray.Length; i++)
-            {
-                AddCommandListener(Helper.RadioArray[i], CommandListener_RadioCommands);
-            }
-        }
-
-        Helper.ExectueCommands();
-
-        if(hotReload)
-        {
+            _ = Task.Run(Helper.DownloadMissingFilesAsync);
+            Helper.RemoveRegisterCommandsAndHooks();
             Helper.LoadJson();
+            Helper.RegisterCommandsAndHooks();
             Helper.ExectueCommands();
-        }
-    }
+            Helper.StartTimer();
+            Helper.ReloadPlayersGlobals();
 
-    private HookResult OnPlayerChat(CCSPlayerController? player, CommandInfo info)
-	{
-        if (player == null || !player.IsValid)return HookResult.Continue;
-
-        _PlayerChat.OnPlayerChat(player, info, false);
-
-        return HookResult.Continue;
-    }
-    private HookResult OnPlayerChatTeam(CCSPlayerController? player, CommandInfo info)
-	{
-        if (player == null || !player.IsValid)return HookResult.Continue;
-
-        _PlayerChat.OnPlayerChat(player, info, true);
-
-        return HookResult.Continue;
-    }
-    private HookResult OnTakeDamage(DynamicHook hook)
-    {
-        var ent = hook.GetParam<CEntityInstance>(0);
-        if (ent == null || !ent.IsValid || ent.DesignerName != "player") { return HookResult.Continue; }
-
-        var damageinfo = hook.GetParam<CTakeDamageInfo>(1);
-        if (damageinfo == null) { return HookResult.Continue; }
-
-        var GetAttacker = damageinfo.Attacker.Value!.As<CBasePlayerPawn>().Controller.Value;
-        if (GetAttacker == null || !GetAttacker.IsValid) { return HookResult.Continue; }
-
-        var pawn = ent.As<CCSPlayerPawn>();
-        if (pawn == null || !pawn.IsValid) { return HookResult.Continue; }
-
-        var attacker = Utilities.GetPlayerFromIndex((int)GetAttacker.Index);
-        if (attacker == null || !attacker.IsValid) { return HookResult.Continue; }
-
-        var victim = pawn.OriginalController.Get();
-        if (victim == null || !victim.IsValid) { return HookResult.Continue; }
-
-        
-        if (attacker.PlayerPawn == null || !attacker.PlayerPawn.IsValid
-        || attacker.PlayerPawn.Value == null || !attacker.PlayerPawn.Value.IsValid
-        || attacker.PlayerPawn.Value.WeaponServices == null
-        || attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon == null || !attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon.IsValid
-        || attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon.Value == null || !attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon.Value!.IsValid
-        || string.IsNullOrEmpty(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon.Value!.DesignerName))
-        {
-            return HookResult.Continue; 
-        };
-
-        bool Check_teammates_are_enemies = ConVar.Find("mp_teammates_are_enemies")!.GetPrimitiveValue<bool>() == false && attacker.TeamNum != victim.TeamNum || ConVar.Find("mp_teammates_are_enemies")!.GetPrimitiveValue<bool>() == true;
-
-        if(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon.Value!.DesignerName.Contains("weapon_knife") || attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon.Value!.DesignerName.Contains("weapon_bayonet"))
-        {
-            if(Check_teammates_are_enemies)
+            if (Configs.Instance.MySql_Enable > 0)
             {
-                if (g_Main.Player_Data.ContainsKey(attacker))
+                _ = Task.Run(async () =>
                 {
-                    g_Main.Player_Data[attacker].StabedHisTeamMate = false;
-                }
-            }else
-            {
-                if (g_Main.Player_Data.ContainsKey(attacker))
-                {
-                    g_Main.Player_Data[attacker].StabedHisTeamMate = true;
-                }
-
-                AddTimer(0.01f, () =>
-                {
-                    if (g_Main.Player_Data.ContainsKey(attacker))
+                    try
                     {
-                        g_Main.Player_Data[attacker].StabedHisTeamMate = false;
+                        if (Configs.Instance.MySql_Enable > 0)
+                        {
+                            await MySqlDataManager.CreateTableIfNotExistsAsync();
+                        }
                     }
-                },TimerFlags.STOP_ON_MAPCHANGE);
+                    catch (Exception ex)
+                    {
+                        Helper.DebugMessage($"hotReload Error: {ex.Message}", 0);
+                    }
+                });
             }
-            
         }
-        return HookResult.Continue;
+    }
+
+    public void OnClientAuthorized(int playerSlot, SteamID steamId)
+    {
+        var player = Utilities.GetPlayerFromSlot(playerSlot);
+        if (!player.IsValid(true)) return;
+        Helper.CheckPlayerName(player);
+    }
+
+    public void OnTick()
+    {
+        foreach(var getplayer in g_Main.Player_Data.Values)
+        {
+            if (getplayer == null) continue;
+
+            var player = getplayer.Player;
+            if (!player.IsValid() || !getplayer.PlayerName_Block) continue;
+
+            var timeSinceLastChange = (DateTime.Now - getplayer.LastNameChangeTime).TotalSeconds;
+            var totalBlock = Configs.Instance.BlockNameChanger_Block;
+            var timeLeft = totalBlock - timeSinceLastChange;
+
+            if (timeLeft < 0)
+            {
+                timeLeft = 0;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            var getLocalizer = Configs.Instance.BlockNameChanger == 1 ? "PrintToCenterToPlayer.NameChanging.Mode1.Blocked" : "PrintToCenterToPlayer.NameChanging.Mode2.Blocked";
+            builder.AppendFormat(Localizer[getLocalizer, (int)Math.Ceiling(timeLeft)]);
+            var centerhtml = builder.ToString();
+            player.PrintToCenterHtml(centerhtml);
+        }
     }
     
-    private void OnMapStart(string Map)
+    public void OnMapStart(string mapname)
     {
+        Helper.RemoveRegisterCommandsAndHooks();
+        Helper.LoadJson();
+        Helper.RegisterCommandsAndHooks();
         Helper.ExectueCommands();
-    }
+        Helper.StartTimer();
 
-    public HookResult OnEventPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
-    {
-        if (@event == null)return HookResult.Continue;
-
-        var player = @event.Userid;
-        if (!player.IsValid(false)) return HookResult.Continue;
-        
-        Helper.AddPlayerToGlobal(player);
-
-        return HookResult.Continue;
-    }
-    public HookResult OnEventGrenadeThrown(EventGrenadeThrown @event, GameEventInfo info)
-    {
-        if (@event == null) return HookResult.Continue;
-
-        var player = @event.Userid;
-        var nade = @event.Weapon;
-
-        if (Configs.GetConfigData().Custom_ThrowNadeMessages == 0 || player == null || !player.IsValid || Configs.GetConfigData().Custom_ThrowNadeMessages == 1 && player.IsBot)return HookResult.Continue;
-        
-        Server.NextFrame(() =>
+        if (Configs.Instance.MySql_Enable > 0)
         {
-            var playerteam = player.TeamNum;
-            var allplayers = Helper.GetPlayersController(true,false);
-
-            allplayers.ForEach(players => {
-                if(players == null || !players.IsValid ||
-                players.PlayerPawn == null || !players.PlayerPawn.IsValid ||
-                players.PlayerPawn.Value == null || !players.PlayerPawn.Value.IsValid)return;
-                var otherteam = players.TeamNum;
-                bool sameTeam = playerteam == otherteam;
-                bool teammatesAreEnemies = ConVar.Find("mp_teammates_are_enemies")!.GetPrimitiveValue<bool>();
-                
-                string Nadelocation = player?.PlayerPawn?.Value?.LastPlaceName ?? "";
-
-                if (sameTeam && !teammatesAreEnemies) {
-                    Helper.SendGrenadeMessage(nade, players, player!.PlayerName, Nadelocation.ToString());
-                } else if (sameTeam && player != players ) {
-                    return;
-                } else if (sameTeam && (Configs.GetConfigData().Custom_ThrowNadeMessages == 3 || Configs.GetConfigData().Custom_ThrowNadeMessages == 4)) {
-                    Helper.SendGrenadeMessage(nade, players, player!.PlayerName, Nadelocation!.ToString());
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    if (Configs.Instance.MySql_Enable > 0)
+                    {
+                        await MySqlDataManager.CreateTableIfNotExistsAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Helper.DebugMessage($"OnMapStart Error: {ex.Message}", 0);
                 }
             });
-        });
-        return HookResult.Continue;
+        }
     }
     
-
-    private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+    public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
-        if(@event == null)return HookResult.Continue;
+        if (@event == null) return HookResult.Continue;
+        
         Helper.ExectueCommands();
-        g_Main.CbaseWeapons.Clear();
+        g_Main.CbaseWeapons?.Clear();
+        Helper.StartTimer();
+        Helper.ReloadCheckPlayerName();
 
         return HookResult.Continue;
     }
-    private HookResult OnEventPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
-    {
-        if(@event == null)return HookResult.Continue;
-        Helper.ExectueCommands();
 
-        var player = @event.Userid;
-        if(!player.IsValid(false))return HookResult.Continue;
-        
-        Helper.AddPlayerToGlobal(player);
-
-        
-        Server.NextFrame(() =>
-        {
-            if(!player.IsValid(false))return;
-
-            if(Configs.GetConfigData().HideDeadBody == 1 
-            || Configs.GetConfigData().HideDeadBody == 2 
-            || Configs.GetConfigData().HideDeadBody == 3)
-            {
-                
-                if (player.IsAlive() && !player.ControllingBot && g_Main.Player_Data.ContainsKey(player))
-                {
-                    g_Main.Player_Data[player].Timer_DeadBody?.Kill();
-                    g_Main.Player_Data[player].Timer_DeadBody = null!;
-                    g_Main.Player_Data[player].PlayerAlpha = 255;
-                    player.PlayerRender(255);
-                }
-            }
-
-            if(Configs.GetConfigData().HideLegs)
-            {
-                Helper.HideLegs(player);
-            }
-
-            if(Configs.GetConfigData().HideWeaponsHUD)
-            {
-                Helper.HideWeaponsHUD(player);
-            }
-            
-            Helper.HideChatHUD(player);
-        });
-
-        return HookResult.Continue;
-    }
-    private HookResult OnEventRoundMvp(EventRoundMvp @event, GameEventInfo info)
-    {
-        if (@event == null)return HookResult.Continue;
-
-        var player = @event.Userid;
-        if(!player.IsValid())return HookResult.Continue;
-
-        if(Configs.GetConfigData().Sounds_MuteMVPMusic)
-        {
-            player.MusicKitID = 0;
-            Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMusicKitID");
-        }
-
-        return HookResult.Continue;
-    }
-    private HookResult OnEventBombPlanted(EventBombPlanted @event, GameEventInfo info)
-    {
-        if (!Configs.GetConfigData().Ignore_BombPlantedHUDMessages || @event == null)return HookResult.Continue;
-        info.DontBroadcast = true;
-        return HookResult.Continue;
-    }
-
-    private HookResult OnEventPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
-    {
-        if(@event == null)return HookResult.Continue;
-
-        var victim = @event.Userid;
-        if(!victim.IsValid(false))return HookResult.Continue;
-
-        if (Configs.GetConfigData().Ignore_DisconnectMessages == 2)
-        {
-            if(g_Main.Player_Data.ContainsKey(victim) && g_Main.Player_Data[victim].Remove_Icon)
-            {
-                info.DontBroadcast = true;
-                g_Main.Player_Data.Remove(victim);
-            }
-        }
-        
-        Server.NextFrame(() =>
-        {
-            Helper.HideDeadBody(victim);
-        });
-
-        var attacker = @event.Attacker;
-        if(!attacker.IsValid(false))return HookResult.Continue;
-        
-        if(Configs.GetConfigData().DisableKillfeed == 1 || Configs.GetConfigData().DisableKillfeed == 2)
-        {
-            info.DontBroadcast = true;
-            if(Configs.GetConfigData().DisableKillfeed == 2)
-            {
-                @event.FireEventToClient(attacker);
-            }
-        }
-        
-
-        return HookResult.Continue;
-    }
-    
-    private HookResult CommandListener_RadioCommands(CCSPlayerController? player, CommandInfo info)
-    {
-        return HookResult.Handled;
-    }
-    private HookResult CommandListener_Chatwheel(CCSPlayerController? player, CommandInfo info)
-    {
-        return HookResult.Handled;
-    }
-    private HookResult CommandListener_Ping(CCSPlayerController? player, CommandInfo info)
-    {
-        return HookResult.Handled;
-    }
     public HookResult OnEventPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         if (@event == null) return HookResult.Continue;
 
-        if (Configs.GetConfigData().Ignore_JoinTeamMessages)
+        if (Configs.Instance.Ignore_JoinTeamMessages)
         {
             info.DontBroadcast = true;
         }
+        
+        if (!Configs.Instance.Custom_ChatMessages) return HookResult.Continue;
 
         var player = @event.Userid;
         int JoinTeam = @event.Team;
+        if (!player.IsValid(true)) return HookResult.Continue;
+        Helper.CheckPlayerInGlobals(player);
 
-        if (player == null || !player.IsValid || player.IsBot && Configs.GetConfigData().Custom_JoinTeamMessages == 1 || player.IsHLTV) return HookResult.Continue;
-        
-        if(Configs.GetConfigData().Custom_JoinTeamMessages == 1 || Configs.GetConfigData().Custom_JoinTeamMessages == 2)
+        var GetValues = Helper.GetValuesInJson(player, "");
+        if(string.IsNullOrEmpty(GetValues.JoinTeam_CT) && string.IsNullOrEmpty(GetValues.JoinTeam_T) && string.IsNullOrEmpty(GetValues.JoinTeam_SPEC)) return HookResult.Continue;
+
+        if (Configs.Instance.Custom_JoinTeamMessages && player.IsBot) return HookResult.Continue;
+
+        if (JoinTeam == (byte)CsTeam.Spectator)
         {
-            var Playername = player.PlayerName;
-
-            if(JoinTeam == 1)
-            {
-                Helper.AdvancedServerPrintToChatAll(Localizer["custom.jointeam.spec"], Playername);
-            }else if(JoinTeam == 2)
-            {
-                Helper.AdvancedServerPrintToChatAll(Localizer["custom.jointeam.t"], Playername);
-            }else if(JoinTeam == 3)
-            {
-                Helper.AdvancedServerPrintToChatAll(Localizer["custom.jointeam.ct"], Playername);
-            }
+            var spec_message = GetValues.JoinTeam_SPEC?.ReplaceChatMessages(clan_chat: GetValues.ClanTag_Chat ?? "", clan_scoreboard: GetValues.ClanTag_ScoreBoard ?? "", PlayerName: player.PlayerName.RemoveColorNames(), location: player.PlayerPawn.Value?.LastPlaceName ?? "", team_color: player.TeamNum.ToTeamColor());
+            Helper.AdvancedServerPrintToChatAll(spec_message!);
+        }
+        else if (JoinTeam == (byte)CsTeam.Terrorist)
+        {
+            var t_message = GetValues.JoinTeam_T?.ReplaceChatMessages(clan_chat: GetValues.ClanTag_Chat ?? "", clan_scoreboard: GetValues.ClanTag_ScoreBoard ?? "", PlayerName: player.PlayerName.RemoveColorNames(), location: player.PlayerPawn.Value?.LastPlaceName ?? "", team_color: player.TeamNum.ToTeamColor());
+            Helper.AdvancedServerPrintToChatAll(t_message!);
+        }
+        else if (JoinTeam == (byte)CsTeam.CounterTerrorist)
+        {
+            var ct_message = GetValues.JoinTeam_CT?.ReplaceChatMessages(clan_chat: GetValues.ClanTag_Chat ?? "", clan_scoreboard: GetValues.ClanTag_ScoreBoard ?? "", PlayerName: player.PlayerName.RemoveColorNames(), location: player.PlayerPawn.Value?.LastPlaceName ?? "", team_color: player.TeamNum.ToTeamColor());
+            Helper.AdvancedServerPrintToChatAll(ct_message!);
         }
         return HookResult.Continue;
     }
 
+    public HookResult OnEventBombPlanted(EventBombPlanted @event, GameEventInfo info)
+    {
+        if (@event == null || !Configs.Instance.Ignore_BombPlantedHUDMessages) return HookResult.Continue;
+        info.DontBroadcast = true;
+        return HookResult.Continue;
+    }
+    
+    public HookResult OnEventBotTakeover(EventBotTakeover @event, GameEventInfo info)
+    {
+        if (@event == null || !Configs.Instance.Custom_ChatMessages) return HookResult.Continue;
+
+        var player = @event.Userid;
+        if (!player.IsValid(true)) return HookResult.Continue;
+        var GetValues = Helper.GetValuesInJson(player, "");
+        if (string.IsNullOrEmpty(GetValues.BotTakeOver)) return HookResult.Continue;
+        
+        var BotTakeover = Utilities.GetPlayers().FirstOrDefault(p => p.IsValid(true) && p.OriginalControllerOfCurrentPawn.Value == player);
+        if (!BotTakeover.IsValid(true)) return HookResult.Continue;
+        var BotTakeOver_message = GetValues.BotTakeOver?.ReplaceChatMessages(clan_chat: GetValues.ClanTag_Chat ?? "", clan_scoreboard: GetValues.ClanTag_ScoreBoard ?? "", PlayerName: player.PlayerName.RemoveColorNames(), location: player.PlayerPawn.Value?.LastPlaceName ?? "", BOT_Controlled: BotTakeover.PlayerName, team_color: player.TeamNum.ToTeamColor());
+        
+        Helper.AdvancedServerPrintToChatAll(BotTakeOver_message!);
+        return HookResult.Continue;
+    }
+
+    public HookResult OnEventGrenadeThrown(EventGrenadeThrown @event, GameEventInfo info)
+    {
+        if (@event == null || !Configs.Instance.Custom_ChatMessages) return HookResult.Continue;
+        
+        var getplayer = @event.Userid;
+        var getnade = @event.Weapon;
+
+        if (!getplayer.IsValid(true)) return HookResult.Continue;
+
+        var GetValues = Helper.GetValuesInJson(getplayer, "");
+        if (string.IsNullOrEmpty(GetValues.Nade_Decoy) && string.IsNullOrEmpty(GetValues.Nade_Flashbang) 
+        && string.IsNullOrEmpty(GetValues.Nade_Hegrenade) && string.IsNullOrEmpty(GetValues.Nade_Incgrenade)
+        && string.IsNullOrEmpty(GetValues.Nade_Molotov) && string.IsNullOrEmpty(GetValues.Nade_Smokegrenade)) return HookResult.Continue;
+
+        if (getplayer.IsBot && (Configs.Instance.Custom_ThrowNadeMessages == 1 || Configs.Instance.Custom_ThrowNadeMessages == 3 || Configs.Instance.Custom_ThrowNadeMessages == 4)) return HookResult.Continue;
+
+        Server.NextFrame(() =>
+        {
+            var player = getplayer;
+            if (!player.IsValid(true)) return;
+            
+            var GetValues = Helper.GetValuesInJson(player, "");
+            var Nade_Name = getnade.ToCustomGrenadeName(player, GetValues);
+            if (string.IsNullOrEmpty(Nade_Name)) return;
+
+            bool mp_teammates_are_enemies = ConVar.Find("mp_teammates_are_enemies")?.GetPrimitiveValue<bool>() ?? false;
+
+            foreach (var players in Helper.GetPlayersController(true, false, false))
+            {
+                if (!players.IsValid(true)) continue;
+                if (Configs.Instance.Custom_ThrowNadeMessages == 1 && player.TeamNum == players.TeamNum)
+                {
+                    Helper.AdvancedPlayerPrintToChat(players, null!, Nade_Name);
+                }
+                else if (Configs.Instance.Custom_ThrowNadeMessages == 2 && player.TeamNum == players.TeamNum)
+                {
+                    Helper.AdvancedPlayerPrintToChat(players, null!, Nade_Name);
+                }
+                else if (Configs.Instance.Custom_ThrowNadeMessages == 3 && mp_teammates_are_enemies && player == players)
+                {
+                    Helper.AdvancedPlayerPrintToChat(players, null!, Nade_Name);
+                }
+                else if (mp_teammates_are_enemies && (Configs.Instance.Custom_ThrowNadeMessages == 4 || Configs.Instance.Custom_ThrowNadeMessages == 5))
+                {
+                    Helper.AdvancedPlayerPrintToChat(players, null!, Nade_Name);
+                }
+            }
+        });
+        return HookResult.Continue;
+    }
+    
+    public HookResult OnEventRoundMvp(EventRoundMvp @event, GameEventInfo info)
+    {
+        if (@event == null || Configs.Instance.Sounds_MuteMVPMusic < 1)return HookResult.Continue;
+
+        var player = @event.Userid;
+        if(!player.IsValid(true))return HookResult.Continue;
+
+        if(Configs.Instance.Sounds_MuteMVPMusic == 1)
+        {
+            player.MusicKitID = 0;
+            Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMusicKitID");
+        }else if(Configs.Instance.Sounds_MuteMVPMusic == 2)
+        {
+            Helper.EmitSound_World("StopSoundEvents.StopAllMusic");
+        }
+
+        return HookResult.Continue;
+    }
+
+    public HookResult OnEventPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+    {
+        if (@event == null) return HookResult.Continue;
+
+        var player = @event.Userid;
+        if (!player.IsValid(true)) return HookResult.Continue;
+
+        _ = HandlePlayerConnectionsAsync(player);
+        
+        return HookResult.Continue;
+    }
+    public async Task HandlePlayerConnectionsAsync(CCSPlayerController Getplayer)
+    {
+        if (!Getplayer.IsValid(true)) return;
+
+        Helper.CheckPlayerName(Getplayer);
+        Helper.SetPlayerClan(Getplayer);
+
+        try
+        {
+            var player = Getplayer;
+            if (!player.IsValid(true)) return;
+
+            var playerip = player.IpAddress?.Split(':')[0] ?? "";
+            var countryCode = Helper.GetGeoIsoCodeInfoAsync(playerip);
+            
+            Console.WriteLine($"Country code: {countryCode}");
+            Server.NextFrame(() =>
+            {
+                if (player.IsValid())
+                {
+                    Helper.SetPlayerLanguage(player, countryCode);
+                }
+            });
+
+            await Helper.LoadPlayerData(player);
+        }
+        catch (Exception ex)
+        {
+            Helper.DebugMessage($"HandlePlayerConnectionsAsync error: {ex.Message}", 0);
+        }
+    }
+
+    public HookResult OnJoinTeam(CCSPlayerController? player, CommandInfo command)
+    {
+        if (!player.IsValid() || !g_Main.Player_Data.TryGetValue(player, out var handle)) return HookResult.Continue;
+
+        if (handle.PlayerName_Block)
+        {
+            var timeSinceLastChange = (DateTime.Now - handle.LastNameChangeTime).TotalSeconds;
+            var totalBlock = Configs.Instance.BlockNameChanger_Block;
+            var timeLeft = totalBlock - timeSinceLastChange;
+
+            if (timeLeft < 0)
+            {
+                timeLeft = 0;
+            }
+
+            if (Configs.Instance.BlockNameChanger == 1)
+            {
+                Helper.AdvancedPlayerPrintToChat(player, null!, Localizer["PrintToChatToPlayer.NameChanging.Mode1.Blocked"], (int)Math.Ceiling(timeLeft));
+            }
+            else
+            {
+                Helper.AdvancedPlayerPrintToChat(player, null!, Localizer["PrintToChatToPlayer.NameChanging.Mode2.Blocked"], (int)Math.Ceiling(timeLeft));
+            }
+
+            return HookResult.Handled;        
+        }
+        else
+        {
+            handle.PlayerName_Count = 0;
+            handle.PlayerName_Block = false;
+            handle.PlayerName_Block_Message = false;
+        }
+
+        return HookResult.Continue;
+    }
+    
+    public HookResult OnEventPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    {
+        if(@event == null)return HookResult.Continue;
+        Helper.ExectueCommands();
+        Helper.StartTimer();
+
+        if (Configs.Instance.HideChatHUD_Delay > 0 || Configs.Instance.HideDeadBody > 0 || Configs.Instance.HideWeaponsHUD)
+        {
+            var player = @event.Userid;
+            if (!player.IsValid(true)) return HookResult.Continue;
+
+            Server.NextFrame(() =>
+            {
+                if (!player.IsValid(true)) return;
+
+                Helper.HideChatHUD(player);
+                Helper.HideWeaponsHUD(player);
+
+                var getcontroller = player.CheckPlayerController();
+                if (!getcontroller.IsValid(true)) return;
+
+                Helper.RemoveHideDeadBody(getcontroller);
+            });
+        }
+
+        return HookResult.Continue;
+    }
+
+
+    public HookResult OnEventPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
+    {
+        if (@event == null) return HookResult.Continue;
+        Helper.StartTimer();
+
+        var victim = @event.Userid;
+        if (!victim.IsValid(true)) return HookResult.Continue;
+
+        if (Configs.Instance.Ignore_DisconnectMessages == 2)
+        {
+            if (victim.Connected == PlayerConnectedState.PlayerDisconnecting)
+            {
+                info.DontBroadcast = true;
+            }
+        }
+
+        if (Configs.Instance.HideChatHUD_Delay > 0 || Configs.Instance.HideDeadBody > 0 || Configs.Instance.HideWeaponsHUD)
+        {
+            Server.NextFrame(() =>
+            {
+                if (!victim.IsValid(true)) return;
+
+                Helper.HideChatHUD(victim);
+                Helper.HideWeaponsHUD(victim);
+
+                var getcontroller = victim.CheckPlayerController();
+                if (!getcontroller.IsValid(true)) return;
+
+                Helper.HideDeadBody(getcontroller);
+            });
+        }
+
+        if (Configs.Instance.HideKillfeed > 0)
+        {
+            var attacker = @event.Attacker;
+            if (!attacker.IsValid(true)) return HookResult.Continue;
+
+            info.DontBroadcast = true;
+            if (Configs.Instance.HideKillfeed == 2)
+            {
+                @event.FireEventToClient(attacker);
+            }
+        }
+        return HookResult.Continue;
+    }
+    
+    public HookResult OnPlayerSay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (!player.IsValid()) return HookResult.Continue;
+
+        var eventmessage = info.ArgString;
+        eventmessage = eventmessage.TrimStart('"');
+        eventmessage = eventmessage.TrimEnd('"');
+        if (string.IsNullOrWhiteSpace(eventmessage)) return HookResult.Continue;
+
+        string message = eventmessage.Trim();
+
+        Game_UserMessages.HookPlayerChat_UserMessages(null, player, message, false);
+
+        return HookResult.Continue;
+    }
+    public HookResult OnPlayerSay_Team(CCSPlayerController? player, CommandInfo info)
+    {
+        if (!player.IsValid()) return HookResult.Continue;
+
+        var eventmessage = info.ArgString;
+        eventmessage = eventmessage.TrimStart('"');
+        eventmessage = eventmessage.TrimEnd('"');
+        if (string.IsNullOrWhiteSpace(eventmessage)) return HookResult.Continue;
+
+        string message = eventmessage.Trim();
+
+        Game_UserMessages.HookPlayerChat_UserMessages(null, player, message, true);
+
+        return HookResult.Continue;
+    }
+    public HookResult OnUserMessage_OnSayText2(CounterStrikeSharp.API.Modules.UserMessages.UserMessage um)
+    {
+        var entityindex = um.ReadInt("entityindex");
+        var player = Utilities.GetPlayerFromIndex(entityindex);
+        if (!player.IsValid()) return HookResult.Continue;
+
+        var message_type = um.ReadString("messagename");
+        var eventmessage_Bytes = um.ReadBytes("param2");
+        var eventmessage = Encoding.UTF8.GetString(eventmessage_Bytes);
+        if (string.IsNullOrWhiteSpace(eventmessage)) return HookResult.Continue;
+
+        string message = eventmessage.Trim();
+        bool TeamChat = false;
+        if (message_type.Equals("Cstrike_Chat_CT") || message_type.Equals("Cstrike_Chat_CT_Loc") || message_type.Equals("Cstrike_Chat_T") || message_type.Equals("Cstrike_Chat_T_Loc")
+        || message_type.Equals("Cstrike_Chat_Spec") || message_type.Equals("Cstrike_Chat_CT_Dead") || message_type.Equals("Cstrike_Chat_T_Dead"))
+        {
+            TeamChat = true;
+        }
+
+        if (g_Main.Player_Data.TryGetValue(player, out var handle))
+        {
+            handle.MessageType = message_type;
+        }
+
+        Game_UserMessages.HookPlayerChat_UserMessages(um, player, message, TeamChat);
+
+        return HookResult.Continue;
+    }
+    
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         if (@event == null) return HookResult.Continue;
 
-        if (Configs.GetConfigData().Ignore_DisconnectMessages == 1 || Configs.GetConfigData().Ignore_DisconnectMessages == 2)
+        if (Configs.Instance.Ignore_DisconnectMessages > 0)
         {
             info.DontBroadcast = true;
         }
 
-        var player = @event.Userid;
-
-        if(!player.IsValid(false))return HookResult.Continue;
-
-        if (Configs.GetConfigData().Ignore_DisconnectMessages == 2)
+        if (Configs.Instance.MySql_Enable == 1 || Configs.Instance.Cookies_Enable == 1)
         {
-            if(g_Main.Player_Data.ContainsKey(player))
-            {
-                g_Main.Player_Data[player].Remove_Icon = true;
-            }
-        }else
-        {
-            if(g_Main.Player_Data.ContainsKey(player))g_Main.Player_Data.Remove(player);
+            var player = @event.Userid;
+            if (!player.IsValid()) return HookResult.Continue;
+            
+            _ = HandlePlayerDisconnectAsync(player);
         }
-
 
         return HookResult.Continue;
     }
 
+    public async Task HandlePlayerDisconnectAsync(CCSPlayerController player)
+    {
+        try
+        {
+            if (!player.IsValid()) return;
+            await Helper.SavePlayerDataOnDisconnect(player);
+        }
+        catch (Exception ex)
+        {
+            Helper.DebugMessage($"HandlePlayerDisconnectAsync error: {ex.Message}", 0);
+        }
+    }
+
     public void OnMapEnd()
     {
-        Helper.ClearVariables();
+        try
+        {
+            if (Configs.Instance.MySql_Enable > 0 || Configs.Instance.Cookies_Enable > 0)
+            {
+                Helper.SavePlayersValues();
+            }
+
+            Helper.ClearVariables();
+
+            if (g_Main.OnTakeDamage_Hooked)
+            {
+                VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(Game_Hook.OnTakeDamage, HookMode.Pre);
+                g_Main.OnTakeDamage_Hooked = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Helper.DebugMessage($"OnMapEnd Error: {ex.Message}", 0);
+        }
     }
+
     public override void Unload(bool hotReload)
     {
-        if(Configs.GetConfigData().Sounds_MuteKnifeStab == 2)
+        try
         {
-            VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
+            Helper.RemoveRegisterCommandsAndHooks();
+            Helper.ClearVariables();
+
         }
-        Helper.ClearVariables();
+        catch (Exception ex)
+        {
+            Helper.DebugMessage($"Unload Error: {ex.Message}", 0);
+        }
+
+        if (hotReload)
+        {
+            try
+            {
+                Helper.RemoveRegisterCommandsAndHooks();
+                Helper.ClearVariables();
+            }
+            catch (Exception ex)
+            {
+                Helper.DebugMessage($"Unload hotReload Error: {ex.Message}", 0);
+            }
+        }
     }
+
+    /* [ConsoleCommand("css_test", "testttt")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void test(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!player.IsValid()) return;
+    } */
 }

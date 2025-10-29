@@ -1,14 +1,34 @@
 {
-	"hidechat.enabled.warning": "{darkred}-------------------------------------------------------{nextline}{green}Gold KingZ {grey}| {darkred}Chat HUD Will Be Hidden After {lime}{0} Secs {nextline}{green}Gold KingZ {grey}| {darkred}Please Open The {lime}Chat Box {darkred}On Your Keyboard To See Chat Temporarily{nextline}{darkred}-------------------------------------------------------",
-	
-	"custom.jointeam.spec": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Spectators",
-	"custom.jointeam.t": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Terrorists",
-	"custom.jointeam.ct": "{green}Gold KingZ {grey}| {purple}{0} {grey}is joining the {lime}Counter-Terrorists",
+	"PrintToChatToPlayer.ReloadPlugin.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
+	"PrintToChatToPlayer.ReloadPlugin.Successfully": "{green}[Game Manager] {grey}Plugin Reloaded {lime}Successfully",
 
-	"custom.hegrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {red}☄ HE Grenade! ☄",
-	"custom.smokegrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {Olive}☁︎ Smoke! ☁︎",
-	"custom.molotov": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {orange}♨ Molotov! ♨",
-	"custom.flashbang": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {Blue}˗ˏˋ★ Flashbang! ★ˎˊ˗",
-	"custom.incgrenade": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {orange} ♨ Incendiary! ♨",
-	"custom.decoy": "{green}Gold KingZ {grey}| {purple}{0} {green}@ {1}{grey}: {grey}Threw {grey}✦ Decoy! ✦"
+	"PrintToChatToPlayer.Toggle.AntiAimPunch.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
+	"PrintToChatToPlayer.Toggle.AntiAimPunch.Enabled": "{green}[Game Manager] {grey}Anti Aim Punch ScreenShake Is Now {lime}Enabled",
+	"PrintToChatToPlayer.Toggle.AntiAimPunch.Disabled": "{green}[Game Manager] {grey}Anti Aim Punch ScreenShake Is Now {darkred}Disabled",
+
+	"PrintToChatToPlayer.Toggle.MuteSounds_1.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
+	"PrintToChatToPlayer.Toggle.MuteSounds_1.Enabled": "{green}[Game Manager] {grey}Mute HeadShot Is Now {lime}Enabled",
+	"PrintToChatToPlayer.Toggle.MuteSounds_1.Disabled": "{green}[Game Manager] {grey}Mute HeadShot Is Now {darkred}Disabled",
+
+	"PrintToChatToPlayer.Toggle.MuteSounds_2.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
+	"PrintToChatToPlayer.Toggle.MuteSounds_2.Enabled": "{green}[Game Manager] {grey}Mute BodyShot Is Now {lime}Enabled",
+	"PrintToChatToPlayer.Toggle.MuteSounds_2.Disabled": "{green}[Game Manager] {grey}Mute BodyShot Is Now {darkred}Disabled",
+
+	"PrintToChatToPlayer.Toggle.MuteSounds_3.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
+	"PrintToChatToPlayer.Toggle.MuteSounds_3.Enabled": "{green}[Game Manager] {grey}Extra Is Now {lime}Enabled",
+	"PrintToChatToPlayer.Toggle.MuteSounds_3.Disabled": "{green}[Game Manager] {grey}Extra Is Now {darkred}Disabled",
+
+	"PrintToChatToPlayer.BlockCommands": "{green}[Game Manager] {darkred}This Command {green}[{0}] Is Blocked By Server",
+	
+	"PrintToChatToPlayer.Filter.IPs": "{green}[Game Manager] {grey}Sharing IP Addresses In Chat Is Not Allowed",
+	"PrintToChatToPlayer.Filter.URLs": "{green}[Game Manager] {grey}Sharing Website Links In Chat Is Not Allowed",
+
+	"PrintToChatToPlayer.HideChat.Warning": "{darkred}-------------------------------------------------------{nextline}{green}[Game Manager] {darkred}Chat HUD Will Be Hidden After {lime}{0} Secs {nextline}{green}[Game Manager] {darkred}Please Open The {lime}Chat Box {darkred}On Your Keyboard To See Chat Temporarily{nextline}{darkred}-------------------------------------------------------",
+
+	"PrintToChatToPlayer.NameChanging.Warning": "{green}[Game Manager] {grey}Name Changing Is Not Allowed On This Server {nextline}{green}[Game Manager] {grey}You Have Been Moved To Spectator",
+	"PrintToChatToPlayer.NameChanging.Mode1.Blocked": "{green}[Game Manager] {grey}You Are Blocked From Joining A Team{nextline}{green}[Game Manager] {grey}Stop Name Changing And Wait {lime}{0} Seconds",
+	"PrintToCenterToPlayer.NameChanging.Mode1.Blocked": "<font class='fontSize-m' color='#ff5555'>Name Changing Is Not Allowed!</font> <br> <font class='fontSize-m'>You Will Be UnBlocked After</font> <br> <font class='fontSize-m color='#7CFC00'> {0} Seconds</font> <br> <font color='#fa00e4'>If You Keep Changing Your Name The Timer Will Reset</font></font>",
+	"PrintToChatToPlayer.NameChanging.Mode1.UnBlocked": "{green}[Game Manager] {grey}You Have Been {lime}Unblocked! {grey}You Can Now Join A Team",
+	"PrintToChatToPlayer.NameChanging.Mode2.Blocked": "{green}[Game Manager] {grey}You Are Blocked From Joining A Team{nextline}{green}[Game Manager] {grey}You Will Get Kicked On {lime}{0} Seconds",
+	"PrintToCenterToPlayer.NameChanging.Mode2.Blocked": "<font class='fontSize-l' color='#ff5555'>Name Changing Is Not Allowed!</font> <br><br> <font class='fontSize-m'>You Will Get Kicked After</font> <br> <font class='fontSize-m' color='#7CFC00'>{0} Seconds</font> <br>"
 }

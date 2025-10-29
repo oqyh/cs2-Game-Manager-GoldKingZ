@@ -15,11 +15,15 @@
     <PackageReference Include="CounterStrikeSharp.API" Version="*" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="MySqlConnector" Version="2.3.7" />
+    <PackageReference Include="MaxMind.Db" Version="4.1.0" />
+    <PackageReference Include="MaxMind.GeoIP2" Version="5.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Newtonsoft.Json.dll"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="MySqlConnector.dll"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="MaxMind.Db.dll"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="MaxMind.GeoIP2.dll"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
     <None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
