@@ -2,7 +2,7 @@
 
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
-# [CS2] Game-Manager-GoldKingZ (2.0.9)
+# [CS2] Game-Manager-GoldKingZ (2.1.0)
 
 Block/Hide Unnecessaries In Game
 
@@ -42,23 +42,48 @@ Block/Hide Unnecessaries In Game
 >
 
 <details open>
-<summary><b>Block/Hide Config</b> (Click to expand 🔽)</summary>
+<summary><b>Main Config</b> (Click to expand 🔽)</summary>
 
 | Property | Description | Values | Required |  
 |----------|-------------|--------|----------|
-| `DisableRadio` | Disable Players Radio | `true`/`false` | - |
-| `DisableBotRadio` | Disable Bot Radio | `true`/`false` | - |
-| `DisableChatWheel` | Disable Chat Wheel | `true`/`false` | - |
-| `DisablePing` | Disable Players Ping | `true`/`false` | - |
-| `DisableGrenadeRadio` | Disable Radio When Throwing Grenades | `true`/`false` | - |
-| `DisableRadar` | Disable Players Radar | `true`/`false` | - |
-| `DisableFallDamage` | Disable Players Fall Damage | `true`/`false` | - |
-| `DisableSvCheats_1` | Force-disable sv_cheats | `true`/`false` | - |
-| `DisableC4` | Disable C4 In Game | `true`/`false` | - |
-| `DisableBloodAndHsSpark` | Disable Blood/Headshot Effects | `true`/`false` | - |
-| `DisableKillfeed` | Disable Killfeed | `0`-No<br>`1`-Disable completely<br>`2`-Show only my kills | - |
-| `DisableTeamMateHeadTag` | Disable Teammate Head Tags | `0`-No<br>`1`-Disable completely<br>`2`-Disable behind walls<br>`3`-Disable by distance | - |
-| `DisableTeamMateHeadTag_Distance` | Head Tag Visibility Distance | `50`-Very close<br>`150`-Close<br>`250`-Far | `DisableTeamMateHeadTag=3` |
+| `AutoSetPlayerLanguage` | Auto set player language based on country | `true`/`false` | - |
+| `Reload_GameManager_CommandsInGame` | Commands to reload plugin | `Console_Commands: css_reloadgamemanager,css_reloadgm | Chat_Commands:` | - |
+| `Reload_GameManager_Flags` | Restricted flags for reload command | `SteamIDs: 76561198206086993,STEAM_0:1:507335558 | Flags: @css/root,@css/admin | Groups: #css/root,#css/admin` | - |
+| `Reload_GameManager_Hide` | Hide chat after reload command | `0`-No<br>`1`-Only after success<br>`2`-Always hide | - |
+
+</details>
+
+<details>
+<summary><b>Block Config</b> (Click to expand 🔽)</summary>
+
+| Property | Description | Values | Required |  
+|----------|-------------|--------|----------|
+| `BlockRadio` | Block Players Radio | `true`/`false` | - |
+| `BlockBotRadio` | Block Bot Radio | `true`/`false` | - |
+| `BlockGrenadesRadio` | Block Radio When Throwing Grenades | `true`/`false` | - |
+| `BlockChatWheel` | Block Chat Wheel | `true`/`false` | - |
+| `BlockPing` | Block Players Ping | `true`/`false` | - |
+| `BlockNameChanger` | Block animated name changers | `0`-No<br>`1`-Send to spec with warning<br>`2`-Send to spec + execute command after delay | - |
+| `BlockNameChanger_Block` | Block duration (seconds) | e.g. `10` | `BlockNameChanger=1 or 2` |
+| `BlockNameChanger_SendServerConsoleCommand` | Command after block timer | Placeholders: `{PLAYER_NAME}`, `{PLAYER_ID}`, etc. | `BlockNameChanger=2` |
+| `Block_Commands_StartWith` | Block commands starting with | Array of strings | - |
+| `Block_Commands_StartWith_IgnoreCase` | Ignore case for start-with | `true`/`false` | - |
+| `Block_Commands_Contains` | Block commands containing | Array of strings | - |
+| `Block_Commands_Contains_IgnoreCase` | Ignore case for contains | `true`/`false` | - |
+| `Block_Commands_Ignore_Flags` | Ignore flags for command blocking | `SteamIDs: | Flags: | Groups:` | - |
+
+</details>
+
+<details>
+<summary><b>Hide Config</b> (Click to expand 🔽)</summary>
+
+| Property | Description | Values | Required |  
+|----------|-------------|--------|----------|
+| `HideRadar` | Hide Players Radar | `true`/`false` | - |
+| `HideKillfeed` | Hide Killfeed | `0`-No<br>`1`-Hide completely<br>`2`-Show only my kills | - |
+| `HideBloodAndHsSpark` | Hide Blood/Headshot Effects | `true`/`false` | - |
+| `HideTeamMateHeadTag` | Hide Teammate Head Tags | `0`-No<br>`1`-Disable completely<br>`2`-Disable behind walls<br>`3`-Disable by distance | - |
+| `HideTeamMateHeadTag_Distance` | Head Tag Visibility Distance | `50`-Very close<br>`150`-Close<br>`250`-Far | `HideTeamMateHeadTag=3` |
 | `HideDeadBody` | Hide Dead Bodies | `0`-No<br>`1`-Immediately<br>`2`-After delay<br>`3`-Decay body | - |
 | `HideDeadBody_Delay` | Body Hide Delay (seconds) | e.g. `10` | `HideDeadBody=2` |
 | `HideLegs` | Hide Player Legs | `true`/`false` | - |
@@ -69,24 +94,44 @@ Block/Hide Unnecessaries In Game
 </details>
 
 <details>
+<summary><b>Disable Config</b> (Click to expand 🔽)</summary>
+
+| Property | Description | Values | Required |  
+|----------|-------------|--------|----------|
+| `DisableFallDamage` | Disable Players Fall Damage | `true`/`false` | - |
+| `DisableSvCheats_1` | Force-disable sv_cheats | `true`/`false` | - |
+| `DisableC4` | Disable C4 In Game | `true`/`false` | - |
+| `DisableCameraSpectator` | Disable spectator camera transitions | `true`/`false` | - |
+| `DisableAimPunch` | Disable screen shake when damaged | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled by default)<br>`3`-Togglable (disabled by default) | - |
+| `DisableAimPunch_CommandsInGame` | Toggle commands for aim punch | `Console_Commands: css_aim,css_aimpunch | Chat_Commands:` | `DisableAimPunch=2 or 3` |
+| `DisableAimPunch_Flags` | Restricted flags for aim punch toggle | `SteamIDs: | Flags: | Groups:` | `DisableAimPunch=2 or 3` |
+| `DisableAimPunch_Hide` | Hide chat after aim punch toggle | `0`-No<br>`1`-Only after success<br>`2`-Always hide | `DisableAimPunch=2 or 3` |
+
+</details>
+
+<details>
 <summary><b>Sounds Config</b> (Click to expand 🔽)</summary>
 
 | Property | Description | Values | Required |  
 |----------|-------------|--------|----------|
-| `Sounds_MuteHeadShot` | Mute headshot sounds | `true`/`false` | - |
-| `Sounds_MuteBodyShot` | Mute bodyshot sounds | `true`/`false` | - |
-| `Sounds_MutePlayerDeathVoice` | Mute death voice sounds | `true`/`false` | - |
-| `Sounds_MuteAfterDeathCrackling` | Mute death crackling sounds | `true`/`false` | - |
-| `Sounds_MuteSwitchModeSemiToAuto` | Mute fire mode switch sounds | `true`/`false` | - |
-| `Sounds_MuteMVPMusic` | Mute MVP music | `true`/`false` | - |
+| `Sounds_MuteMVPMusic` | Mute MVP music | `0`-No<br>`1`-MVP music only<br>`2`-MVP + round end music | - |
 | `Sounds_MutePlayersFootSteps` | Mute footsteps | `true`/`false` | - |
 | `Sounds_MuteJumpLand` | Mute jump land sounds | `true`/`false` | - |
-| `Sounds_MuteKnifeStab` | Mute knife stab sounds | `0`-No<br>`1`-Completely<br>`2`-Only on teammates | - |
+| `Sounds_MuteKnife` | Mute knife stab sounds | `0`-No<br>`1`-Completely<br>`2`-Only on teammates | - |
+| `Sounds_MuteKnife_SoundeventHash` | Soundevent hashes for knife mute | Array of numbers | `Sounds_MuteKnife=1 or 2` |
 | `Sounds_MuteGunShots` | Mute gunshot sounds | `0`-No<br>`1`-Completely<br>`2`-Replace with M4 silencer<br>`3`-Replace with USP silencer<br>`4`-Custom replacement | - |
 | `Sounds_MuteGunShots_weapon_id` | Custom gun sound: weapon ID | Number (e.g. `0`) | `Sounds_MuteGunShots=4` |
 | `Sounds_MuteGunShots_sound_type` | Custom gun sound: type | Number (e.g. `9`) | `Sounds_MuteGunShots=4` |
 | `Sounds_MuteGunShots_item_def_index` | Custom gun sound: item index | Number (e.g. `61`) | `Sounds_MuteGunShots=4` |
-| `Sounds_MuteDropWeapons` | Mute weapon drop sounds | `A`-C4<br>`B`-Pistols<br>`C`-Shotguns<br>`D`-SMGs<br>`E`-Rifles<br>`F`-Snipers<br>`G`-Flash/Decoy<br>`H`-Smoke/Incendiary<br>`I`-HE Grenade<br>`J`-Molotov<br>`K`-Knife<br>Combine letters (e.g. `"ABCD"`) | - |
+| `Custom_MuteSounds1` | Custom mute sounds 1 | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled)<br>`3`-Togglable (disabled) | - |
+| `Custom_MuteSounds1_SoundeventHash_Global_Side` | Global soundevent hashes | Array of numbers | `Custom_MuteSounds1=1` |
+| `Custom_MuteSounds1_SoundeventHash_Victim_Side` | Victim-side soundevent hashes | Array of numbers | `Custom_MuteSounds1=2 or 3` |
+| `Custom_MuteSounds1_SoundeventHash_Attacker_Side` | Attacker-side soundevent hashes | Array of numbers | `Custom_MuteSounds1=2 or 3` |
+| `Custom_MuteSounds1_CommandsInGame` | Toggle commands | `Console_Commands: | Chat_Commands:` | `Custom_MuteSounds1=2 or 3` |
+| `Custom_MuteSounds1_Flags` | Restricted flags | `SteamIDs: | Flags: | Groups:` | `Custom_MuteSounds1=2 or 3` |
+| `Custom_MuteSounds1_Hide` | Hide chat after toggle | `0`-No<br>`1`-Only after success<br>`2`-Always hide | `Custom_MuteSounds1=2 or 3` |
+| `Custom_MuteSounds2` | Custom mute sounds 2 | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled)<br>`3`-Togglable (disabled) | - |
+| `Custom_MuteSounds3` | Custom mute sounds 3 | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled)<br>`3`-Togglable (disabled) | - |
 
 </details>
 
@@ -95,15 +140,18 @@ Block/Hide Unnecessaries In Game
 
 | Property | Description | Values | Required |  
 |----------|-------------|--------|----------|
-| `Ignore_BombPlantedHUDMessages` | Ignore bomb planted HUD messages/sound | `true`/`false` (Requires restart) | - |
-| `Ignore_TeamMateAttackMessages` | Ignore teammate attack messages | `true`/`false` (Requires restart) | - |
-| `Ignore_AwardsMoneyMessages` | Ignore money award messages | `true`/`false` (Requires restart) | - |
-| `Ignore_PlayerSavedYouByPlayerMessages` | Ignore "saved you" messages | `true`/`false` (Requires restart) | - |
-| `Ignore_ChickenKilledMessages` | Ignore chicken death messages | `true`/`false` (Requires restart) | - |
-| `Ignore_JoinTeamMessages` | Ignore team join messages | `true`/`false` (Requires restart) | - |
-| `Ignore_PlantingBombMessages` | Ignore "[PLANTING!]" messages | `true`/`false` (Requires restart) | - |
-| `Ignore_DefusingBombMessages` | Ignore "[DEFUSING!]" messages | `true`/`false` (Requires restart) | - |
+| `Ignore_BombPlantedHUDMessages` | Ignore bomb planted HUD messages/sound | `true`/`false` | - |
+| `Ignore_TeamMateAttackMessages` | Ignore teammate attack messages | `true`/`false` | - |
+| `Ignore_AwardsMoneyMessages` | Ignore money award messages | `true`/`false` | - |
+| `Ignore_PlayerSavedYouByPlayerMessages` | Ignore "saved you" messages | `true`/`false` | - |
+| `Ignore_ChickenKilledMessages` | Ignore chicken death messages | `true`/`false` | - |
+| `Ignore_JoinTeamMessages` | Ignore team join messages | `true`/`false` | - |
+| `Ignore_PlantingBombMessages` | Ignore "[PLANTING!]" messages | `true`/`false` | - |
+| `Ignore_DefusingBombMessages` | Ignore "[DEFUSING!]" messages | `true`/`false` | - |
 | `Ignore_DisconnectMessages` | Ignore disconnect messages | `0`-No<br>`1`-Completely<br>`2`-Also remove killfeed icon | - |
+| `Ignore_Custom_TextMsg` | Ignore custom TextMsg messages | Array of strings | - |
+| `Ignore_Custom_HintText` | Ignore custom HintText messages | Array of strings | - |
+| `Ignore_Custom_RadioText` | Ignore custom RadioText messages | Array of strings | - |
 
 </details>
 
@@ -112,10 +160,14 @@ Block/Hide Unnecessaries In Game
 
 | Property | Description | Values | Required |  
 |----------|-------------|--------|----------|
-| `Custom_JoinTeamMessages` | Customize team join messages | `0`-No<br>`1`-Yes (Exclude bots)<br>`2`-Yes (Include bots) | - |
-| `Custom_ThrowNadeMessages` | Customize grenade throw messages | `0`-No<br>`1`-Yes (Exclude bots)<br>`2`-Yes (Include bots)<br>`3`-Hide when (mp_teammates_are_enemies true)<br>`4`-Show when (mp_teammates_are_enemies true) | - |
 | `Custom_ChatMessages` | Enable custom chat messages (via `chat_processor.json`) | `true`/`false` | - |
-| `Custom_ChatMessages_ExcludeStartWith` | Exclude chat messages starting with these prefixes | Array of strings (e.g., `"!"`, `"."`, `"/"`, `"rtv"`) | `Custom_ChatMessages=true` |
+| `Custom_JoinTeamMessages` | Customize team join messages | `true`-Exclude bots<br>`false`-Include bots | `Custom_ChatMessages=true` |
+| `Custom_ThrowNadeMessages` | Customize grenade throw messages | `1`-Exclude bots<br>`2`-Include bots<br>`3`-Hide when (mp_teammates_are_enemies true)<br>`4`-Show when (exclude bots)<br>`5`-Show when (include bots) | `Custom_ChatMessages=true` |
+| `Custom_ChatMessages_Mode` | Chat message visibility | `1`-Show to all<br>`2`-Alive can't see dead messages<br>`3`-Alive see only team dead messages | `Custom_ChatMessages=true` |
+| `Custom_ChatMessages_ExcludeStartWith` | Exclude chat messages starting with prefixes | Array of strings | `Custom_ChatMessages=true` |
+| `Custom_ChatMessages_ExcludeStartWith_IgnoreCase` | Ignore case for start-with | `true`/`false` | `Custom_ChatMessages=true` |
+| `Custom_ChatMessages_ExcludeContains` | Exclude chat messages containing text | Array of strings | `Custom_ChatMessages=true` |
+| `Custom_ChatMessages_ExcludeContains_IgnoreCase` | Ignore case for contains | `true`/`false` | `Custom_ChatMessages=true` |
 
 </details>
 
@@ -125,9 +177,9 @@ Block/Hide Unnecessaries In Game
 | Property | Description | Values | Required |  
 |----------|-------------|--------|----------|
 | `AutoClean_Enable` | Enable auto clean dropped weapons | `true`/`false` | - |
-| `AutoClean_WhenXWeaponsInGround` | Start cleaning when X weapons are on ground | Number (e.g. `5`) | `AutoClean_Enable=true` |
-| `AutoClean_DropWeapons` | Cleanup method | `1`-Remove all at once<br>`2`-Remove oldest first<br>`3`-Remove newest first | `AutoClean_Enable=true` |
-| `AutoClean_TheseDroppedWeaponsOnly` | Weapons to auto clean | `A`-Snipers<br>`B`-Rifles<br>`C`-LMGs<br>`D`-Shotguns<br>`E`-SMGs<br>`F`-Pistols<br>`G`-Grenades<br>`H`-Defuse kits<br>`I`-Taser<br>`J`-Healthshot<br>`K`-Knives<br>`ANY`-All weapons<br>Or specific weapon names (e.g. `"A,B,weapon_taser"`) | `AutoClean_Enable=true` |
+| `AutoClean_Timer` | Check interval (seconds) | `1`-`999` | `AutoClean_Enable=true` |
+| `AutoClean_MaxWeaponsOnGround` | Start cleaning when X weapons on ground | `1`-`999` | `AutoClean_Enable=true` |
+| `AutoClean_TheseDroppedWeaponsOnly` | Weapons to auto clean | `A`-Snipers<br>`B`-Rifles<br>`C`-LMGs<br>`D`-Shotguns<br>`E`-SMGs<br>`F`-Pistols<br>`G`-Grenades<br>`H`-Defuse kits<br>`I`-Taser<br>`J`-Healthshot<br>`K`-Knives<br>`ANY`-All weapons<br>Or specific weapon names | `AutoClean_Enable=true` |
 
 **Weapon Categories Key:**
 - `A`: AWP, G3SG1, SCAR-20, SSG 08
@@ -145,11 +197,48 @@ Block/Hide Unnecessaries In Game
 </details>
 
 <details>
+<summary><b>Advanced Filters Config</b> (Click to expand 🔽)</summary>
+
+| Property | Description | Values | Required |  
+|----------|-------------|--------|----------|
+| `Filter_Whitelist_Ips` | Whitelist IP addresses | Array of IPs | - |
+| `Filter_Whitelist_URLs` | Whitelist URLs | Array of URLs | - |
+| `Filter_Players_Names` | Filter player names | `0`-No<br>`1`-Check IPs<br>`2`-Check URLs<br>`3`-Check both | - |
+| `Filter_Players_Chat` | Filter player chat | `0`-No<br>`1`-Check IPs<br>`2`-Check URLs<br>`3`-Check both | - |
+
+</details>
+
+<details>
+<summary><b>Locally Config</b> (Click to expand 🔽)</summary>
+
+| Property | Description | Values | Required |  
+|----------|-------------|--------|----------|
+| `Cookies_Enable` | Save player data locally | `0`-No<br>`1`-On disconnect<br>`2`-On map change | - |
+| `Cookies_AutoRemovePlayerOlderThanXDays` | Auto delete inactive players (days) | `0`-Don't delete<br>`1`+ days | `Cookies_Enable=1 or 2` |
+
+</details>
+
+<details>
+<summary><b>MySql Config</b> (Click to expand 🔽)</summary>
+
+| Property | Description | Values | Required |  
+|----------|-------------|--------|----------|
+| `MySql_Enable` | Save player data to MySQL | `0`-No<br>`1`-On disconnect<br>`2`-On map change | - |
+| `MySql_ConnectionTimeout` | Connection timeout (seconds) | e.g. `30` | `MySql_Enable=1 or 2` |
+| `MySql_RetryAttempts` | Retry attempts on failure | e.g. `3` | `MySql_Enable=1 or 2` |
+| `MySql_RetryDelay` | Delay between retries (seconds) | e.g. `2` | `MySql_Enable=1 or 2` |
+| `MySql_Servers` | MySQL server configurations | Array of server objects | `MySql_Enable=1 or 2` |
+| `MySql_AutoRemovePlayerOlderThanXDays` | Auto delete inactive players (days) | `0`-Don't delete<br>`1`+ days | `MySql_Enable=1 or 2` |
+
+</details>
+
+<details>
 <summary><b>Utilities Config</b> (Click to expand 🔽)</summary>
 
 | Property | Description | Values | Required |  
-|----------|-------------|--------|----------|  
-| `EnableDebug` | Enable Debug Mode | `true`/`false` | - |  
+|----------|-------------|--------|----------|
+| `AutoUpdateGeoLocation` | Auto update GeoLocation data | `true`/`false` | - |
+| `EnableDebug` | Enable Debug Mode | `0`-No<br>`1`-Debug everything<br>`2`-Custom_MuteSounds only<br>`3`-Sounds_MuteGunShots only<br>`4`-Ignore_Custom messages only | - |
 
 </details>
 
@@ -161,6 +250,76 @@ Block/Hide Unnecessaries In Game
 <details>
 <summary><b>📋 View Version History</b> (Click to expand 🔽)</summary>
 
+### [2.1.0]
+- Rework On Plugin
+- Optimize On Hook UnHook
+- Moved Custom_JoinTeamMessages,Custom_ThrowNadeMessages,Custom_ChatMessages_ExcludeStartWith To Custom_ChatMessages (chat_processor.json)
+- Fix/Compatibility With cs2fix
+- Fix Exploit On Names/Chat In Custom_ChatMessages
+- Fix HideDeadBody
+- Fix Ignore_DisconnectMessages 2
+- Fix AutoClean_Enable Lag
+- Fix On chat_processor.json Flags
+- Removed AutoClean_DropWeapons
+- Added Reload_GameManager_CommandsInGame
+- Added Reload_GameManager_Flags
+- Added Reload_GameManager_Hide
+- Added Block_Commands_StartWith
+- Added Block_Commands_StartWith_IgnoreCase
+- Added Block_Commands_Contains_IgnoreCase
+- Added Block_Commands_Ignore_Flags
+- Added DisableAimPunch
+- Added DisableAimPunch_CommandsInGame
+- Added DisableAimPunch_Flags
+- Added DisableAimPunch_Hide
+- Added Custom_MuteSounds1 And MuteSounds2 And MuteSounds3
+- Added Custom_MuteSounds
+- Added Custom_MuteSounds_SoundeventHash_Global_Side
+- Added Custom_MuteSounds_SoundeventHash_Victim_Side
+- Added Custom_MuteSounds_SoundeventHash_Attacker_Side
+- Added Custom_MuteSounds_CommandsInGame
+- Added Custom_MuteSounds_Flags
+- Added Custom_MuteSounds_Hide
+- Added Multiple MySql
+- Added Locally 
+- Added Added AutoSetPlayerLanguage
+- Added Added BlockNameChanger
+- Added Added BlockNameChanger_SendServerConsoleCommand
+- Added Added Block_Commands_StartWith
+- Added Added Block_Commands_StartWith_IgnoreCase
+- Added Added Block_Commands_Contains
+- Added Added Block_Commands_Contains_IgnoreCase
+- Added Added Block_Commands_Ignore_Flags
+- Added Added DisableCameraSpectator
+- Added Added Sounds_MuteMVPMusic 2 = MVP Music And Round End Music
+- Added Added Sounds_MuteKnife_SoundeventHash
+- Added Added Ignore_Custom_TextMsg
+- Added Added Ignore_Custom_HintText
+- Added Added Ignore_Custom_RadioText
+- Added Added Custom_ChatMessages_Mode
+- Added Added Custom_ChatMessages_ExcludeStartWith
+- Added Added Custom_ChatMessages_ExcludeStartWith_IgnoreCase
+- Added Added Custom_ChatMessages_ExcludeContains
+- Added Added Custom_ChatMessages_ExcludeContains_IgnoreCase
+- Added AutoClean_Timer
+- Added Filter_Whitelist_Ips
+- Added Filter_Whitelist_URLs
+- Added Filter_Players_Names
+- Added Filter_Players_Chat
+- Added AutoUpdateGeoLocation
+- Added EnableDebug 1 to 4
+- Added In chat_processor.json
+ - ClanTag_ScoreBoard
+ - ClanTag_Chat
+ - BotTakeOver
+ - {PLAYER_NAME}
+ - {BOT_NAME}
+ - {ClanTag_ScoreBoard}
+ - {ClanTag_Chat}
+ - {PLAYER_LOCATION}
+ - {PLAYER_MSG}
+ - {team_color}
+ 
 ### [2.0.9]
 #### **Bug Fixes**
 - Fixed various bugs
