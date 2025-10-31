@@ -25,9 +25,9 @@ public class Game_UserMessages
         var weapon_id = um.ReadUInt("weapon_id");
         var sound_type = um.ReadInt("sound_type");
         var item_def_index = um.ReadInt("item_def_index");
-        Helper.DebugMessage("weapon_id : " + weapon_id, Configs.Instance.EnableDebug.ToDebugConfig(3));
-        Helper.DebugMessage("sound_type : " + sound_type, Configs.Instance.EnableDebug.ToDebugConfig(3));
-        Helper.DebugMessage("item_def_index : " + item_def_index, Configs.Instance.EnableDebug.ToDebugConfig(3));
+        Helper.DebugMessage("[Sounds_MuteGunShots] weapon_id : " + weapon_id, Configs.Instance.EnableDebug.ToDebugConfig(3));
+        Helper.DebugMessage("[Sounds_MuteGunShots] sound_type : " + sound_type, Configs.Instance.EnableDebug.ToDebugConfig(3));
+        Helper.DebugMessage("[Sounds_MuteGunShots] item_def_index : " + item_def_index, Configs.Instance.EnableDebug.ToDebugConfig(3));
 
         if (Configs.Instance.Sounds_MuteGunShots == 1)
         {
@@ -67,11 +67,11 @@ public class Game_UserMessages
             || Configs.Instance.Ignore_ChickenKilledMessages && message.Contains("#Pet_Killed")
             || Configs.Instance.Ignore_Custom_TextMsg.Contains(message))
             {
-                Helper.DebugMessage("[TextMsg] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                Helper.DebugMessage("[Ignore_Custom] [TextMsg] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
                 um.Recipients.Clear();
             } else
             {
-                Helper.DebugMessage("[TextMsg] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                Helper.DebugMessage("[Ignore_Custom] [TextMsg] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
             }
             
         }
@@ -88,11 +88,11 @@ public class Game_UserMessages
             || Configs.Instance.Ignore_DefusingBombMessages && message.Contains("#Cstrike_TitlesTXT_Defusing_Bomb")
             || Configs.Instance.Ignore_Custom_RadioText.Contains(message))
             {
-                Helper.DebugMessage("[RadioText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                Helper.DebugMessage("[Ignore_Custom] [RadioText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
                 um.Recipients.Clear();
             } else
             {
-                Helper.DebugMessage("[RadioText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                Helper.DebugMessage("[Ignore_Custom] [RadioText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
             }
             
         }
@@ -105,11 +105,11 @@ public class Game_UserMessages
         if (Configs.Instance.Ignore_TeamMateAttackMessages && Helper.TeamWarningArray.Contains(message)
         || Configs.Instance.Ignore_Custom_HintText.Contains(message))
         {
-            Helper.DebugMessage("[HintText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+            Helper.DebugMessage("[Ignore_Custom] [HintText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
             um.Recipients.Clear();
         }else
         {
-            Helper.DebugMessage("[HintText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+            Helper.DebugMessage("[Ignore_Custom] [HintText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
         }
 
         return HookResult.Continue;
@@ -235,11 +235,11 @@ public class Game_UserMessages
         {
             if (PlayerMadeSounds.IsValid(true))
             {
-                Helper.DebugMessage($"[MUTED] - {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                Helper.DebugMessage($"[Custom_MuteSounds] [MUTED] - {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
             else if (attacker.IsValid(true))
             {
-                Helper.DebugMessage($"[MUTED] - {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                Helper.DebugMessage($"[Custom_MuteSounds] [MUTED] - {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
             return HookResult.Stop;
         }
@@ -247,11 +247,11 @@ public class Game_UserMessages
         {
             if (PlayerMadeSounds.IsValid(true))
             {
-                Helper.DebugMessage($"{PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                Helper.DebugMessage($"[Custom_MuteSounds] {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
             else if (attacker.IsValid(true))
             {
-                Helper.DebugMessage($"{attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                Helper.DebugMessage($"[Custom_MuteSounds] {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
         }
 
@@ -350,105 +350,119 @@ public class Game_UserMessages
             Helper.MuteCommands(um, Configs.Instance.Reload_GameManager.Reload_GameManager_Hide, true);
         }
 
-        if (Configs.Instance.Disable_AimPunch.DisableAimPunch_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
+        if (Configs.Instance.Disable_AimPunch.DisableAimPunch > 1)
         {
-            if (Configs.Instance.Disable_AimPunch.DisableAimPunch_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Disable_AimPunch.DisableAimPunch_Flags))
+            if (Configs.Instance.Disable_AimPunch.DisableAimPunch_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
             {
-                if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.AntiAimPunch.Not.Allowed"]);
-            }
-            else
-            {
-                if (onetime)
+                if (Configs.Instance.Disable_AimPunch.DisableAimPunch_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Disable_AimPunch.DisableAimPunch_Flags))
                 {
-                    playerData.Toggle_AimPunch = playerData.Toggle_AimPunch.ToggleOnOff();
-                    if (playerData.Toggle_AimPunch == -1)
-                    {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.AntiAimPunch.Enabled"]);
-                    }
-                    else if (playerData.Toggle_AimPunch == -2)
-                    {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.AntiAimPunch.Disabled"]);
-                    }
+                    if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.AntiAimPunch.Not.Allowed"]);
                 }
-                Helper.MuteCommands(um, Configs.Instance.Disable_AimPunch.DisableAimPunch_Hide);
+                else
+                {
+                    if (onetime)
+                    {
+                        playerData.Toggle_AimPunch = playerData.Toggle_AimPunch.ToggleOnOff();
+                        if (playerData.Toggle_AimPunch == -1)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.AntiAimPunch.Enabled"]);
+                        }
+                        else if (playerData.Toggle_AimPunch == -2)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.AntiAimPunch.Disabled"]);
+                        }
+                    }
+                    Helper.MuteCommands(um, Configs.Instance.Disable_AimPunch.DisableAimPunch_Hide);
+                }
+                Helper.MuteCommands(um, Configs.Instance.Disable_AimPunch.DisableAimPunch_Hide, true);
             }
-            Helper.MuteCommands(um, Configs.Instance.Disable_AimPunch.DisableAimPunch_Hide, true);
+        }
+        
+
+        if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1 > 1)
+        {
+            if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
+            {
+                if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Flags))
+                {
+                    if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_1.Not.Allowed"]);
+                }
+                else
+                {
+                    if (onetime)
+                    {
+                        playerData.Toggle_Custom_MuteSounds1 = playerData.Toggle_Custom_MuteSounds1.ToggleOnOff();
+                        if (playerData.Toggle_Custom_MuteSounds1 == -1)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_1.Enabled"]);
+                        }
+                        else if (playerData.Toggle_Custom_MuteSounds1 == -2)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_1.Disabled"]);
+                        }
+                    }
+                    Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Hide);
+                }
+                Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Hide, true);
+            }
         }
 
-        if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
+        if (Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2 > 1)
         {
-            if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Flags))
+            if (Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
             {
-                if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_1.Not.Allowed"]);
-            }
-            else
-            {
-                if (onetime)
+                if (Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Flags))
                 {
-                    playerData.Toggle_Custom_MuteSounds1 = playerData.Toggle_Custom_MuteSounds1.ToggleOnOff();
-                    if (playerData.Toggle_Custom_MuteSounds1 == -1)
-                    {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_1.Enabled"]);
-                    }
-                    else if (playerData.Toggle_Custom_MuteSounds1 == -2)
-                    {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_1.Disabled"]);
-                    }
+                    if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_2.Not.Allowed"]);
                 }
-                Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Hide);
+                else
+                {
+                    if (onetime)
+                    {
+                        playerData.Toggle_Custom_MuteSounds2 = playerData.Toggle_Custom_MuteSounds2.ToggleOnOff();
+                        if (playerData.Toggle_Custom_MuteSounds2 == -1)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_2.Enabled"]);
+                        }
+                        else if (playerData.Toggle_Custom_MuteSounds2 == -2)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_2.Disabled"]);
+                        }
+                    }
+                    Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Hide);
+                }
+                Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Hide, true);
             }
-            Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Hide, true);
         }
 
-        if (Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
+        if (Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3 > 1)
         {
-            if (Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Flags))
+            if (Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
             {
-                if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_2.Not.Allowed"]);
-            }
-            else
-            {
-                if (onetime)
+                if (Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Flags))
                 {
-                    playerData.Toggle_Custom_MuteSounds2 = playerData.Toggle_Custom_MuteSounds2.ToggleOnOff();
-                    if (playerData.Toggle_Custom_MuteSounds2 == -1)
-                    {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_2.Enabled"]);
-                    }
-                    else if (playerData.Toggle_Custom_MuteSounds2 == -2)
-                    {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_2.Disabled"]);
-                    }
+                    if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_3.Not.Allowed"]);
                 }
-                Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Hide);
-            }
-            Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Hide, true);
-        }
-
-        if (Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_CommandsInGame.ConvertCommands(true)?.Any(c => message.Equals(c.Trim(), StringComparison.OrdinalIgnoreCase)) == true)
-        {
-            if (Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Flags))
-            {
-                if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_3.Not.Allowed"]);
-            }
-            else
-            {
-                if (onetime)
+                else
                 {
-                    playerData.Toggle_Custom_MuteSounds3 = playerData.Toggle_Custom_MuteSounds3.ToggleOnOff();
-                    if (playerData.Toggle_Custom_MuteSounds3 == -1)
+                    if (onetime)
                     {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_3.Enabled"]);
+                        playerData.Toggle_Custom_MuteSounds3 = playerData.Toggle_Custom_MuteSounds3.ToggleOnOff();
+                        if (playerData.Toggle_Custom_MuteSounds3 == -1)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_3.Enabled"]);
+                        }
+                        else if (playerData.Toggle_Custom_MuteSounds3 == -2)
+                        {
+                            Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_3.Disabled"]);
+                        }
                     }
-                    else if (playerData.Toggle_Custom_MuteSounds3 == -2)
-                    {
-                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.Toggle.MuteSounds_3.Disabled"]);
-                    }
+                    Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Hide);
                 }
-                Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Hide);
+                Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Hide, true);
             }
-            Helper.MuteCommands(um, Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Hide, true);
         }
+        
 
         if (Configs.Instance.Custom_ChatMessages)
         {
@@ -495,19 +509,19 @@ public class Game_UserMessages
 
                         var message_formate = GetValues.formatString?.ReplaceChatMessages(clan_chat: GetValues.ClanTag_Chat ?? "", clan_scoreboard: GetValues.ClanTag_ScoreBoard ?? "", PlayerName: player.PlayerName.RemoveColorNames(), location: player.PlayerPawn.Value?.LastPlaceName ?? "", message: message.RemoveColorNames(), team_color: player.TeamNum.ToTeamColor());
                         Helper.AdvancedPlayerPrintToChat(players, null!, message_formate!);
-                        if (!string.IsNullOrEmpty(message_formate))
+                        /* if (!string.IsNullOrEmpty(message_formate))
                         {
-                            /* um?.Recipients.Clear();
+                            um?.Recipients.Clear();
                             um?.SetString("messagename", " " + message_formate.ReplaceColorTags());
-                            um?.Send(players); */
+                            um?.Send(players);
 
-                            /* var sendmessage = UserMessage.FromId(118);
+                            var sendmessage = UserMessage.FromId(118);
                             sendmessage.SetInt("entityindex", (int)player.Index);
                             sendmessage.SetBool("chat", true);
                             var mmm = " {green}test";
                             sendmessage.SetString("param2", mmm.ReplaceColorTags());
-                            sendmessage.Send(player); */
-                        }
+                            sendmessage.Send(player);
+                        } */
                     }
                 }
             }
@@ -560,7 +574,7 @@ public class Game_UserMessages
 
     public void CommandsAction_Toggle_AimPunch(CCSPlayerController? player, CommandInfo info)
     {
-        if (!player.IsValid()) return;
+        if (Configs.Instance.Disable_AimPunch.DisableAimPunch < 2 || !player.IsValid()) return;
 
         Helper.CheckPlayerInGlobals(player);
 
@@ -587,7 +601,7 @@ public class Game_UserMessages
 
     public void CommandsAction_Toggle_MuteSounds_1(CCSPlayerController? player, CommandInfo info)
     {
-        if (!player.IsValid()) return;
+        if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1 < 2 || !player.IsValid()) return;
 
         Helper.CheckPlayerInGlobals(player);
 
@@ -614,7 +628,7 @@ public class Game_UserMessages
 
     public void CommandsAction_Toggle_MuteSounds_2(CCSPlayerController? player, CommandInfo info)
     {
-        if (!player.IsValid()) return;
+        if (Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2 < 2 || !player.IsValid()) return;
 
         Helper.CheckPlayerInGlobals(player);
 
@@ -641,7 +655,7 @@ public class Game_UserMessages
 
     public void CommandsAction_Toggle_MuteSounds_3(CCSPlayerController? player, CommandInfo info)
     {
-        if (!player.IsValid()) return;
+        if (Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3 < 2 || !player.IsValid()) return;
 
         Helper.CheckPlayerInGlobals(player);
 

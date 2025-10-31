@@ -641,35 +641,26 @@ public class Helper
             {
                 Console.ForegroundColor = ConsoleColor.Green;
             }
-            string output = $"[Game Manager] {message}";
-            Console.WriteLine(output);
         }
         else if (config == 1)
         {
             Console.ForegroundColor = ConsoleColor.Magenta;
-            string output = $"[Game Manager] {message}";
-            Console.WriteLine(output);
         }
         else if (config == 2)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            string output = $"[Game Manager (Custom_MuteSounds)] {message}";
-            Console.WriteLine(output);
         }
         else if (config == 3)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            string output = $"[Game Manager (Sounds_MuteGunShots)] {message}";
-            Console.WriteLine(output);
         }
         else if (config == 4)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            string output = $"[Game Manager (Ignore_Custom)] {message}";
-            Console.WriteLine(output);
         }
 
-
+        string output = $"[Game Manager] {message}";
+        Console.WriteLine(output);
         Console.ResetColor();
     }
 
@@ -944,6 +935,25 @@ public class Helper
         });
     }
 
+    public static string GetGeoIsoCodeInfoAsync(string ipAddress)
+    {
+        if (!Configs.Instance.AutoSetPlayerLanguage || ipAddress == "127.0.0.1" || ipAddress.Contains("192.168."))
+            return "";
+
+        try
+        {
+            using var reader = new DatabaseReader(Path.Combine(MainPlugin.Instance.ModuleDirectory, "GeoLocation/GeoLite2-City.mmdb"));
+
+            var response = reader.City(ipAddress);
+
+            return response.Country.IsoCode ?? "";
+        }
+        catch (Exception ex)
+        {
+            DebugMessage($"GetGeoIsoCodeInfoAsync Error {ex.Message}", 0);
+        }
+        return "";
+    }
     public static void SetPlayerLanguage(CCSPlayerController? player, string isoCode)
     {
         if (!Configs.Instance.AutoSetPlayerLanguage || !player.IsValid()) return;
@@ -1813,23 +1823,5 @@ public class Helper
         return url.TrimEnd('/');
     }
 
-    public static string GetGeoIsoCodeInfoAsync(string ipAddress)
-    {
-        if (ipAddress == "127.0.0.1" || ipAddress.Contains("192.168."))
-            return "";
-
-        try
-        {
-            using var reader = new DatabaseReader(Path.Combine(MainPlugin.Instance.ModuleDirectory, "GeoLocation/GeoLite2-City.mmdb"));
-
-            var response = reader.City(ipAddress);
-
-            return response.Country.IsoCode ?? "";
-        }
-        catch (Exception ex)
-        {
-            DebugMessage($"GetGeoIsoCodeInfoAsync Error {ex.Message}", 0);
-        }
-        return "";
-    }
+    
 }

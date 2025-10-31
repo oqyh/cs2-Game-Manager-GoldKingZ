@@ -32,7 +32,7 @@ namespace Game_Manager_GoldKingZ;
 public class MainPlugin : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.1.0";
+    public override string ModuleVersion => "2.1.1";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     public static MainPlugin Instance { get; set; } = new();
@@ -51,23 +51,6 @@ public class MainPlugin : BasePlugin
         Helper.RegisterCommandsAndHooks(true);
         Helper.ExectueCommands();
         Helper.StartTimer();
-
-        RegisterListener<Listeners.OnClientAuthorized>(OnClientAuthorized);
-        RegisterListener<Listeners.OnMapStart>(OnMapStart);
-        RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
-
-        RegisterEventHandler<EventRoundStart>(OnRoundStart);
-        RegisterEventHandler<EventPlayerSpawn>(OnEventPlayerSpawn);
-        RegisterEventHandler<EventPlayerDeath>(OnEventPlayerDeath, HookMode.Pre);
-        RegisterEventHandler<EventRoundMvp>(OnEventRoundMvp, HookMode.Pre);
-        RegisterEventHandler<EventPlayerConnectFull>(OnEventPlayerConnectFull);
-        RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect, HookMode.Pre);
-        RegisterEventHandler<EventBombPlanted>(OnEventBombPlanted, HookMode.Pre);
-        RegisterEventHandler<EventPlayerTeam>(OnEventPlayerTeam, HookMode.Pre);
-        RegisterEventHandler<EventGrenadeThrown>(OnEventGrenadeThrown);
-        RegisterEventHandler<EventBotTakeover>(OnEventBotTakeover);
-
-        
 
         if (hotReload)
         {
@@ -307,7 +290,6 @@ public class MainPlugin : BasePlugin
     public HookResult OnEventPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
     {
         if (@event == null) return HookResult.Continue;
-
         var player = @event.Userid;
         if (!player.IsValid(true)) return HookResult.Continue;
 
@@ -327,17 +309,19 @@ public class MainPlugin : BasePlugin
             var player = Getplayer;
             if (!player.IsValid(true)) return;
 
-            var playerip = player.IpAddress?.Split(':')[0] ?? "";
-            var countryCode = Helper.GetGeoIsoCodeInfoAsync(playerip);
-            
-            Console.WriteLine($"Country code: {countryCode}");
-            Server.NextFrame(() =>
+            if (Configs.Instance.AutoSetPlayerLanguage)
             {
-                if (player.IsValid())
+                var playerip = player.IpAddress?.Split(':')[0] ?? "";
+                var countryCode = Helper.GetGeoIsoCodeInfoAsync(playerip);
+
+                Server.NextFrame(() =>
                 {
-                    Helper.SetPlayerLanguage(player, countryCode);
-                }
-            });
+                    if (player.IsValid())
+                    {
+                        Helper.SetPlayerLanguage(player, countryCode);
+                    }
+                });
+            }
 
             await Helper.LoadPlayerData(player);
         }
