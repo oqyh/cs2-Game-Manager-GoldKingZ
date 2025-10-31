@@ -2,7 +2,7 @@
 
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
-# [CS2] Game-Manager-GoldKingZ (2.1.0)
+# [CS2] Game-Manager-GoldKingZ (2.1.1)
 
 Block/Hide Unnecessaries In Game
 
@@ -328,6 +328,12 @@ Block/Hide Unnecessaries In Game
 
 <details>
 <summary><b>📋 View Version History</b> (Click to expand 🔽)</summary>
+
+### [2.1.1]
+- Remove Hooks On Plugin Load Avoid Dublicate
+- Clean Up Code 
+- Fix Toggles Configs On Reload Plugin 
+
 
 ### [2.1.0]
 - Rework On Plugin
