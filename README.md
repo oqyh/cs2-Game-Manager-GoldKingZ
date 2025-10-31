@@ -330,7 +330,7 @@ Block/Hide Unnecessaries In Game
 <summary><b>📋 View Version History</b> (Click to expand 🔽)</summary>
 
 ### [2.1.1]
-- Remove Hooks On Plugin Load Avoid Dublicate
+- Remove Hooks On Plugin Load Avoid Duplicate
 - Clean Up Code 
 - Fix Toggles Configs On Reload Plugin 
 
