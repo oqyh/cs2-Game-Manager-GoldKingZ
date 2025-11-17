@@ -2,7 +2,7 @@
 
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
-# [CS2] Game-Manager-GoldKingZ (2.1.1)
+# [CS2] Game-Manager-GoldKingZ (2.1.2)
 
 Block/Hide Unnecessaries In Game
 
@@ -58,13 +58,16 @@ Block/Hide Unnecessaries In Game
 
 <details open>
 <summary><b>Main Config</b> (Click to expand 🔽)</summary>
+  
+| Property                            | Description                               | Values                                                                                                                  | Required |
+| ----------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------- |
+| `AutoSetPlayerLanguage`             | Auto set player language based on country | `true`/`false`                                                                                                          | -        |
+| `Reload_GameManager_CommandsInGame` | Commands to reload plugin                 | `Console_Commands: css_reloadgamemanager, css_reloadgm`<br>`Chat_Commands:`                                             | -        |
+| `Reload_GameManager_Flags`          | Restricted flags for reload command       | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `Reload_GameManager_CommandsInGame`        |
+| `Reload_GameManager_Hide`           | Hide chat after reload command            | `0`-No<br>`1`-Only after success<br>`2`-Always hide                                                                     | `Reload_GameManager_CommandsInGame`        |
+| `ExecuteOnEveryRoundEnd`            | Commands to execute every round end       | Example: `sv_alltalk true; sv_deadtalk true`<br>Empty = Disable                                                         | -        |
+| `ExecuteOnEveryRoundStart`          | Commands to execute every round start     | Example: `sv_alltalk false; sv_deadtalk false`<br>Empty = Disable                                                       | -        |
 
-| Property | Description | Values | Required |  
-|----------|-------------|--------|----------|
-| `AutoSetPlayerLanguage` | Auto set player language based on country | `true`/`false` | - |
-| `Reload_GameManager_CommandsInGame` | Commands to reload plugin | `Console_Commands: css_reloadgamemanager,css_reloadgm | Chat_Commands:` | - |
-| `Reload_GameManager_Flags` | Restricted flags for reload command | `SteamIDs: 76561198206086993,STEAM_0:1:507335558 | Flags: @css/root,@css/admin | Groups: #css/root,#css/admin` | - |
-| `Reload_GameManager_Hide` | Hide chat after reload command | `0`-No<br>`1`-Only after success<br>`2`-Always hide | - |
 
 </details>
 
@@ -85,7 +88,7 @@ Block/Hide Unnecessaries In Game
 | `Block_Commands_StartWith_IgnoreCase` | Ignore case for start-with | `true`/`false` | - |
 | `Block_Commands_Contains` | Block commands containing | Array of strings | - |
 | `Block_Commands_Contains_IgnoreCase` | Ignore case for contains | `true`/`false` | - |
-| `Block_Commands_Ignore_Flags` | Ignore flags for command blocking | `SteamIDs: | Flags: | Groups:` | - |
+| `Block_Commands_Ignore_Flags` | Ignore flags for command blocking | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `Block_Commands_StartWith` or `Block_Commands_Contains` |
 
 </details>
 
@@ -113,13 +116,16 @@ Block/Hide Unnecessaries In Game
 
 | Property | Description | Values | Required |  
 |----------|-------------|--------|----------|
+| `DisableChickenFromSpawn` | Disable Chickens From Spawning | `true`/`false` | - |
 | `DisableFallDamage` | Disable Players Fall Damage | `true`/`false` | - |
+| `DisableKnifeDamage` | Disable Knife Damage | `true`/`false` | - |
+| `DisableZeusDamage` | Disable Zeus Damage | `true`/`false` | - |
 | `DisableSvCheats_1` | Force-disable sv_cheats | `true`/`false` | - |
 | `DisableC4` | Disable C4 In Game | `true`/`false` | - |
 | `DisableCameraSpectator` | Disable spectator camera transitions | `true`/`false` | - |
 | `DisableAimPunch` | Disable screen shake when damaged | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled by default)<br>`3`-Togglable (disabled by default) | - |
 | `DisableAimPunch_CommandsInGame` | Toggle commands for aim punch | `Console_Commands: css_aim,css_aimpunch | Chat_Commands:` | `DisableAimPunch=2 or 3` |
-| `DisableAimPunch_Flags` | Restricted flags for aim punch toggle | `SteamIDs: | Flags: | Groups:` | `DisableAimPunch=2 or 3` |
+| `DisableAimPunch_Flags` | Restricted flags for aim punch toggle | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `DisableAimPunch=2 or 3` |
 | `DisableAimPunch_Hide` | Hide chat after aim punch toggle | `0`-No<br>`1`-Only after success<br>`2`-Always hide | `DisableAimPunch=2 or 3` |
 
 </details>
@@ -143,7 +149,7 @@ Block/Hide Unnecessaries In Game
 | `Custom_MuteSounds1_SoundeventHash_Victim_Side` | Victim-side soundevent hashes | Array of numbers | `Custom_MuteSounds1=2 or 3` |
 | `Custom_MuteSounds1_SoundeventHash_Attacker_Side` | Attacker-side soundevent hashes | Array of numbers | `Custom_MuteSounds1=2 or 3` |
 | `Custom_MuteSounds1_CommandsInGame` | Toggle commands | `Console_Commands: | Chat_Commands:` | `Custom_MuteSounds1=2 or 3` |
-| `Custom_MuteSounds1_Flags` | Restricted flags | `SteamIDs: | Flags: | Groups:` | `Custom_MuteSounds1=2 or 3` |
+| `Custom_MuteSounds1_Flags` | Restricted flags | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `Custom_MuteSounds1=2 or 3` |
 | `Custom_MuteSounds1_Hide` | Hide chat after toggle | `0`-No<br>`1`-Only after success<br>`2`-Always hide | `Custom_MuteSounds1=2 or 3` |
 | `Custom_MuteSounds2` | Custom mute sounds 2 | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled)<br>`3`-Togglable (disabled) | - |
 | `Custom_MuteSounds3` | Custom mute sounds 3 | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled)<br>`3`-Togglable (disabled) | - |
@@ -328,6 +334,15 @@ Block/Hide Unnecessaries In Game
 
 <details>
 <summary><b>📋 View Version History</b> (Click to expand 🔽)</summary>
+
+### [2.1.2]
+- Fix BlockNameChanger On Reconnect With New Name It Kick Player
+- Fix OnTakeDamage NullReferenceException
+- Added DisableKnifeDamage
+- Added DisableZeusDamage
+- Added DisableChickenFromSpawn
+- Added ExecuteOnEveryRoundEnd
+- Added ExecuteOnEveryRoundStart
 
 ### [2.1.1]
 - Remove Hooks On Plugin Load Avoid Duplicate
