@@ -32,7 +32,7 @@ namespace Game_Manager_GoldKingZ;
 public class MainPlugin : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.1.1";
+    public override string ModuleVersion => "2.1.2";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     public static MainPlugin Instance { get; set; } = new();
@@ -145,6 +145,11 @@ public class MainPlugin : BasePlugin
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
         if (@event == null) return HookResult.Continue;
+
+        if(!string.IsNullOrEmpty(Configs.Instance.ExecuteOnEveryRoundStart))
+        {
+            Server.ExecuteCommand(Configs.Instance.ExecuteOnEveryRoundStart);
+        }
         
         Helper.ExectueCommands();
         g_Main.CbaseWeapons?.Clear();
@@ -152,6 +157,23 @@ public class MainPlugin : BasePlugin
         Helper.ReloadCheckPlayerName();
 
         return HookResult.Continue;
+    }
+    public HookResult OnEventRoundEnd(EventRoundEnd @event, GameEventInfo info)
+    {
+        if (@event == null) return HookResult.Continue;
+
+        if(!string.IsNullOrEmpty(Configs.Instance.ExecuteOnEveryRoundEnd))
+        {
+            Server.ExecuteCommand(Configs.Instance.ExecuteOnEveryRoundEnd);
+        }
+
+        return HookResult.Continue;
+    }
+
+    public void OnEntitySpawned(CEntityInstance entity)
+    {
+        if (entity == null || !entity.IsValid || entity.DesignerName != "chicken") return;
+        entity.AcceptInput("kill");
     }
 
     public HookResult OnEventPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
@@ -510,11 +532,18 @@ public class MainPlugin : BasePlugin
             info.DontBroadcast = true;
         }
 
+        var player = @event.Userid;
+        if (!player.IsValid()) return HookResult.Continue;
+            
+        if (g_Main.Player_Data.TryGetValue(player, out var handle))
+        {
+            handle.PlayerName_Count = 0;
+            handle.PlayerName_Block = false;
+            handle.PlayerName_Block_Message = false;
+        }
+
         if (Configs.Instance.MySql_Enable == 1 || Configs.Instance.Cookies_Enable == 1)
         {
-            var player = @event.Userid;
-            if (!player.IsValid()) return HookResult.Continue;
-            
             _ = HandlePlayerDisconnectAsync(player);
         }
 

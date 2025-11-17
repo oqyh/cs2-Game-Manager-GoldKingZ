@@ -337,6 +337,7 @@ public class Helper
         MainPlugin.Instance.RegisterListener<Listeners.OnMapEnd>(MainPlugin.Instance.OnMapEnd);
 
         MainPlugin.Instance.RegisterEventHandler<EventRoundStart>(MainPlugin.Instance.OnRoundStart);
+        MainPlugin.Instance.RegisterEventHandler<EventRoundEnd>(MainPlugin.Instance.OnEventRoundEnd);
         MainPlugin.Instance.RegisterEventHandler<EventPlayerSpawn>(MainPlugin.Instance.OnEventPlayerSpawn);
         MainPlugin.Instance.RegisterEventHandler<EventPlayerDeath>(MainPlugin.Instance.OnEventPlayerDeath, HookMode.Pre);
         MainPlugin.Instance.RegisterEventHandler<EventRoundMvp>(MainPlugin.Instance.OnEventRoundMvp, HookMode.Pre);
@@ -351,15 +352,20 @@ public class Helper
         MainPlugin.Instance.AddCommandListener("say_team", MainPlugin.Instance.OnPlayerSay_Team, HookMode.Post);
         MainPlugin.Instance.HookUserMessage(118, MainPlugin.Instance.OnUserMessage_OnSayText2, HookMode.Pre);
 
+        RegisterCssCommands(Configs.Instance.Reload_GameManager.Reload_GameManager_CommandsInGame.ConvertCommands(), "Commands To Reload Game Manager Plugin", MainPlugin.Instance.Game_UserMessages.CommandsAction_ReloadPlugin);
+        RegisterCssListener(Configs.Instance.Block_Commands.Block_Commands_Contains?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
+        RegisterCssListener(Configs.Instance.Block_Commands.Block_Commands_StartWith?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
+        
+        if(Configs.Instance.DisableChickenFromSpawn)
+        {
+            MainPlugin.Instance.RegisterListener<Listeners.OnEntitySpawned>(MainPlugin.Instance.OnEntitySpawned);
+        }
+
         if (Configs.Instance.BlockNameChanger > 0)
         {
             MainPlugin.Instance.RegisterListener<Listeners.OnTick>(MainPlugin.Instance.OnTick);
             MainPlugin.Instance.AddCommandListener("jointeam", MainPlugin.Instance.OnJoinTeam, HookMode.Pre);
         }
-
-        RegisterCssCommands(Configs.Instance.Reload_GameManager.Reload_GameManager_CommandsInGame.ConvertCommands(), "Commands To Reload Game Manager Plugin", MainPlugin.Instance.Game_UserMessages.CommandsAction_ReloadPlugin);
-        RegisterCssListener(Configs.Instance.Block_Commands.Block_Commands_Contains?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
-        RegisterCssListener(Configs.Instance.Block_Commands.Block_Commands_StartWith?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
 
         if (Configs.Instance.Disable_AimPunch.DisableAimPunch > 1)
         {
@@ -434,7 +440,7 @@ public class Helper
         if (!MainPlugin.Instance.g_Main.OnTakeDamage_Hooked)
         {
             if (Configs.Instance.Disable_AimPunch.DisableAimPunch > 0 || Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1 > 1 || Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2 > 1 || Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3 > 1
-            || Configs.Instance.Sounds_MuteKnife == 2 || Configs.Instance.EnableDebug.ToDebugConfig(2) == 2)
+            || Configs.Instance.Sounds_MuteKnife == 2 || Configs.Instance.DisableKnifeDamage || Configs.Instance.DisableZeusDamage || Configs.Instance.EnableDebug.ToDebugConfig(2) == 2)
             {
                 VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(MainPlugin.Instance.Game_Hook.OnTakeDamage, HookMode.Pre);
                 MainPlugin.Instance.g_Main.OnTakeDamage_Hooked = true;
@@ -448,6 +454,7 @@ public class Helper
         MainPlugin.Instance.RemoveListener<Listeners.OnMapStart>(MainPlugin.Instance.OnMapStart);
         MainPlugin.Instance.RemoveListener<Listeners.OnTick>(MainPlugin.Instance.OnTick);
         MainPlugin.Instance.RemoveListener<Listeners.OnMapEnd>(MainPlugin.Instance.OnMapEnd);
+        MainPlugin.Instance.RemoveListener<Listeners.OnEntitySpawned>(MainPlugin.Instance.OnEntitySpawned);
         RemoveCssCommands(Configs.Instance.Reload_GameManager.Reload_GameManager_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_ReloadPlugin);
         RemoveCssCommands(Configs.Instance.Disable_AimPunch.DisableAimPunch_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_Toggle_AimPunch);
         RemoveCssCommands(Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_Toggle_MuteSounds_1);
@@ -950,7 +957,7 @@ public class Helper
         }
         catch (Exception ex)
         {
-            DebugMessage($"GetGeoIsoCodeInfoAsync Error {ex.Message}", 0);
+            DebugMessage($"GetGeoIsoCodeInfoAsync Error {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
         }
         return "";
     }
@@ -1054,7 +1061,7 @@ public class Helper
                 }
                 catch (Exception ex)
                 {
-                    DebugMessage($"LoadPlayerData Update Cookies Error: {ex.Message}", 0);
+                    DebugMessage($"LoadPlayerData Update Cookies Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                 }
             }
 
@@ -1077,13 +1084,13 @@ public class Helper
                 }
                 catch (Exception ex)
                 {
-                    DebugMessage($"LoadPlayerData Update MySql Error: {ex.Message}", 0);
+                    DebugMessage($"LoadPlayerData Update MySql Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                 }
             }
         }
         catch (Exception ex)
         {
-            DebugMessage($"LoadPlayerData Error: {ex.Message}", 0);
+            DebugMessage($"LoadPlayerData Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
         }
     }
 
@@ -1160,7 +1167,7 @@ public class Helper
                         }
                         catch (Exception ex)
                         {
-                            DebugMessage($"SavePlayerDataOnDisconnect Save Cookies Error: {ex.Message}", 0);
+                            DebugMessage($"SavePlayerDataOnDisconnect Save Cookies Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                         }
                     }
 
@@ -1170,7 +1177,6 @@ public class Helper
                         {
                             await Server.NextFrameAsync(async () =>
                             {
-
                                 await MySqlDataManager.SaveToMySqlAsync(new Globals_Static.PersonData
                                 {
                                     PlayerSteamID = player_SteamID,
@@ -1185,7 +1191,7 @@ public class Helper
                         }
                         catch (Exception ex)
                         {
-                            DebugMessage($"SavePlayerDataOnDisconnect Save MySql Error: {ex.Message}", 0);
+                            DebugMessage($"SavePlayerDataOnDisconnect Save MySql Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                         }
                     }
                 }
@@ -1195,7 +1201,7 @@ public class Helper
         }
         catch (Exception ex)
         {
-            DebugMessage($"SavePlayerDataOnDisconnect Error: {ex.Message}", 0);
+            DebugMessage($"SavePlayerDataOnDisconnect Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
         }
     }
 
@@ -1236,7 +1242,7 @@ public class Helper
                         }
                         catch (Exception ex)
                         {
-                            DebugMessage($"SavePlayersValues Save Cookies Error: {ex.Message}", 0);
+                            DebugMessage($"SavePlayersValues Save Cookies Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                         }
                     });
                 }
@@ -1260,7 +1266,7 @@ public class Helper
                         }
                         catch (Exception ex)
                         {
-                            DebugMessage($"SavePlayersValues Save MySql Error: {ex.Message}", 0);
+                            DebugMessage($"SavePlayersValues Save MySql Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                         }
                     });
                 }
@@ -1279,7 +1285,7 @@ public class Helper
                 }
                 catch (Exception ex)
                 {
-                    DebugMessage($"SavePlayersValues Remove Cookies Error: {ex.Message}", 0);
+                    DebugMessage($"SavePlayersValues Remove Cookies Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                 }
             });
         }
@@ -1294,7 +1300,7 @@ public class Helper
                 }
                 catch (Exception ex)
                 {
-                    DebugMessage($"SavePlayersValues Remove MySql Error: {ex.Message}", 0);
+                    DebugMessage($"SavePlayersValues Remove MySql Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
                 }
             });
         }
@@ -1636,7 +1642,7 @@ public class Helper
         }
         catch (Exception ex)
         {
-            DebugMessage($"DownloadMissingFiles failed: {ex.Message}", 0);
+            DebugMessage($"DownloadMissingFiles failed: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
         }
     }
 
@@ -1671,8 +1677,8 @@ public class Helper
             }
 
             using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "CS2-Plugin");
-            client.Timeout = TimeSpan.FromSeconds(20);
+            client.DefaultRequestHeaders.Add("User-Agent", $"CS2-Plugin-Game-Manager");
+            client.Timeout = TimeSpan.FromSeconds(50);
 
             string actualDownloadUrl = githubUrl;
 

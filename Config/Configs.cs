@@ -159,7 +159,7 @@ namespace Game_Manager_GoldKingZ.Config
         [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (!)")]
         [Comment("Making Both Console_Commands And Chat_Commands Empty = Disable")]
         [String("Console_Commands", "Chat_Commands")]
-        public string Custom_MuteSounds1_CommandsInGame { get; set; } = "Console_Commands: | Chat_Commands: ";
+        public string Custom_MuteSounds1_CommandsInGame { get; set; } = "Console_Commands: css_muteheadshot,css_mutehs | Chat_Commands: ";
 
         [Comment("If [Custom_MuteSounds1_CommandsInGame] Pass, Is There Any Specified Restricted Flags, Groups, SteamIDs")]
         [Comment("Example:")]
@@ -225,7 +225,7 @@ namespace Game_Manager_GoldKingZ.Config
         [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (!)")]
         [Comment("Making Both Console_Commands And Chat_Commands Empty = Disable")]
         [String("Console_Commands", "Chat_Commands")]
-        public string Custom_MuteSounds2_CommandsInGame { get; set; } = "Console_Commands: | Chat_Commands: ";
+        public string Custom_MuteSounds2_CommandsInGame { get; set; } = "Console_Commands: css_mutebodyshot,css_mutebs | Chat_Commands: ";
 
         [Comment("If [Custom_MuteSounds2_CommandsInGame] Pass, Is There Any Specified Restricted Flags, Groups, SteamIDs")]
         [Comment("Example:")]
@@ -375,6 +375,18 @@ namespace Game_Manager_GoldKingZ.Config
 
         [Comment("Reload Game Manager Plugin")]
         public Reload_GameManager Reload_GameManager { get; set; } = new();
+
+        [Comment("Execute Commands On Every Round End")]
+        [Comment("Example: (Allow Players Talk On Round End And Disable On Round Start)")]
+        [Comment("\"sv_alltalk true; sv_deadtalk true\"")]
+        [Comment("Empty = No (Disable This Feature)")]
+        public string ExecuteOnEveryRoundEnd { get; set; } = "";
+
+        [Comment("Execute Commands On Every Round Start")]
+        [Comment("Example: (Allow Players Talk On Round End And Disable On Round Start)")]
+        [Comment("\"sv_alltalk false; sv_deadtalk false\"")]
+        [Comment("Empty = No (Disable This Feature)")]
+        public string ExecuteOnEveryRoundStart { get; set; } = "";
 
         [BreakLine("----------------------------[ ↓ Block Config ↓ ]----------------------------{nextline}")]
 
@@ -527,10 +539,25 @@ namespace Game_Manager_GoldKingZ.Config
 
         [BreakLine("----------------------------[ ↓ Disable Config ↓ ]----------------------------{nextline}")]
 
+        [Comment("Disable Chickens From Spawning?")]
+        [Comment("true = Yes")]
+        [Comment("false = No")]
+        public bool DisableChickenFromSpawn { get; set; } = false;
+
         [Comment("Disable Players Fall Damage?")]
         [Comment("true = Yes")]
         [Comment("false = No")]
         public bool DisableFallDamage { get; set; } = false;
+
+        [Comment("Disable Knife Damage?")]
+        [Comment("true = Yes")]
+        [Comment("false = No")]
+        public bool DisableKnifeDamage { get; set; } = false;
+
+        [Comment("Disable Zeus Damage?")]
+        [Comment("true = Yes")]
+        [Comment("false = No")]
+        public bool DisableZeusDamage { get; set; } = false;
 
         [Comment("Disable sv_cheats?")]
         [Comment("true = Yes (Will Force sv_cheats To Be Disabled)")]
