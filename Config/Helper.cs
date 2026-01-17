@@ -24,10 +24,6 @@ namespace Game_Manager_GoldKingZ;
 public class Helper
 {
     public static StringComparison GetComparison(bool ignoreCase) => ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-    private static readonly HttpClient _httpClient = new HttpClient
-    {
-        Timeout = TimeSpan.FromSeconds(10)
-    };
     public static string[] RadioArray = new string[] {
     "coverme",
     "takepoint",
@@ -353,8 +349,24 @@ public class Helper
         MainPlugin.Instance.HookUserMessage(118, MainPlugin.Instance.OnUserMessage_OnSayText2, HookMode.Pre);
 
         RegisterCssCommands(Configs.Instance.Reload_GameManager.Reload_GameManager_CommandsInGame.ConvertCommands(), "Commands To Reload Game Manager Plugin", MainPlugin.Instance.Game_UserMessages.CommandsAction_ReloadPlugin);
-        RegisterCssListener(Configs.Instance.Block_Commands.Block_Commands_Contains?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
-        RegisterCssListener(Configs.Instance.Block_Commands.Block_Commands_StartWith?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
+
+        if (Configs.Instance.Block_Commands.Block_Commands_StartWith != null && Configs.Instance.Block_Commands.Block_Commands_StartWith.Any())
+        {
+            var commands = Configs.Instance.Block_Commands.Block_Commands_StartWith.ToList();
+            MainPlugin.Instance.g_Main.AntiCrash_StartWith = "AntiCrash_StartWith_" + DateTime.Now;
+            commands.Add(MainPlugin.Instance.g_Main.AntiCrash_StartWith);
+            
+            RegisterCssListener(commands.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
+        }
+
+        if (Configs.Instance.Block_Commands.Block_Commands_Contains != null && Configs.Instance.Block_Commands.Block_Commands_Contains.Any())
+        {
+            var commands = Configs.Instance.Block_Commands.Block_Commands_Contains.ToList();
+            MainPlugin.Instance.g_Main.AntiCrash_Contains = "AntiCrash_Contains_" + DateTime.Now;
+            commands.Add(MainPlugin.Instance.g_Main.AntiCrash_Contains);
+            
+            RegisterCssListener(commands.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
+        }
         
         if(Configs.Instance.DisableChickenFromSpawn)
         {
@@ -365,6 +377,11 @@ public class Helper
         {
             MainPlugin.Instance.RegisterListener<Listeners.OnTick>(MainPlugin.Instance.OnTick);
             MainPlugin.Instance.AddCommandListener("jointeam", MainPlugin.Instance.OnJoinTeam, HookMode.Pre);
+        }
+
+        if (Configs.Instance.BlockSpray)
+        {
+            MainPlugin.Instance.RegisterListener<Listeners.OnEntityCreated>(MainPlugin.Instance.OnEntityCreated);
         }
 
         if (Configs.Instance.Disable_AimPunch.DisableAimPunch > 1)
@@ -389,7 +406,11 @@ public class Helper
 
         if (Configs.Instance.BlockRadio)
         {
-            RegisterCssListener(RadioArray, MainPlugin.Instance.Game_Listeners.BlockRadio_Listener);
+            var commands = RadioArray.ToList();
+            MainPlugin.Instance.g_Main.AntiCrash_BlockRadio = "AntiCrash_BlockRadio_" + DateTime.Now;
+            commands.Add(MainPlugin.Instance.g_Main.AntiCrash_BlockRadio);
+            
+            RegisterCssListener(commands.ToArray(), MainPlugin.Instance.Game_Listeners.BlockRadio_Listener);
         }
 
         if (Configs.Instance.BlockChatWheel)
@@ -442,7 +463,7 @@ public class Helper
             if (Configs.Instance.Disable_AimPunch.DisableAimPunch > 0 || Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1 > 1 || Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2 > 1 || Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3 > 1
             || Configs.Instance.Sounds_MuteKnife == 2 || Configs.Instance.DisableKnifeDamage || Configs.Instance.DisableZeusDamage || Configs.Instance.EnableDebug.ToDebugConfig(2) == 2)
             {
-                VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(MainPlugin.Instance.Game_Hook.OnTakeDamage, HookMode.Pre);
+                MainPlugin.Instance.RegisterListener<Listeners.OnEntityTakeDamagePre>(MainPlugin.Instance.Game_Listeners.OnEntityTakeDamagePre);
                 MainPlugin.Instance.g_Main.OnTakeDamage_Hooked = true;
             }
         }
@@ -455,16 +476,27 @@ public class Helper
         MainPlugin.Instance.RemoveListener<Listeners.OnTick>(MainPlugin.Instance.OnTick);
         MainPlugin.Instance.RemoveListener<Listeners.OnMapEnd>(MainPlugin.Instance.OnMapEnd);
         MainPlugin.Instance.RemoveListener<Listeners.OnEntitySpawned>(MainPlugin.Instance.OnEntitySpawned);
+        MainPlugin.Instance.RemoveListener<Listeners.OnEntityCreated>(MainPlugin.Instance.OnEntityCreated);
         RemoveCssCommands(Configs.Instance.Reload_GameManager.Reload_GameManager_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_ReloadPlugin);
         RemoveCssCommands(Configs.Instance.Disable_AimPunch.DisableAimPunch_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_Toggle_AimPunch);
         RemoveCssCommands(Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_Toggle_MuteSounds_1);
         RemoveCssCommands(Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_Toggle_MuteSounds_2);
         RemoveCssCommands(Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_CommandsInGame.ConvertCommands(), MainPlugin.Instance.Game_UserMessages.CommandsAction_Toggle_MuteSounds_3);
-        RemoveCssListener(RadioArray, MainPlugin.Instance.Game_Listeners.BlockRadio_Listener);
-        RemoveCssListener(Configs.Instance.Block_Commands.Block_Commands_Contains?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
-        RemoveCssListener(Configs.Instance.Block_Commands.Block_Commands_StartWith?.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
 
+        var commands_RadioArray = RadioArray.ToList();
+        commands_RadioArray.Add(MainPlugin.Instance.g_Main.AntiCrash_BlockRadio);
+        RemoveCssListener(commands_RadioArray.ToArray(), MainPlugin.Instance.Game_Listeners.BlockRadio_Listener);
+       
+        var commands_Block_Commands_StartWith = Configs.Instance.Block_Commands.Block_Commands_StartWith.ToList();
+        commands_Block_Commands_StartWith.Add(MainPlugin.Instance.g_Main.AntiCrash_StartWith);
+        RemoveCssListener(commands_Block_Commands_StartWith.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
+        
+        var commands_Block_Commands_Contains = Configs.Instance.Block_Commands.Block_Commands_Contains.ToList();
+        commands_Block_Commands_Contains.Add(MainPlugin.Instance.g_Main.AntiCrash_Contains);
+        RemoveCssListener(commands_Block_Commands_Contains.ToArray(), MainPlugin.Instance.Game_Listeners.BlockCommands_Listener);
+        
         MainPlugin.Instance.DeregisterEventHandler<EventRoundStart>(MainPlugin.Instance.OnRoundStart);
+	    MainPlugin.Instance.DeregisterEventHandler<EventRoundEnd>(MainPlugin.Instance.OnEventRoundEnd);
         MainPlugin.Instance.DeregisterEventHandler<EventPlayerSpawn>(MainPlugin.Instance.OnEventPlayerSpawn);
         MainPlugin.Instance.DeregisterEventHandler<EventPlayerDeath>(MainPlugin.Instance.OnEventPlayerDeath, HookMode.Pre);
         MainPlugin.Instance.DeregisterEventHandler<EventRoundMvp>(MainPlugin.Instance.OnEventRoundMvp, HookMode.Pre);
@@ -491,7 +523,7 @@ public class Helper
 
         if (MainPlugin.Instance.g_Main.OnTakeDamage_Hooked)
         {
-            VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(MainPlugin.Instance.Game_Hook.OnTakeDamage, HookMode.Pre);
+            MainPlugin.Instance.RemoveListener<Listeners.OnEntityTakeDamagePre>(MainPlugin.Instance.Game_Listeners.OnEntityTakeDamagePre);
             MainPlugin.Instance.g_Main.OnTakeDamage_Hooked = false;
         }
     }
@@ -678,6 +710,11 @@ public class Helper
             Server.ExecuteCommand("bot_chatter off");
         }
 
+        if (Configs.Instance.BlockBots)
+        {
+            Server.ExecuteCommand("bot_kick");
+        }
+
         if (Configs.Instance.BlockGrenadesRadio)
         {
             Server.ExecuteCommand("sv_ignoregrenaderadio 1");
@@ -731,9 +768,6 @@ public class Helper
             Server.ExecuteCommand($"sv_teamid_overhead 1; sv_teamid_overhead_always_prohibit 1; sv_teamid_overhead_maxdist {Configs.Instance.HideTeamMateHeadTag_Distance}");
         }
     }
-
-
-
 
 
     public static (string? Nade_Decoy, string? Nade_Flashbang, string? Nade_Incgrenade, string? Nade_Molotov,
@@ -829,17 +863,6 @@ public class Helper
         {
             if (!players.IsValid()) continue;
             _ = MainPlugin.Instance.HandlePlayerConnectionsAsync(players);
-        }
-    }
-
-    public static void ReloadPlayersClanTags()
-    {
-        if (!Configs.Instance.Custom_ChatMessages) return;
-
-        foreach (var players in GetPlayersController(false, false, false))
-        {
-            if (!players.IsValid()) continue;
-            SetPlayerClan(players);
         }
     }
 
@@ -1002,7 +1025,7 @@ public class Helper
         if (!player.IsValid(true)) return;
 
         var g_Main = MainPlugin.Instance.g_Main;
-        if (!g_Main.Player_Data.ContainsKey(player))
+        if (!g_Main.Player_Data.ContainsKey(player.Slot))
         {
             var initialData = new Globals.PlayerDataClass(
                 player,
@@ -1023,7 +1046,12 @@ public class Helper
                 DateTime.MinValue,
                 DateTime.MinValue
             );
-            g_Main.Player_Data.TryAdd(player, initialData);
+            g_Main.Player_Data.TryAdd(player.Slot, initialData);
+        }
+
+        if (g_Main.Player_Data.TryGetValue(player.Slot, out var handle))
+        {
+            handle.Player = player;
         }
     }
 
@@ -1032,10 +1060,9 @@ public class Helper
         try
         {
             var g_Main = MainPlugin.Instance.g_Main;
-            if (!player.IsValid() || g_Main.Player_Data.ContainsKey(player)) return;
+            if (!player.IsValid() || g_Main.Player_Data.ContainsKey(player.Slot)) return;
 
             var steamId = player.SteamID;
-            var player_musickit = player.MusicKitID;
 
             await Server.NextFrameAsync(() =>
             {
@@ -1101,7 +1128,7 @@ public class Helper
         if (!player.IsValid()) return;
 
         var g_Main = MainPlugin.Instance.g_Main;
-        if (!g_Main.Player_Data.TryGetValue(player, out var handle)) return;
+        if (!g_Main.Player_Data.TryGetValue(player.Slot, out var handle)) return;
 
 
         if (data.Toggle_AimPunch < 0 || data.Toggle_Custom_MuteSounds1 < 0 || data.Toggle_Custom_MuteSounds2 < 0 || data.Toggle_Custom_MuteSounds3 < 0)
@@ -1134,7 +1161,7 @@ public class Helper
             var g_Main = MainPlugin.Instance.g_Main;
             var steamId = player.SteamID;
 
-            if (g_Main.Player_Data.TryGetValue(player, out var alldata))
+            if (g_Main.Player_Data.TryGetValue(player.Slot, out var alldata))
             {
                 if (alldata == null) return;
 
@@ -1153,7 +1180,6 @@ public class Helper
                         {
                             await Server.NextFrameAsync(async () =>
                             {
-
                                 await Cookies.SaveToJsonFile(
                                 player_SteamID,
                                 player_Toggle_AimPunch,
@@ -1196,7 +1222,7 @@ public class Helper
                     }
                 }
 
-                g_Main.Player_Data.Remove(player);
+                g_Main.Player_Data.Remove(player.Slot);
             }
         }
         catch (Exception ex)
@@ -1317,7 +1343,7 @@ public class Helper
 
         CheckPlayerInGlobals(player);
 
-        if (g_Main.Player_Data.TryGetValue(player, out var handle))
+        if (g_Main.Player_Data.TryGetValue(player.Slot, out var handle))
         {
             handle.Timer_DeadBody?.Kill();
             handle.Timer_DeadBody = null!;
@@ -1363,7 +1389,7 @@ public class Helper
         }
         else if (Configs.Instance.HideDeadBody == 2)
         {
-            if (g_Main.Player_Data.TryGetValue(player, out var handle))
+            if (g_Main.Player_Data.TryGetValue(player.Slot, out var handle))
             {
                 handle.Timer_DeadBody = MainPlugin.Instance.AddTimer(Configs.Instance.HideDeadBody_Delay, () =>
                 {
@@ -1374,7 +1400,7 @@ public class Helper
         }
         else if (Configs.Instance.HideDeadBody == 3)
         {
-            if (g_Main.Player_Data.TryGetValue(player, out var handle))
+            if (g_Main.Player_Data.TryGetValue(player.Slot, out var handle))
             {
                 handle.PlayerAlpha = 255;
                 handle.Timer_DeadBody = MainPlugin.Instance.AddTimer(0.01f, () =>
@@ -1391,7 +1417,7 @@ public class Helper
 
         if (!player.IsValid(true) || player.IsAlive() && !player.ControllingBot) return;
 
-        if (g_Main.Player_Data.TryGetValue(player, out var handle))
+        if (g_Main.Player_Data.TryGetValue(player.Slot, out var handle))
         {
             if (handle.PlayerAlpha <= 0)
             {
@@ -1460,6 +1486,7 @@ public class Helper
             }
         }
     }
+    
     public static void Timer_Checker_Callback()
     {
         foreach (var getplayers in MainPlugin.Instance.g_Main.Player_Data.Values.ToList())
@@ -1478,7 +1505,7 @@ public class Helper
                 getplayers.LastNameChangeTime = DateTime.Now;
                 getplayers.PlayerName = currentPlayerName;
 
-                if (getplayers.PlayerName_Count >= 3)
+                if (getplayers.PlayerName_Count >= Configs.Instance.BlockNameChanger_Changes)
                 {
                     PunishPlayer(player, getplayers);
                 }
@@ -1638,6 +1665,19 @@ public class Helper
     {
         try
         {
+            string Fpath = Path.Combine(MainPlugin.Instance.ModuleDirectory, "GeoLocation");
+            if (Directory.Exists(Fpath))
+            {
+                try
+                {
+                    Directory.Delete(Fpath, true);
+                }
+                catch
+                {
+                    
+                }
+            }
+            
             await DownloadMissingFiles();
         }
         catch (Exception ex)
@@ -1654,13 +1694,13 @@ public class Helper
             string settingsGithubUrl = "https://raw.githubusercontent.com/oqyh/cs2-Game-Manager-GoldKingZ/main/Resources/chat_processor.json";
             await DownloadFromGitHub(settingsFileName, settingsGithubUrl);
 
-            string geoFileName = "GeoLocation/GeoLite2-City.mmdb";
+            string geoFileName = Path.GetFullPath(Path.Combine(MainPlugin.Instance.ModuleDirectory, "..", "..", "shared/GoldKingZ/GeoLocation/GeoLite2-City.mmdb"));
             string geoUpdateUrl = "https://raw.githubusercontent.com/oqyh/cs2-Connect-Disconnect-Sound-GoldKingZ/main/Resources/update.txt";
             await DownloadFromGitHub(geoFileName, geoUpdateUrl, Configs.Instance.AutoUpdateGeoLocation);
         }
         catch (Exception ex)
         {
-            DebugMessage($"DownloadMissingFiles Error: {ex.Message}", 0);
+            DebugMessage($"DownloadMissingFiles Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
         }
     }
 
@@ -1708,7 +1748,7 @@ public class Helper
         }
         catch (Exception ex)
         {
-            DebugMessage($"DownloadFromGitHub Error: {ex.Message}", 0);
+            DebugMessage($"DownloadFromGitHub Error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
         }
     }
 

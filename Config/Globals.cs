@@ -35,6 +35,9 @@ public class Globals_Static
 
 public class Globals
 {
+    public string AntiCrash_StartWith = "";
+    public string AntiCrash_Contains = "";
+    public string AntiCrash_BlockRadio = "";
     public bool OnTakeDamage_Hooked = false;
     public class PlayerDataClass
     {
@@ -76,7 +79,7 @@ public class Globals
             LastNameChangeTime = LastNameChangeTimee;
         }
     }
-    public Dictionary<CCSPlayerController, PlayerDataClass> Player_Data = new Dictionary<CCSPlayerController, PlayerDataClass>();
+    public Dictionary<int, PlayerDataClass> Player_Data = new Dictionary<int, PlayerDataClass>();
     public List<CBaseEntity> CbaseWeapons = new List<CBaseEntity>();
     public JObject? JsonData { get; set; }
     public CounterStrikeSharp.API.Modules.Timers.Timer? TimerCleanUp;
@@ -84,7 +87,6 @@ public class Globals
 
     public void Clear()
     {
-        JsonData = null;
         CbaseWeapons?.Clear();
         TimerCleanUp?.Kill();
         TimerCleanUp = null;

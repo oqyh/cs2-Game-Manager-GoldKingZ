@@ -58,7 +58,8 @@ namespace Game_Manager_GoldKingZ.Config
         [Comment("Block Ingame Commands If It Contains")]
         public List<string> Block_Commands_Contains { get; set; } = new List<string>
         {
-            "meta"
+            "plugins",
+            "list"
         };
 
         [Comment("If You Using [Block_Commands_Contains] Do We Ignore Upper/LowerCase?")]
@@ -415,6 +416,16 @@ namespace Game_Manager_GoldKingZ.Config
         [Comment("false = No")]
         public bool BlockPing { get; set; } = false;
 
+        [Comment("Block Players Graffiti Spray?")]
+        [Comment("true = Yes")]
+        [Comment("false = No")]
+        public bool BlockSpray { get; set; } = false;
+
+        [Comment("Block Bots (Permanently Remove bots)?")]
+        [Comment("true = Yes")]
+        [Comment("false = No")]
+        public bool BlockBots { get; set; } = false;
+
         [Comment("Block Players Animated Name Changer?")]
         [Comment("0 = No")]
         [Comment("1 = Yes, Send Him To Spec With Message Warning To Stop And Block From Joining Team Until Stop Changing Name")]
@@ -425,6 +436,9 @@ namespace Game_Manager_GoldKingZ.Config
         "1 = Yes, Send Him To Spec With Message Warning To Stop And Block From Joining Team Until Stop Changing Name\n" +
         "2 = Yes, Send Him To Spec With Message Warning To Stop And Block From Joining Team After [BlockNameChanger_Block] Secs Finish Then Send Server Console [BlockNameChanger_SendServerConsoleCommand]")]
         public int BlockNameChanger { get; set; } = 0;
+
+        [Comment("If [BlockNameChanger = 1 or 2], How Many Times Is Each Player Allowed To Change Their Name?")]
+        public int BlockNameChanger_Changes { get; set; } = 3;
 
         [Comment("If [BlockNameChanger = 1 or 2], How Many (In Secs) Block Him From Joining")]
         public int BlockNameChanger_Block { get; set; } = 10;
@@ -886,7 +900,7 @@ namespace Game_Manager_GoldKingZ.Config
         [Comment("2 = Yes, Check If Player Name Has [Filter_Whitelist_URLs] Remove It")]
         [Comment("3 = Yes, Check If Player Name Has [Filter_Whitelist_Ips] Or [Filter_Whitelist_URLs] Remove It")]
         [Range(0, 3, 0,
-        "Cookies_Enable: is invalid, setting to default value (0) Please Choose From 0 To 3.\n" +
+        "Filter_Players_Names: is invalid, setting to default value (0) Please Choose From 0 To 3.\n" +
         "0 = No\n" +
         "1 = Yes, Check If Player Name Has [Filter_Whitelist_Ips] Remove It\n" +
         "2 = Yes, Check If Player Name Has [Filter_Whitelist_URLs] Remove It\n" +
@@ -899,7 +913,7 @@ namespace Game_Manager_GoldKingZ.Config
         [Comment("2 = Yes, Check If Player Chat Has [Filter_Whitelist_URLs] Block It")]
         [Comment("3 = Yes, Check If Player Chat Has [Filter_Whitelist_Ips] Or [Filter_Whitelist_URLs] Block It")]
         [Range(0, 3, 0,
-        "Cookies_Enable: is invalid, setting to default value (0) Please Choose From 0 To 3.\n" +
+        "Filter_Players_Chat: is invalid, setting to default value (0) Please Choose From 0 To 3.\n" +
         "0 = No\n" +
         "1 = Yes, Check If Player Chat Has [Filter_Whitelist_Ips] Block It\n" +
         "2 = Yes, Check If Player Chat Has [Filter_Whitelist_URLs] Block It\n" +

@@ -124,8 +124,11 @@ public class Game_UserMessages
         if (entity == null) return HookResult.Continue;
 
         var PlayerMadeSounds = Utilities.GetPlayers().FirstOrDefault(p => p.IsValid(true) && p.PlayerPawn.Value?.Index == entityIndex);
+        
         CCSPlayerController attacker = null!;
-        if (PlayerMadeSounds.IsValid(true) && g_Main.Player_Data.TryGetValue(PlayerMadeSounds, out var Victim_handle) && Victim_handle.Attacker.IsValid(true))
+        if (PlayerMadeSounds.IsValid(true) && 
+            g_Main.Player_Data.TryGetValue(PlayerMadeSounds.Slot, out var Victim_handle) && 
+            Victim_handle.Attacker.IsValid(true))
         {
             attacker = Victim_handle.Attacker;
         }
@@ -133,89 +136,144 @@ public class Game_UserMessages
         bool Custom_Mute1 = false;
         bool Custom_Mute1_Victim = false;
         bool Custom_Mute1_Attacker = false;
-        if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1 > 0)
-        {
-            switch (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1)
-            {
-                case 1:
-                    Custom_Mute1 = Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Global_Side.Contains(soundevent);
-                    break;
-                case 2 or 3:
-                    if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Attacker_Side.Contains(soundevent) &&
-                        attacker.IsValid(true) &&
-                        g_Main.Player_Data.TryGetValue(attacker, out var attacker_Soundevent))
-                    {
-                        Custom_Mute1_Attacker = attacker_Soundevent.Toggle_Custom_MuteSounds1 == -1 || attacker_Soundevent.Toggle_Custom_MuteSounds1 == 1;
-                    }
-
-                    if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Victim_Side.Contains(soundevent) &&
-                        PlayerMadeSounds.IsValid(true) &&
-                        g_Main.Player_Data.TryGetValue(PlayerMadeSounds, out var victim_Soundevent))
-                    {
-                        Custom_Mute1_Victim = victim_Soundevent.Toggle_Custom_MuteSounds1 == -1 || victim_Soundevent.Toggle_Custom_MuteSounds1 == 1;
-                    }
-                    break;
-            }
-        }
-
+        
         bool Custom_Mute2 = false;
         bool Custom_Mute2_Victim = false;
         bool Custom_Mute2_Attacker = false;
-        if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1 > 0)
-        {
-            switch (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1)
-            {
-                case 1:
-                    Custom_Mute2 = Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Global_Side.Contains(soundevent);
-                    break;
-                case 2 or 3:
-                    if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Attacker_Side.Contains(soundevent) &&
-                        attacker.IsValid(true) &&
-                        g_Main.Player_Data.TryGetValue(attacker, out var attacker_Soundevent))
-                    {
-                        Custom_Mute2_Attacker = attacker_Soundevent.Toggle_Custom_MuteSounds1 == -1 || attacker_Soundevent.Toggle_Custom_MuteSounds1 == 1;
-                    }
-
-                    if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Victim_Side.Contains(soundevent) &&
-                        PlayerMadeSounds.IsValid(true) &&
-                        g_Main.Player_Data.TryGetValue(PlayerMadeSounds, out var victim_Soundevent))
-                    {
-                        Custom_Mute2_Victim = victim_Soundevent.Toggle_Custom_MuteSounds1 == -1 || victim_Soundevent.Toggle_Custom_MuteSounds1 == 1;
-                    }
-                    break;
-            }
-        }
-
+        
         bool Custom_Mute3 = false;
         bool Custom_Mute3_Victim = false;
         bool Custom_Mute3_Attacker = false;
-        if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1 > 0)
+        
+        var config1 = Configs.Instance.Custom_MuteSounds_1;
+        if (config1.Custom_MuteSounds1 > 0)
         {
-            switch (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1)
+            switch (config1.Custom_MuteSounds1)
             {
                 case 1:
-                    Custom_Mute3 = Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Global_Side.Contains(soundevent);
-                    break;
-                case 2 or 3:
-                    if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Attacker_Side.Contains(soundevent) &&
-                        attacker.IsValid(true) &&
-                        g_Main.Player_Data.TryGetValue(attacker, out var attacker_Soundevent))
+                    if (config1.Custom_MuteSounds1_SoundeventHash_Global_Side.Contains(soundevent))
                     {
-                        Custom_Mute3_Attacker = attacker_Soundevent.Toggle_Custom_MuteSounds1 == -1 || attacker_Soundevent.Toggle_Custom_MuteSounds1 == 1;
+                        Custom_Mute1 = true;
                     }
-
-                    if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_SoundeventHash_Victim_Side.Contains(soundevent) &&
-                        PlayerMadeSounds.IsValid(true) &&
-                        g_Main.Player_Data.TryGetValue(PlayerMadeSounds, out var victim_Soundevent))
+                    break;
+                        
+                case 2 or 3:
+                    if (config1.Custom_MuteSounds1_SoundeventHash_Attacker_Side.Contains(soundevent))
                     {
-                        Custom_Mute3_Victim = victim_Soundevent.Toggle_Custom_MuteSounds1 == -1 || victim_Soundevent.Toggle_Custom_MuteSounds1 == 1;
+                        if (attacker.IsValid(true) && 
+                            g_Main.Player_Data.TryGetValue(attacker.Slot, out var attackerData))
+                        {
+                            var toggleValue = attackerData.Toggle_Custom_MuteSounds1;
+                            if (toggleValue == -1 || toggleValue == 1)
+                            {
+                                Custom_Mute1_Attacker = true;
+                            }
+                        }
+                    }
+                    
+                    if (config1.Custom_MuteSounds1_SoundeventHash_Victim_Side.Contains(soundevent))
+                    {
+                        if (PlayerMadeSounds.IsValid(true) && 
+                            g_Main.Player_Data.TryGetValue(PlayerMadeSounds.Slot, out var victimData))
+                        {
+                            var toggleValue = victimData.Toggle_Custom_MuteSounds1;
+                            if (toggleValue == -1 || toggleValue == 1)
+                            {
+                                Custom_Mute1_Victim = true;
+                            }
+                        }
                     }
                     break;
             }
         }
-
+        
+        var config2 = Configs.Instance.Custom_MuteSounds_2;
+        if (config2.Custom_MuteSounds2 > 0)
+        {
+            switch (config2.Custom_MuteSounds2)
+            {
+                case 1:
+                    if (config2.Custom_MuteSounds2_SoundeventHash_Global_Side.Contains(soundevent))
+                    {
+                        Custom_Mute2 = true;
+                    }
+                    break;
+                        
+                case 2 or 3:
+                    if (config2.Custom_MuteSounds2_SoundeventHash_Attacker_Side.Contains(soundevent))
+                    {
+                        if (attacker.IsValid(true) && 
+                            g_Main.Player_Data.TryGetValue(attacker.Slot, out var attackerData))
+                        {
+                            var toggleValue = attackerData.Toggle_Custom_MuteSounds2;
+                            if (toggleValue == -1 || toggleValue == 1)
+                            {
+                                Custom_Mute2_Attacker = true;
+                            }
+                        }
+                    }
+                    
+                    if (config2.Custom_MuteSounds2_SoundeventHash_Victim_Side.Contains(soundevent))
+                    {
+                        if (PlayerMadeSounds.IsValid(true) && 
+                            g_Main.Player_Data.TryGetValue(PlayerMadeSounds.Slot, out var victimData))
+                        {
+                            var toggleValue = victimData.Toggle_Custom_MuteSounds2;
+                            if (toggleValue == -1 || toggleValue == 1)
+                            {
+                                Custom_Mute2_Victim = true;
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+        
+        var config3 = Configs.Instance.Custom_MuteSounds_3;
+        if (config3.Custom_MuteSounds3 > 0)
+        {
+            switch (config3.Custom_MuteSounds3)
+            {
+                case 1:
+                    if (config3.Custom_MuteSounds3_SoundeventHash_Global_Side.Contains(soundevent))
+                    {
+                        Custom_Mute3 = true;
+                    }
+                    break;
+                        
+                case 2 or 3:
+                    if (config3.Custom_MuteSounds3_SoundeventHash_Attacker_Side.Contains(soundevent))
+                    {
+                        if (attacker.IsValid(true) && 
+                            g_Main.Player_Data.TryGetValue(attacker.Slot, out var attackerData))
+                        {
+                            var toggleValue = attackerData.Toggle_Custom_MuteSounds3;
+                            if (toggleValue == -1 || toggleValue == 1)
+                            {
+                                Custom_Mute3_Attacker = true;
+                            }
+                        }
+                    }
+                    
+                    if (config3.Custom_MuteSounds3_SoundeventHash_Victim_Side.Contains(soundevent))
+                    {
+                        if (PlayerMadeSounds.IsValid(true) && 
+                            g_Main.Player_Data.TryGetValue(PlayerMadeSounds.Slot, out var victimData))
+                        {
+                            var toggleValue = victimData.Toggle_Custom_MuteSounds3;
+                            if (toggleValue == -1 || toggleValue == 1)
+                            {
+                                Custom_Mute3_Victim = true;
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+        
         bool MuteKnife = false;
-        if (Configs.Instance.Sounds_MuteKnife > 0 && Configs.Instance.Sounds_MuteKnife_SoundeventHash.Contains(soundevent))
+        if (Configs.Instance.Sounds_MuteKnife > 0 && 
+            Configs.Instance.Sounds_MuteKnife_SoundeventHash.Contains(soundevent))
         {
             switch (Configs.Instance.Sounds_MuteKnife)
             {
@@ -229,37 +287,30 @@ public class Game_UserMessages
         }
 
         if (MuteKnife
-        || Custom_Mute1 || Custom_Mute1_Victim || Custom_Mute1_Attacker
-        || Custom_Mute2 || Custom_Mute2_Victim || Custom_Mute2_Attacker
-        || Custom_Mute3 || Custom_Mute3_Victim || Custom_Mute3_Attacker)
+            || Custom_Mute1 || Custom_Mute1_Victim || Custom_Mute1_Attacker
+            || Custom_Mute2 || Custom_Mute2_Victim || Custom_Mute2_Attacker
+            || Custom_Mute3 || Custom_Mute3_Victim || Custom_Mute3_Attacker)
         {
-            if (PlayerMadeSounds.IsValid(true))
-            {
-                Helper.DebugMessage($"[Custom_MuteSounds] [MUTED] - {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
-            }
-            else if (attacker.IsValid(true))
+            if(attacker.IsValid(true))
             {
                 Helper.DebugMessage($"[Custom_MuteSounds] [MUTED] - {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+            }else if(PlayerMadeSounds.IsValid(true))
+            {
+                Helper.DebugMessage($"[Custom_MuteSounds] [MUTED] - {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
             return HookResult.Stop;
         }
         else
         {
-            if (PlayerMadeSounds.IsValid(true))
+            if(attacker.IsValid(true))
+            {
+                Helper.DebugMessage($"[Custom_MuteSounds] {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+            }else if(PlayerMadeSounds.IsValid(true))
             {
                 Helper.DebugMessage($"[Custom_MuteSounds] {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
-            else if (attacker.IsValid(true))
-            {
-                Helper.DebugMessage($"[Custom_MuteSounds] {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
-            }
         }
-
-        if (PlayerMadeSounds.IsValid(true) && g_Main.Player_Data.TryGetValue(PlayerMadeSounds, out var Victim_handle2))
-        {
-            Victim_handle2.Attacker = null!;
-        }
-
+        
         return HookResult.Continue;
     }
     
@@ -270,7 +321,7 @@ public class Game_UserMessages
         var g_Main = MainPlugin.Instance.g_Main;
         Helper.CheckPlayerInGlobals(player);
 
-        if (!g_Main.Player_Data.TryGetValue(player, out var playerData)) return HookResult.Continue;
+        if (!g_Main.Player_Data.TryGetValue(player.Slot, out var playerData)) return HookResult.Continue;
 
         bool onetime = (DateTime.Now - playerData.EventPlayerChat).TotalSeconds > 0.4;
         if (onetime)
@@ -335,13 +386,16 @@ public class Game_UserMessages
             {
                 if (onetime)
                 {
-                    Configs.Load(MainPlugin.Instance.ModuleDirectory);
                     Helper.RemoveRegisterCommandsAndHooks();
+                    Helper.ClearVariables();
+
+                    Configs.Load(MainPlugin.Instance.ModuleDirectory);
+                    _ = Task.Run(Helper.DownloadMissingFilesAsync);
                     Helper.LoadJson(true, player);
+
                     Helper.RegisterCommandsAndHooks();
                     Helper.ExectueCommands();
-                    Helper.ReloadPlayersClanTags();
-                    Helper.ReloadCheckPlayerName();
+                    Helper.ReloadPlayersGlobals();
                     Helper.StartTimer();
                     Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.ReloadPlugin.Successfully"]);
                 }
@@ -551,7 +605,7 @@ public class Game_UserMessages
 
         Helper.CheckPlayerInGlobals(player);
 
-        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player, out var playerData)) return;
+        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player.Slot, out var playerData)) return;
         if ((DateTime.Now - playerData.EventPlayerChat).TotalSeconds <= 0.4) return;
 
         if (Configs.Instance.Reload_GameManager.Reload_GameManager_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Reload_GameManager.Reload_GameManager_Flags))
@@ -560,13 +614,16 @@ public class Game_UserMessages
         }
         else
         {
-            Configs.Load(MainPlugin.Instance.ModuleDirectory);
             Helper.RemoveRegisterCommandsAndHooks();
+            Helper.ClearVariables();
+
+            Configs.Load(MainPlugin.Instance.ModuleDirectory);
+            _ = Task.Run(Helper.DownloadMissingFilesAsync);
             Helper.LoadJson(true, player, info);
+
             Helper.RegisterCommandsAndHooks();
             Helper.ExectueCommands();
-            Helper.ReloadPlayersClanTags();
-            Helper.ReloadCheckPlayerName();
+            Helper.ReloadPlayersGlobals();
             Helper.StartTimer();
             Helper.AdvancedPlayerPrintToChat(player, info, MainPlugin.Instance.Localizer["PrintToChatToPlayer.ReloadPlugin.Successfully"]);
         }
@@ -578,7 +635,7 @@ public class Game_UserMessages
 
         Helper.CheckPlayerInGlobals(player);
 
-        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player, out var playerData)) return;
+        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player.Slot, out var playerData)) return;
         if ((DateTime.Now - playerData.EventPlayerChat).TotalSeconds <= 0.4) return;
 
         if (Configs.Instance.Disable_AimPunch.DisableAimPunch_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Disable_AimPunch.DisableAimPunch_Flags))
@@ -605,7 +662,7 @@ public class Game_UserMessages
 
         Helper.CheckPlayerInGlobals(player);
 
-        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player, out var playerData)) return;
+        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player.Slot, out var playerData)) return;
         if ((DateTime.Now - playerData.EventPlayerChat).TotalSeconds <= 0.4) return;
 
         if (Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_1.Custom_MuteSounds1_Flags))
@@ -632,7 +689,7 @@ public class Game_UserMessages
 
         Helper.CheckPlayerInGlobals(player);
 
-        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player, out var playerData)) return;
+        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player.Slot, out var playerData)) return;
         if ((DateTime.Now - playerData.EventPlayerChat).TotalSeconds <= 0.4) return;
 
         if (Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_2.Custom_MuteSounds2_Flags))
@@ -659,7 +716,7 @@ public class Game_UserMessages
 
         Helper.CheckPlayerInGlobals(player);
 
-        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player, out var playerData)) return;
+        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player.Slot, out var playerData)) return;
         if ((DateTime.Now - playerData.EventPlayerChat).TotalSeconds <= 0.4) return;
 
         if (Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Flags.HasValidPermissionData() && !Helper.IsPlayerInGroupPermission(player, Configs.Instance.Custom_MuteSounds_3.Custom_MuteSounds3_Flags))

@@ -32,14 +32,13 @@ namespace Game_Manager_GoldKingZ;
 public class MainPlugin : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.1.2";
+    public override string ModuleVersion => "2.1.3";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     public static MainPlugin Instance { get; set; } = new();
     public Globals g_Main = new();
     public readonly Game_Listeners Game_Listeners = new();
     public readonly Game_UserMessages Game_UserMessages = new();
-    public readonly Game_Hook Game_Hook = new();
     public override void Load(bool hotReload)
     {
         Instance = this;
@@ -82,11 +81,75 @@ public class MainPlugin : BasePlugin
         }
     }
 
+    public void OnEntityCreated(CEntityInstance entity)
+    {
+        if (entity == null || !entity.IsValid || entity.DesignerName != "player_spray_decal") return;
+
+        Server.NextFrame(() =>
+        {
+            if (entity == null || !entity.IsValid) return;
+
+            entity.AcceptInput("kill");
+        });
+        
+    }
+
+    public void OnEntitySpawned(CEntityInstance entity)
+    {
+        if (entity == null || !entity.IsValid || entity.DesignerName != "chicken") return;
+
+        entity.AcceptInput("kill");
+    }
+
     public void OnClientAuthorized(int playerSlot, SteamID steamId)
     {
         var player = Utilities.GetPlayerFromSlot(playerSlot);
         if (!player.IsValid(true)) return;
         Helper.CheckPlayerName(player);
+    }
+
+    public HookResult OnEventPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+    {
+        if (@event == null) return HookResult.Continue;
+        var player = @event.Userid;
+        if (!player.IsValid(true)) return HookResult.Continue;
+
+        _ = HandlePlayerConnectionsAsync(player);
+        
+        return HookResult.Continue;
+    }
+    public async Task HandlePlayerConnectionsAsync(CCSPlayerController Getplayer)
+    {
+        if (!Getplayer.IsValid(true)) return;
+
+        Helper.CheckPlayerName(Getplayer);
+        Helper.SetPlayerClan(Getplayer);
+
+        try
+        {
+            var player = Getplayer;
+            if (!player.IsValid(true)) return;
+
+            if (Configs.Instance.AutoSetPlayerLanguage)
+            {
+                var playerip = player.IpAddress?.Split(':')[0] ?? "";
+                var countryCode = Helper.GetGeoIsoCodeInfoAsync(playerip);
+
+                Server.NextFrame(() =>
+                {
+                    if (player.IsValid())
+                    {
+                        Helper.SetPlayerLanguage(player, countryCode);
+                    }
+                });
+            }
+
+            await Helper.LoadPlayerData(player);
+        }
+        catch (Exception ex)
+        {
+            Helper.DebugMessage($"HandlePlayerConnectionsAsync error: {ex.Message}", Configs.Instance.EnableDebug.ToDebugConfig(1));
+        }
     }
 
     public void OnTick()
@@ -168,12 +231,6 @@ public class MainPlugin : BasePlugin
         }
 
         return HookResult.Continue;
-    }
-
-    public void OnEntitySpawned(CEntityInstance entity)
-    {
-        if (entity == null || !entity.IsValid || entity.DesignerName != "chicken") return;
-        entity.AcceptInput("kill");
     }
 
     public HookResult OnEventPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
@@ -309,53 +366,11 @@ public class MainPlugin : BasePlugin
         return HookResult.Continue;
     }
 
-    public HookResult OnEventPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
-    {
-        if (@event == null) return HookResult.Continue;
-        var player = @event.Userid;
-        if (!player.IsValid(true)) return HookResult.Continue;
-
-        _ = HandlePlayerConnectionsAsync(player);
-        
-        return HookResult.Continue;
-    }
-    public async Task HandlePlayerConnectionsAsync(CCSPlayerController Getplayer)
-    {
-        if (!Getplayer.IsValid(true)) return;
-
-        Helper.CheckPlayerName(Getplayer);
-        Helper.SetPlayerClan(Getplayer);
-
-        try
-        {
-            var player = Getplayer;
-            if (!player.IsValid(true)) return;
-
-            if (Configs.Instance.AutoSetPlayerLanguage)
-            {
-                var playerip = player.IpAddress?.Split(':')[0] ?? "";
-                var countryCode = Helper.GetGeoIsoCodeInfoAsync(playerip);
-
-                Server.NextFrame(() =>
-                {
-                    if (player.IsValid())
-                    {
-                        Helper.SetPlayerLanguage(player, countryCode);
-                    }
-                });
-            }
-
-            await Helper.LoadPlayerData(player);
-        }
-        catch (Exception ex)
-        {
-            Helper.DebugMessage($"HandlePlayerConnectionsAsync error: {ex.Message}", 0);
-        }
-    }
+    
 
     public HookResult OnJoinTeam(CCSPlayerController? player, CommandInfo command)
     {
-        if (!player.IsValid() || !g_Main.Player_Data.TryGetValue(player, out var handle)) return HookResult.Continue;
+        if (!player.IsValid() || !g_Main.Player_Data.TryGetValue(player.Slot, out var handle)) return HookResult.Continue;
 
         if (handle.PlayerName_Block)
         {
@@ -513,7 +528,7 @@ public class MainPlugin : BasePlugin
             TeamChat = true;
         }
 
-        if (g_Main.Player_Data.TryGetValue(player, out var handle))
+        if (g_Main.Player_Data.TryGetValue(player.Slot, out var handle))
         {
             handle.MessageType = message_type;
         }
@@ -535,7 +550,7 @@ public class MainPlugin : BasePlugin
         var player = @event.Userid;
         if (!player.IsValid()) return HookResult.Continue;
             
-        if (g_Main.Player_Data.TryGetValue(player, out var handle))
+        if (g_Main.Player_Data.TryGetValue(player.Slot, out var handle))
         {
             handle.PlayerName_Count = 0;
             handle.PlayerName_Block = false;
@@ -576,7 +591,7 @@ public class MainPlugin : BasePlugin
 
             if (g_Main.OnTakeDamage_Hooked)
             {
-                VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(Game_Hook.OnTakeDamage, HookMode.Pre);
+                RemoveListener<Listeners.OnEntityTakeDamagePre>(Game_Listeners.OnEntityTakeDamagePre);
                 g_Main.OnTakeDamage_Hooked = false;
             }
         }
