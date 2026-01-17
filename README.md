@@ -352,7 +352,7 @@ Block/Hide Unnecessaries In Game
 - Fix On Sounds_MuteKnife On 2
 - Fix On DisableKnifeDamage
 - Update OnEntityTakeDamage To Last cssharp Update 
-
+- Moved GeoLocation To Shared
 
 ### [2.1.2]
 - Fix BlockNameChanger On Reconnect With New Name It Kick Player
