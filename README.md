@@ -2,7 +2,7 @@
 
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
-# [CS2] Game-Manager-GoldKingZ (2.1.2)
+# [CS2] Game-Manager-GoldKingZ (2.1.3)
 
 Block/Hide Unnecessaries In Game
 
@@ -81,7 +81,10 @@ Block/Hide Unnecessaries In Game
 | `BlockGrenadesRadio` | Block Radio When Throwing Grenades | `true`/`false` | - |
 | `BlockChatWheel` | Block Chat Wheel | `true`/`false` | - |
 | `BlockPing` | Block Players Ping | `true`/`false` | - |
+| `BlockSpray` | Block Players Graffiti Spray | `true`/`false` | - |
+| `BlockBots` | Block Bots (Permanently Remove bots) | `true`/`false` | - |
 | `BlockNameChanger` | Block animated name changers | `0`-No<br>`1`-Send to spec with warning<br>`2`-Send to spec + execute command after delay | - |
+| `BlockNameChanger_Changes` | How many times each player is allowed to change their name | e.g. `3` | `BlockNameChanger = 1 or 2` |
 | `BlockNameChanger_Block` | Block duration (seconds) | e.g. `10` | `BlockNameChanger=1 or 2` |
 | `BlockNameChanger_SendServerConsoleCommand` | Command after block timer | Placeholders: `{PLAYER_NAME}`, `{PLAYER_ID}`, etc. | `BlockNameChanger=2` |
 | `Block_Commands_StartWith` | Block commands starting with | Array of strings | - |
@@ -334,6 +337,22 @@ Block/Hide Unnecessaries In Game
 
 <details>
 <summary><b>📋 View Version History</b> (Click to expand 🔽)</summary>
+
+### [2.1.3]
+- Added BlockSpray
+- Added BlockBots
+- Added BlockNameChanger_Changes
+- Fix Server Crash On BlockRadio
+- Fix Server Crash On Block_Commands_StartWith
+- Fix Server Crash On Block_Commands_Contains
+- Fix On DisableAimPunch
+- Fix On Custom_MuteSounds1
+- Fix On Custom_MuteSounds2
+- Fix On Custom_MuteSounds3
+- Fix On Sounds_MuteKnife On 2
+- Fix On DisableKnifeDamage
+- Update OnEntityTakeDamage To Last cssharp Update 
+
 
 ### [2.1.2]
 - Fix BlockNameChanger On Reconnect With New Name It Kick Player
