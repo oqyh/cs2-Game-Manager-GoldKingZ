@@ -972,7 +972,7 @@ public class Helper
 
         try
         {
-            using var reader = new DatabaseReader(Path.Combine(MainPlugin.Instance.ModuleDirectory, "GeoLocation/GeoLite2-City.mmdb"));
+            using var reader = new DatabaseReader(Path.GetFullPath(Path.Combine(MainPlugin.Instance.ModuleDirectory, "..", "..", "shared/GoldKingZ/GeoLocation/GeoLite2-City.mmdb")));
 
             var response = reader.City(ipAddress);
 
