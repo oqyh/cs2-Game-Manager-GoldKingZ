@@ -2,7 +2,7 @@
 
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
 
-# [CS2] Game-Manager-GoldKingZ (2.1.3)
+# [CS2] Game-Manager-GoldKingZ (2.1.4)
 
 Block/Hide Unnecessaries In Game
 
@@ -337,6 +337,26 @@ Block/Hide Unnecessaries In Game
 
 <details>
 <summary><b>📋 View Version History</b> (Click to expand 🔽)</summary>
+
+### [2.1.4]
+- Updated Plugin With v1.0.361 CounterStrikeSharp Api
+- Change Custom_MuteSounds1_SoundeventHash_Global_Side To SoundeventHashAndString
+- Change Custom_MuteSounds1_SoundeventHash_Victim_Side To SoundeventHashAndString
+- Change Custom_MuteSounds1_SoundeventHash_Attacker_Side To SoundeventHashAndString
+- Change Custom_MuteSounds2_SoundeventHash_Global_Side To SoundeventHashAndString
+- Change Custom_MuteSounds2_SoundeventHash_Victim_Side To SoundeventHashAndString
+- Change Custom_MuteSounds2_SoundeventHash_Attacker_Side To SoundeventHashAndString
+- Change Custom_MuteSounds3_SoundeventHash_Global_Side To SoundeventHashAndString
+- Change Custom_MuteSounds3_SoundeventHash_Victim_Side To SoundeventHashAndString
+- Change Custom_MuteSounds3_SoundeventHash_Attacker_Side To SoundeventHashAndString
+- Change Sounds_MuteKnife_SoundeventHash To SoundeventHashAndString
+- Fix Custom_MuteSounds1 Victim Side
+- Fix Custom_MuteSounds2 Victim Side
+- Fix Custom_MuteSounds3 Victim Side
+- Fix DebugMessage 2 [Custom_MuteSounds] Now Shows (Attacker,Victim,Player,GLOBAL)
+- Added In DebugMessage 2 [WeaponSound] And [UserMessages]
+- Fix Bug On Reload Plugin Bug With Commands Mute
+- Added New List Of SoundEvents_Names.txt In Github
 
 ### [2.1.3]
 - Added BlockSpray
