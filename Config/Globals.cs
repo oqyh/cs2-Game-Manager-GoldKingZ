@@ -43,6 +43,7 @@ public class Globals
     {
         public CCSPlayerController Player { get; set; }
         public CCSPlayerController Attacker { get; set; }
+        public CCSPlayerController Victim { get; set; }
         public string PlayerName { get; set; }
         public int PlayerName_Count { get; set; }
         public bool PlayerName_Block { get; set; }
@@ -58,10 +59,11 @@ public class Globals
         public CounterStrikeSharp.API.Modules.Timers.Timer Timer_DeadBody { get; set; }
         public DateTime EventPlayerChat { get; set; }
         public DateTime LastNameChangeTime { get; set; }
-        public PlayerDataClass(CCSPlayerController player, CCSPlayerController Attackerr, string PlayerNamee, int PlayerName_Countt, bool PlayerName_Blockk, bool PlayerName_Block_Messagee, ulong steamId, int Toggle_AimPunchh, int Toggle_Custom_MuteSounds11, int Toggle_Custom_MuteSounds22, int Toggle_Custom_MuteSounds33, string MessageTypee, int playerAlpha, bool StabedHisTeamMatee, CounterStrikeSharp.API.Modules.Timers.Timer timer_DeadBody, DateTime EventPlayerChatt, DateTime LastNameChangeTimee)
+        public PlayerDataClass(CCSPlayerController player, CCSPlayerController Attackerr, CCSPlayerController Victimm, string PlayerNamee, int PlayerName_Countt, bool PlayerName_Blockk, bool PlayerName_Block_Messagee, ulong steamId, int Toggle_AimPunchh, int Toggle_Custom_MuteSounds11, int Toggle_Custom_MuteSounds22, int Toggle_Custom_MuteSounds33, string MessageTypee, int playerAlpha, bool StabedHisTeamMatee, CounterStrikeSharp.API.Modules.Timers.Timer timer_DeadBody, DateTime EventPlayerChatt, DateTime LastNameChangeTimee)
         {
             Player = player;
             Attacker = Attackerr;
+            Victim = Victimm;
             PlayerName = PlayerNamee;
             PlayerName_Count = PlayerName_Countt;
             PlayerName_Block = PlayerName_Blockk;
@@ -85,12 +87,17 @@ public class Globals
     public CounterStrikeSharp.API.Modules.Timers.Timer? TimerCleanUp;
     public CounterStrikeSharp.API.Modules.Timers.Timer? TimerChecker;
 
-    public void Clear()
+    public void Clear(bool force = false)
     {
         CbaseWeapons?.Clear();
         TimerCleanUp?.Kill();
         TimerCleanUp = null;
         TimerChecker?.Kill();
         TimerChecker = null;
+
+        if(force)
+        {
+            Player_Data?.Clear();
+        }
     }
 }

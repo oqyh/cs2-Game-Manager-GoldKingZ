@@ -1,0 +1,128 @@
+//Hit/Kill
+3573863551 HeadShotHit Victim Side
+2831007164 HeadShotHit Attacker Side
+3663896169 HeadShotHit Global Side
+
+2020934318 HeadShotKill Victim Side
+3535174312 HeadShotKill Attacker Side
+2310318859 HeadShotKill Global Side
+
+
+3124768561 BodyShotHit Victim Side
+708038349 BodyShotHit Attacker Side
+524041390 BodyShotHit Global Side
+
+2323025056 BodyShotKill Victim Side
+1771184788 BodyShotKill Attacker Side
+3396420465 BodyShotKill Global Side
+
+
+
+856190898 LegHit Victim Side
+3767841471 LegHit Attacker Side
+2447320252 LegHit Global Side
+
+
+1823342283 LegKill Victim Side
+3988751453 LegKill Attacker Side
+2192712263 LegKill Global Side
+
+427534867 Friendly Fire Global Side
+604181152 After Killing Base Sound Attacker Side
+46413566 DeathScream_Male BodyShotKillAndLegKill Global Side
+1815352525 DeathScream_Female BodyShotKillAndLegKill Global Side
+
+//Knife
+3756387178 Knife_StabRightClick Global Side
+2294996470 Knife_Stab_BackSide_RightClick Global Side
+3439870439 Knife_StabLeftClick Global Side
+3393546924 Knife_Stab_BackSide_LeftClick Global Side
+2486534908 Knife_StabWall Global Side
+
+//Zeus
+3644530211 Zeus Fire Global Side
+4251682918 Zeus Fire Empty Global Side
+1814999476 Zeus Charged Global Side
+
+
+//Drop Weapons
+1346129716 DropWeapon_C4 Global Side
+3208928088 DropWeapon_Knife Global Side
+1842263658 DropWeapon_PistolAndTaser Global Side
+4003696900 DropWeapon_Shotguns Global Side
+3003881917 DropWeapon_SMGs Global Side
+449069384 DropWeapon_AssaultRifles Global Side
+2125410722 DropWeapon_Snipers Global Side
+95362054 DropWeapon_FlashAndDecoy Global Side
+910752207 DropWeapon_SmokeAndInNade Global Side
+1252397774 DropWeapon_HENade Global Side
+1601161479 DropWeapon_Molly Global Side
+
+
+//Others
+576815311 Player Switch To Semi Global Side
+1758033930 C4 Explode Global Side
+
+3921206064 Smoke Bounce Global Side
+1665511289 Smoke Started Global Side
+
+3325837742 He Grenade Bounce Global Side
+962330345 HeGrenadeAndDecoy Explode Global Side
+
+390116200 Molly Bounce Global Side
+935204851 Molly Crackling While On Air Global Side
+1816034375 Molly Ignited Glass Shattered Global Side
+1465521547 MollyAndIncendiary Ignited Flame Global Side
+3153301409 MollyAndIncendiary Ignited Fire Started Global Side
+453270950 MollyAndIncendiary Ignited Fire End Global Side
+3666239815 MollyAndIncendiary Damage Players Global Side
+
+4101891102 Incendiary Bounce Global Side
+2121561929 Incendiary Crackling While On Air Global Side
+2209372535 Incendiary Ignited Shattered Global Side
+1465521547 IncendiaryAndMolly Ignited Flame Global Side
+3153301409 IncendiaryAndMolly Ignited Fire Started Global Side
+3666239815 IncendiaryAndMolly Damage Players Global Side
+
+1991628669 Fire Extinguished By IncendiaryAndMolly Global Side
+
+1964534378 FlashAndDecoy Bounce Global Side
+1058408389 Flash Flashed Global Side
+
+
+1964534378 DecoyAndFlash Bounce Global Side
+962330345 DecoyAndHeGrenade Explode Global Side
+70806330 Decoy Mimic Glock Global Side
+3842310860 Decoy Mimic Revolver Global Side
+4294941031 Decoy Mimic CZ75 Global Side
+4116905495 Decoy Mimic Dual Berettas Global Side
+2495097128 Decoy Mimic P250 Global Side
+4171241014 Decoy Mimic Tec9 Global Side
+91093423 Decoy Mimic Desert Eagle Global Side
+3516087642 Decoy Mimic Nova Global Side
+3940673172 Decoy Mimic MP7 Global Side
+865281244 Decoy Mimic SawedOff Global Side
+564164376 Decoy Mimic Negev Global Side
+3658953836 Decoy Mimic PPBizon Global Side
+2812994567 Decoy Mimic UMP45 Global Side
+3976916060 Decoy Mimic M249 Global Side
+3003759649 Decoy Mimic xm1014 Global Side
+2801550907 Decoy Mimic MP5SD Global Side
+599538763 Decoy Mimic p90 Global Side
+225373939 Decoy Mimic MAC10 Global Side
+431029699 Decoy Mimic GalilAR Global Side
+160008354 Decoy Mimic G3SG1 Global Side
+140502159 Decoy Mimic SSG08 Global Side
+1484514046 Decoy Mimic SG553 Global Side
+1967247 Decoy Mimic AWP Global Side
+1699395452 Decoy Mimic AK47 Global Side
+45669651 Decoy Mimic P2000 Global Side
+1067504021 Decoy Mimic USPS Global Side
+4102543341 Decoy Mimic FiveSeven Global Side
+1589223202 Decoy Mimic MAG7 Global Side
+1454938196 Decoy Mimic MP9 Global Side
+1573166764 Decoy Mimic AUG Global Side
+3679765971 Decoy Mimic FAMAS Global Side
+976357947 Decoy Mimic M4A1S Global Side
+1358667727 Decoy Mimic M4A4 Global Side
+1932291732 Decoy Mimic SCAR20 Global Side

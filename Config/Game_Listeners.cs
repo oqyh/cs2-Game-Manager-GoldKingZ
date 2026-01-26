@@ -81,24 +81,13 @@ public class Game_Listeners
             if (damageinfo == null) return HookResult.Continue;
 
             if (damageinfo.Attacker.Value == null) return HookResult.Continue;
-            var attackerPawn = damageinfo.Attacker.Value.As<CBasePlayerPawn>();
-            if (attackerPawn == null || !attackerPawn.IsValid) return HookResult.Continue;
-            
-            var GetAttacker = attackerPawn.Controller.Value;
-            if (GetAttacker == null || !GetAttacker.IsValid) return HookResult.Continue;
 
-            var pawn = ent.As<CCSPlayerPawn>();
-            if (pawn == null || !pawn.IsValid) return HookResult.Continue;
-
-            var GetAttackerController = Utilities.GetPlayerFromIndex((int)GetAttacker.Index);
-            if (!GetAttackerController.IsValid(true)) return HookResult.Continue;
-
-            var attacker = GetAttackerController.CheckPlayerController();
+            var attacker = damageinfo.Attacker.Value.GetPlayerFromCBaseEntity();
             if (!attacker.IsValid(true)) return HookResult.Continue;
 
             Helper.CheckPlayerInGlobals(attacker);
 
-            var victim = pawn.OriginalController?.Get();
+            var victim = ent.GetPlayerFromCBaseEntity();
             if (!victim.IsValid(true)) return HookResult.Continue;
 
             Helper.CheckPlayerInGlobals(victim);
@@ -108,6 +97,13 @@ public class Game_Listeners
                 if (g_Main.Player_Data.TryGetValue(victim.Slot, out var victim_handle))
                 {
                     victim_handle.Attacker = attacker;
+                    victim_handle.Victim = victim;
+                }
+
+                if (g_Main.Player_Data.TryGetValue(attacker.Slot, out var attacker_handlee))
+                {
+                    attacker_handlee.Attacker = attacker;
+                    attacker_handlee.Victim = victim;
                 }
 
                 MainPlugin.Instance.AddTimer(0.01f, () =>
@@ -115,6 +111,13 @@ public class Game_Listeners
                     if (victim.IsValid(true) && g_Main.Player_Data.TryGetValue(victim.Slot, out var victim_handle2))
                     {
                         victim_handle2.Attacker = null!;
+                        victim_handle2.Victim = null!;
+                    }
+
+                    if (attacker.IsValid(true) && g_Main.Player_Data.TryGetValue(attacker.Slot, out var attacker_handle2))
+                    {
+                        attacker_handle2.Attacker = null!;
+                        attacker_handle2.Victim = null!;
                     }
                 }, TimerFlags.STOP_ON_MAPCHANGE);
             }
@@ -134,7 +137,7 @@ public class Game_Listeners
                     {
                         attacker_handle.StabedHisTeamMate = true;
 
-                        MainPlugin.Instance.AddTimer(0.01f, () =>
+                        MainPlugin.Instance.AddTimer(1.00f, () =>
                         {
                             if (attacker.IsValid(true) && g_Main.Player_Data.TryGetValue(attacker.Slot, out var attacker_handle2))
                             {

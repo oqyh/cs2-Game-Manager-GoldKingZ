@@ -300,11 +300,11 @@ public class Helper
         }
     }
 
-    public static void ClearVariables()
+    public static void ClearVariables(bool force = false)
     {
         var g_Main = MainPlugin.Instance.g_Main;
 
-        g_Main.Clear();
+        g_Main.Clear(force);
     }
 
     public static CCSGameRules? GetGameRules()
@@ -433,6 +433,7 @@ public class Helper
         || Configs.Instance.Sounds_MuteKnife > 0 || Configs.Instance.EnableDebug.ToDebugConfig(2) is 2 or 1)
         {
             MainPlugin.Instance.HookUserMessage(208, MainPlugin.Instance.Game_UserMessages.MuteSounds_UserMessages, HookMode.Pre);
+            MainPlugin.Instance.HookUserMessage(369, MainPlugin.Instance.Game_UserMessages.MuteSounds_WeaponSound, HookMode.Pre);
         }
 
         if (Configs.Instance.Sounds_MuteGunShots > 0 || Configs.Instance.EnableDebug.ToDebugConfig(3) is 3 or 1)
@@ -516,6 +517,7 @@ public class Helper
         MainPlugin.Instance.UnhookUserMessage(400, MainPlugin.Instance.Game_UserMessages.HideBloodAndHsSpark_UserMessages, HookMode.Pre);
         MainPlugin.Instance.UnhookUserMessage(411, MainPlugin.Instance.Game_UserMessages.HideBloodAndHsSpark_UserMessages, HookMode.Pre);
         MainPlugin.Instance.UnhookUserMessage(208, MainPlugin.Instance.Game_UserMessages.MuteSounds_UserMessages, HookMode.Pre);
+        MainPlugin.Instance.UnhookUserMessage(369, MainPlugin.Instance.Game_UserMessages.MuteSounds_WeaponSound, HookMode.Pre);
         MainPlugin.Instance.UnhookUserMessage(452, MainPlugin.Instance.Game_UserMessages.MuteGunShots_UserMessages, HookMode.Pre);
         MainPlugin.Instance.UnhookUserMessage(124, MainPlugin.Instance.Game_UserMessages.Ignore_TextMsg_UserMessages, HookMode.Pre);
         MainPlugin.Instance.UnhookUserMessage(322, MainPlugin.Instance.Game_UserMessages.Ignore_RadioText_UserMessages, HookMode.Pre);
@@ -1029,6 +1031,7 @@ public class Helper
         {
             var initialData = new Globals.PlayerDataClass(
                 player,
+                null!,
                 null!,
                 player.PlayerName,
                 0,

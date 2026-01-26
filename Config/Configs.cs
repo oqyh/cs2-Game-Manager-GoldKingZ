@@ -131,29 +131,35 @@ namespace Game_Manager_GoldKingZ.Config
         public int Custom_MuteSounds1 { get; set; } = 0;
 
         [Comment("If [Custom_MuteSounds1 = 1], Soundevent Hash Global Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Victim/Attacker/Global Side")]
-        public List<uint> Custom_MuteSounds1_SoundeventHash_Global_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds1_SoundeventHashAndString_Global_Side { get; set; } = new List<string>
         {
             
         };
 
         [Comment("If [Custom_MuteSounds1 = 2 or 3], Soundevent Hash Victim Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Victim Side Only OtherWise Plugin Will Break")]
-        public List<uint> Custom_MuteSounds1_SoundeventHash_Victim_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds1_SoundeventHashAndString_Victim_Side { get; set; } = new List<string>
         {
-            3573863551,
-            2020934318
+            "3573863551",
+            "2020934318"
         };
 
         [Comment("If [Custom_MuteSounds1 = 2 or 3], Soundevent Hash Attacker Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Attacker Side Only OtherWise Plugin Will Break")]
-        public List<uint> Custom_MuteSounds1_SoundeventHash_Attacker_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds1_SoundeventHashAndString_Attacker_Side { get; set; } = new List<string>
         {
-            2831007164,
-            3535174312
+            "2831007164",
+            "3535174312"
         };
 
         [Comment("If [Custom_MuteSounds1 = 2 or 3], Commands To Toggle")]
@@ -197,29 +203,35 @@ namespace Game_Manager_GoldKingZ.Config
         public int Custom_MuteSounds2 { get; set; } = 0;
 
         [Comment("If [Custom_MuteSounds2 = 1], Soundevent Hash Global Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Victim/Attacker/Global Side")]
-        public List<uint> Custom_MuteSounds2_SoundeventHash_Global_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds2_SoundeventHashAndString_Global_Side { get; set; } = new List<string>
         {
             
         };
 
         [Comment("If [Custom_MuteSounds2 = 2 or 3], Soundevent Hash Victim Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Victim Side Only OtherWise Plugin Will Break")]
-        public List<uint> Custom_MuteSounds2_SoundeventHash_Victim_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds2_SoundeventHashAndString_Victim_Side { get; set; } = new List<string>
         {
-            3124768561,
-            2323025056
+            "3124768561",
+            "2323025056"
         };
 
         [Comment("If [Custom_MuteSounds2 = 2 or 3], Soundevent Hash Attacker Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Attacker Side Only OtherWise Plugin Will Break")]
-        public List<uint> Custom_MuteSounds2_SoundeventHash_Attacker_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds2_SoundeventHashAndString_Attacker_Side { get; set; } = new List<string>
         {
-            708038349,
-            1771184788
+            "708038349",
+            "1771184788"
         };
 
         [Comment("If [Custom_MuteSounds2 = 2 or 3], Commands To Toggle")]
@@ -263,32 +275,38 @@ namespace Game_Manager_GoldKingZ.Config
         public int Custom_MuteSounds3 { get; set; } = 0;
 
         [Comment("If [Custom_MuteSounds3 = 1], Soundevent Hash Global Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Victim/Attacker/Global Side")]
-        public List<uint> Custom_MuteSounds3_SoundeventHash_Global_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds3_SoundeventHashAndString_Global_Side { get; set; } = new List<string>
         {
-            46413566,
-            1815352525,
-            2323025056,
-            1771184788,
-            3396420465,
-            1823342283,
-            3988751453,
-            2192712263
+            "46413566",
+            "1815352525",
+            "2323025056",
+            "1771184788",
+            "3396420465",
+            "1823342283",
+            "3988751453",
+            "2192712263"
         };
 
         [Comment("If [Custom_MuteSounds3 = 2 or 3], Soundevent Hash Victim Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Victim Side Only OtherWise Plugin Will Break")]
-        public List<uint> Custom_MuteSounds3_SoundeventHash_Victim_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds3_SoundeventHashAndString_Victim_Side { get; set; } = new List<string>
         {
             
         };
 
         [Comment("If [Custom_MuteSounds3 = 2 or 3], Soundevent Hash Attacker Side")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Attacker Side Only OtherWise Plugin Will Break")]
-        public List<uint> Custom_MuteSounds3_SoundeventHash_Attacker_Side { get; set; } = new List<uint>
+        public List<string> Custom_MuteSounds3_SoundeventHashAndString_Attacker_Side { get; set; } = new List<string>
         {
             
         };
@@ -626,13 +644,26 @@ namespace Game_Manager_GoldKingZ.Config
         public int Sounds_MuteKnife { get; set; } = 0;
 
         [Comment("If [Sounds_MuteKnife = 1 or 2], What We Mute In Soundevent Hash")]
-        [Comment("To Get Soundevent Hash Please Check https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt Or Make [EnableDebug = 2] To See Soundevents")]
+        [Comment("Soundevent Hash https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Hash.txt")]
+        [Comment("Soundevent Names https://github.com/oqyh/cs2-Game-Manager-GoldKingZ/blob/main/Resources/SoundEvents_Names.txt")]
+        [Comment("Or You Can Get Soundevent Hash And Names Make [EnableDebug = 2]")]
         [Comment("You Can Use Victim/Attacker/Global Side")]
-        public List<uint> Sounds_MuteKnife_SoundeventHash { get; set; } = new List<uint>
+        public List<string> Sounds_MuteKnife_SoundeventHashAndString { get; set; } = new List<string>
         {
-            427534867,
-            3475734633,
-            1769891506
+            "427534867",
+            "3756387178",
+            "2294996470",
+            "3439870439",
+            "3393546924",
+            "Weapon_Knife.Swish.Light",
+            "Weapon_Knife.Hit.Light.Backstab",
+            "Weapon_Knife.Hit.Gear",
+            "Weapon_Knife.Hit.Slice",
+            "Weapon_Knife.Swish.Gear",
+            "Weapon_Knife.Swish.Heavy",
+            "Weapon_Knife.Hit.Heavy",
+            "Weapon_Knife.Hit.Heavy.Backstab",
+            "Weapon_Knife.Hit.Heavy.Backstab.Retract"
         };
 
         [Comment("Mute Players Gun Shots Sounds?")]
@@ -971,10 +1002,10 @@ namespace Game_Manager_GoldKingZ.Config
 
         [BreakLine("----------------------------[ ↓ Utilities  ↓ ]----------------------------{nextline}")]
 
-        [Comment("Auto Update GeoLocation (In ../Game-Manager-GoldKingZ/GeoLocation/)?")]
+        [Comment("Auto Update GeoLocation (In ../shared/GoldKingZ/GeoLocation/)?")]
         [Comment("true = Yes")]
         [Comment("false = No")]
-        public bool AutoUpdateGeoLocation { get; set; } = true;
+        public bool AutoUpdateGeoLocation { get; set; } = false;
         
         [Comment("Enable Debug Plugin In Server Console?")]
         [Comment("0 = No")]

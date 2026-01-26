@@ -177,6 +177,15 @@ public static class Extension
         return getplayer;
     }
 
+    public static CCSPlayerController? GetPlayerFromCBaseEntity(this CBaseEntity entity, bool realPlayer = true)
+    {
+        if (entity == null || !entity.IsValid || entity.DesignerName != "player")return null;
+
+        var entityIndex = entity.Index;
+
+        return Utilities.GetPlayers().FirstOrDefault(p =>p.IsValid(true) &&(realPlayer? p.Pawn.Value?.Index == entityIndex : p.PlayerPawn.Value?.Index == entityIndex));
+    }
+
     public static void PlayerHideHUD(this CCSPlayerController player, uint HideHUD, bool Hide)
     {
         if (player == null || !player.IsValid) return;
