@@ -33,10 +33,17 @@
 1815352525 DeathScream_Female BodyShotKillAndLegKill Global Side
 
 //Knife
-3475734633 Knife_StabRightClick Global Side
-1769891506 Knife_StabLeftClick Global Side
+3756387178 Knife_StabRightClick Global Side
+2294996470 Knife_Stab_BackSide_RightClick Global Side
+3439870439 Knife_StabLeftClick Global Side
+3393546924 Knife_Stab_BackSide_LeftClick Global Side
 2486534908 Knife_StabWall Global Side
-3634660983 Knife_SwingAir Global Side
+
+//Zeus
+3644530211 Zeus Fire Global Side
+4251682918 Zeus Fire Empty Global Side
+1814999476 Zeus Charged Global Side
+
 
 //Drop Weapons
 1346129716 DropWeapon_C4 Global Side
