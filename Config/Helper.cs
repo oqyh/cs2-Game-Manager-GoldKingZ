@@ -429,9 +429,12 @@ public class Helper
             MainPlugin.Instance.AddCommandListener("playerchatwheel", MainPlugin.Instance.Game_Listeners.BlockChatwheel_Listener, HookMode.Pre);
         }
 
-        if (Configs.Instance.BlockPing)
+        if (Configs.Instance.BlockPing == 1)
         {
             MainPlugin.Instance.AddCommandListener("player_ping", MainPlugin.Instance.Game_Listeners.BlockPing_Listener, HookMode.Pre);
+        }else if (Configs.Instance.BlockPing == 2)
+        {
+            MainPlugin.Instance.RegisterEventHandler<EventPlayerPing>(MainPlugin.Instance.OnEventPlayerPing, HookMode.Pre);
         }
 
         if (Configs.Instance.HideBloodDecals)
@@ -528,6 +531,7 @@ public class Helper
         MainPlugin.Instance.DeregisterEventHandler<EventWeaponFire>(MainPlugin.Instance.OnEventWeaponFire);
         MainPlugin.Instance.DeregisterEventHandler<EventWeaponReload>(MainPlugin.Instance.OnEventWeaponReload);
         MainPlugin.Instance.DeregisterEventHandler<EventItemEquip>(MainPlugin.Instance.OnEventItemEquip);
+        MainPlugin.Instance.DeregisterEventHandler<EventPlayerPing>(MainPlugin.Instance.OnEventPlayerPing, HookMode.Pre);
 
         MainPlugin.Instance.RemoveCommandListener("say", MainPlugin.Instance.OnPlayerSay, HookMode.Post);
         MainPlugin.Instance.RemoveCommandListener("say_team", MainPlugin.Instance.OnPlayerSay_Team, HookMode.Post);
@@ -1039,8 +1043,12 @@ public class Helper
                 player.SteamID,
                 "",
                 255,
+                0,
                 false,
                 null!,
+                DateTime.MinValue,
+                DateTime.MinValue,
+                DateTime.MinValue,
                 DateTime.MinValue,
                 DateTime.MinValue,
                 DateTime.MinValue

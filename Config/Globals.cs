@@ -46,12 +46,17 @@ public class Globals
         public ulong SteamId { get; set; }
         public string MessageType { get; set; }
         public int PlayerAlpha { get; set; }
+        public int AntiFlood_Times { get; set; }
         public bool StabedHisTeamMate { get; set; }
         public CounterStrikeSharp.API.Modules.Timers.Timer Timer_DeadBody { get; set; }
         public DateTime EventPlayerChat { get; set; }
         public DateTime EventPlayerChat_Filter { get; set; }
         public DateTime LastNameChangeTime { get; set; }
-        public PlayerDataClass(CCSPlayerController player, CCSPlayerController Attackerr, CCSPlayerController Victimm, string PlayerNamee, int PlayerName_Countt, bool PlayerName_Blockk, bool PlayerName_Block_Messagee, ulong steamId, string MessageTypee, int playerAlpha, bool StabedHisTeamMatee, CounterStrikeSharp.API.Modules.Timers.Timer timer_DeadBody, DateTime EventPlayerChatt, DateTime EventPlayerChat_Filterr, DateTime LastNameChangeTimee)
+        public DateTime AntiFlood_WindowStart { get; set; }
+        public DateTime AntiFlood_CountTime { get; set; }
+        public DateTime AntiFlood_BlockedUntil { get; set; }
+        
+        public PlayerDataClass(CCSPlayerController player, CCSPlayerController Attackerr, CCSPlayerController Victimm, string PlayerNamee, int PlayerName_Countt, bool PlayerName_Blockk, bool PlayerName_Block_Messagee, ulong steamId, string MessageTypee, int playerAlpha, int AntiFlood_Timess, bool StabedHisTeamMatee, CounterStrikeSharp.API.Modules.Timers.Timer timer_DeadBody, DateTime EventPlayerChatt, DateTime EventPlayerChat_Filterr, DateTime LastNameChangeTimee, DateTime AntiFlood_WindowStartt, DateTime AntiFlood_CountTimee, DateTime AntiFlood_BlockedUntill)
         {
             Player = player;
             Attacker = Attackerr;
@@ -62,12 +67,16 @@ public class Globals
             PlayerName_Block_Message = PlayerName_Block_Messagee;
             SteamId = steamId;
             PlayerAlpha = playerAlpha;
+            AntiFlood_Times = AntiFlood_Timess;
             StabedHisTeamMate = StabedHisTeamMatee;
             MessageType = MessageTypee;
             Timer_DeadBody = timer_DeadBody;
             EventPlayerChat = EventPlayerChatt;
             EventPlayerChat_Filter = EventPlayerChat_Filterr;
             LastNameChangeTime = LastNameChangeTimee;
+            AntiFlood_WindowStart = AntiFlood_WindowStartt;
+            AntiFlood_CountTime = AntiFlood_CountTimee;
+            AntiFlood_BlockedUntil = AntiFlood_BlockedUntill;
         }
     }
     public Dictionary<int, PlayerDataClass> Player_Data = new Dictionary<int, PlayerDataClass>();

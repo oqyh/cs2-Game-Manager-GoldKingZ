@@ -504,6 +504,14 @@ public class Game_UserMessages
     {
         if (!player.IsValid()) return HookResult.Continue;
 
+        if (Configs.Instance.AntiFlood_Messages > 0)
+        {
+            if (Handle_AntiFlood(player!, um!))
+            {
+                return HookResult.Handled;
+            }
+        }
+
         if (Configs.Instance.Filter_Players_Chat > 0)
         {
             if (Handle_FilterPlayersChat(player!, message, null!, um!))
@@ -601,6 +609,44 @@ public class Game_UserMessages
 
 
     #region Handles
+
+    public static bool Handle_AntiFlood(CCSPlayerController player, UserMessage um = null!)
+    {
+        if (Configs.Instance.AntiFlood_Messages <= 0) return false;
+        if (!MainPlugin.Instance.g_Main.Player_Data.TryGetValue(player.Slot, out var playerData)) return false;
+        if (Configs.Instance.AntiFlood_Ignore_Flags.HasValidPermissionData() && Helper.IsPlayerInGroupPermission(player, Configs.Instance.AntiFlood_Ignore_Flags)) return false;
+
+        bool onetime = (DateTime.Now - playerData.AntiFlood_CountTime).TotalSeconds > 0.4;
+        if (onetime) playerData.AntiFlood_CountTime = DateTime.Now;
+
+        if (playerData.AntiFlood_BlockedUntil > DateTime.Now)
+        {
+            var remaining = (playerData.AntiFlood_BlockedUntil - DateTime.Now).TotalSeconds;
+            if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.AntiFlood.Blocked"], (int)Math.Ceiling(remaining));
+            um?.Recipients.Clear();
+            return true;
+        }
+
+        if ((DateTime.Now - playerData.AntiFlood_WindowStart).TotalSeconds > Configs.Instance.AntiFlood_Seconds)
+        {
+            playerData.AntiFlood_Times = 0;
+            playerData.AntiFlood_WindowStart = DateTime.Now;
+        }
+
+        if (onetime) playerData.AntiFlood_Times++;
+
+        if (playerData.AntiFlood_Times > Configs.Instance.AntiFlood_Messages)
+        {
+            playerData.AntiFlood_BlockedUntil = DateTime.Now.AddSeconds(Configs.Instance.AntiFlood_PunishCooldown);
+            playerData.AntiFlood_Times = 0;
+
+            if (onetime) Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.AntiFlood.Blocked"], Configs.Instance.AntiFlood_PunishCooldown);
+            um?.Recipients.Clear();
+            return true;
+        }
+
+        return false;
+    }
 
     public static bool Handle_FilterPlayersChat(CCSPlayerController player, string message, CommandInfo commandInfo = null!, UserMessage um = null!)
     {

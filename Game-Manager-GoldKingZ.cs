@@ -58,7 +58,7 @@ public sealed class ClientPrefs
 public class MainPlugin : BasePlugin
 {
     public override string ModuleName => "Game Manager (Block/Hide Unnecessaries In Game)";
-    public override string ModuleVersion => "2.1.5";
+    public override string ModuleVersion => "2.1.6";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
     public static MainPlugin Instance { get; set; } = new();
@@ -226,6 +226,18 @@ public class MainPlugin : BasePlugin
             var centerhtml = builder.ToString();
             player.PrintToCenterHtml(centerhtml);
         }
+    }
+    
+    public HookResult OnEventPlayerPing(EventPlayerPing @event, GameEventInfo info)
+    {
+        if (@event == null) return HookResult.Continue;
+
+        var player = @event.Userid;
+        if (!player.IsValid(true)) return HookResult.Continue;
+
+        info.DontBroadcast = true;
+                
+        return HookResult.Continue;
     }
     
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)

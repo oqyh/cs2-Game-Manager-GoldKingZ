@@ -1,7 +1,7 @@
 {
 	"PrintToChatToPlayer.ReloadPlugin.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
 	"PrintToChatToPlayer.ReloadPlugin.Successfully": "{green}[Game Manager] {grey}Plugin Reloaded {lime}Successfully",
-
+	
 	"PrintToChatToPlayer.Toggle.AntiAimPunch.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
 	"PrintToChatToPlayer.Toggle.AntiAimPunch.Enabled": "{green}[Game Manager] {grey}Anti Aim Punch ScreenShake Is Now {lime}Enabled",
 	"PrintToChatToPlayer.Toggle.AntiAimPunch.Disabled": "{green}[Game Manager] {grey}Anti Aim Punch ScreenShake Is Now {darkred}Disabled",
@@ -17,6 +17,8 @@
 	"PrintToChatToPlayer.Toggle.MuteSounds_3.Not.Allowed": "{green}[Game Manager] {darkred}You Dont Have Permission",
 	"PrintToChatToPlayer.Toggle.MuteSounds_3.Enabled": "{green}[Game Manager] {grey}Extra Is Now {lime}Enabled",
 	"PrintToChatToPlayer.Toggle.MuteSounds_3.Disabled": "{green}[Game Manager] {grey}Extra Is Now {darkred}Disabled",
+	
+	"PrintToChatToPlayer.AntiFlood.Blocked": "{green}[Game Manager] {grey}Stop Flooding! Chat Blocked For {green}{0}{grey} Secs",
 
 	"PrintToChatToPlayer.BlockCommands": "{green}[Game Manager] {darkred}This Command {green}[{0}] Is Blocked By Server",
 	

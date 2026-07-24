@@ -16,7 +16,7 @@ namespace Game_Manager_GoldKingZ.Config
     public class Reload_GameManager
     {
         [Comment("Commands To Reload Plugin")]
-        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (!)")]
+        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (! or css_)")]
         [Comment("Making Both Console_Commands And Chat_Commands Empty = Disable")]
         [String("Console_Commands", "Chat_Commands")]
         public string Reload_GameManager_CommandsInGame { get; set; } = "Console_Commands: css_reloadgamemanager,css_reloadgm | Chat_Commands: ";
@@ -91,7 +91,7 @@ namespace Game_Manager_GoldKingZ.Config
         public int DisableAimPunch { get; set; } = 0;
 
         [Comment("If [DisableAimPunch = 2 or 3], Commands To Toggle")]
-        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (!)")]
+        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (! or css_)")]
         [Comment("Making Both Console_Commands And Chat_Commands Empty = Disable")]
         [String("Console_Commands", "Chat_Commands")]
         public string DisableAimPunch_CommandsInGame { get; set; } = "Console_Commands: css_aim,css_aimpunch | Chat_Commands: ";
@@ -163,7 +163,7 @@ namespace Game_Manager_GoldKingZ.Config
         };
 
         [Comment("If [Custom_MuteSounds1 = 2 or 3], Commands To Toggle")]
-        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (!)")]
+        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (! or css_)")]
         [Comment("Making Both Console_Commands And Chat_Commands Empty = Disable")]
         [String("Console_Commands", "Chat_Commands")]
         public string Custom_MuteSounds1_CommandsInGame { get; set; } = "Console_Commands: css_muteheadshot,css_mutehs | Chat_Commands: ";
@@ -235,7 +235,7 @@ namespace Game_Manager_GoldKingZ.Config
         };
 
         [Comment("If [Custom_MuteSounds2 = 2 or 3], Commands To Toggle")]
-        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (!)")]
+        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (! or css_)")]
         [Comment("Making Both Console_Commands And Chat_Commands Empty = Disable")]
         [String("Console_Commands", "Chat_Commands")]
         public string Custom_MuteSounds2_CommandsInGame { get; set; } = "Console_Commands: css_mutebodyshot,css_mutebs | Chat_Commands: ";
@@ -312,7 +312,7 @@ namespace Game_Manager_GoldKingZ.Config
         };
 
         [Comment("If [Custom_MuteSounds3 = 2 or 3], Commands To Toggle")]
-        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (!)")]
+        [Comment("Note: Console_Commands Can Be Execute Via Both Console And Chat By (! or css_)")]
         [Comment("Making Both Console_Commands And Chat_Commands Empty = Disable")]
         [String("Console_Commands", "Chat_Commands")]
         public string Custom_MuteSounds3_CommandsInGame { get; set; } = "Console_Commands: | Chat_Commands: ";
@@ -432,9 +432,15 @@ namespace Game_Manager_GoldKingZ.Config
         public bool BlockChatWheel { get; set; } = false;
 
         [Comment("Block Players Ping?")]
-        [Comment("true = Yes")]
-        [Comment("false = No")]
-        public bool BlockPing { get; set; } = false;
+        [Comment("0 = No")]
+        [Comment("1 = Yes, Completely")]
+        [Comment("2 = Yes, Only Sound")]
+        [Range(0, 2, 0,
+        "BlockPing: is invalid, setting to default value (0) Please Choose From 0 To 2.\n" +
+        "0 = No\n" +
+        "1 = Yes, Completely\n" +
+        "2 = Yes, Only Sound")]
+        public int BlockPing { get; set; } = 0;
 
         [Comment("Block Players Graffiti Spray?")]
         [Comment("true = Yes")]
@@ -515,6 +521,32 @@ namespace Game_Manager_GoldKingZ.Config
 
         [Comment("Block Ingame Commands")]
         public Block_Commands Block_Commands { get; set; } = new();
+
+        [Comment("Anti Flood Players Chat (Block Message Spam)?")]
+        [Comment("How Many Messages Allowed Within [AntiFlood_Seconds]")]
+        [Comment("Recommended To Use AntiFlood_Messages = 4")]
+        [Comment("0 = Disable Anti Flood")]
+        [Range(0, 999, 3,
+        "AntiFlood_Messages: is invalid, setting to default value (0) Please Choose From 0 To 999.\n" +
+        "0 = Disable Anti Flood")]
+        public int AntiFlood_Messages { get; set; } = 0;
+
+        [Comment("If [AntiFlood_Messages > 0], Time Window (In Secs) To Count Messages")]
+        [Range(1, 999, 5,
+        "AntiFlood_Seconds: is invalid, setting to default value (5) Please Choose From 1 To 999.")]
+        public int AntiFlood_Seconds { get; set; } = 5;
+
+        [Comment("If [AntiFlood_Messages] Pass, Punishment Cooldown (In Secs) Block Player From Chatting")]
+        [Range(1, 999, 10,
+        "AntiFlood_PunishCooldown: is invalid, setting to default value (10) Please Choose From 1 To 999.")]
+        public int AntiFlood_PunishCooldown { get; set; } = 10;
+
+        [Comment("If [AntiFlood_Messages > 0], Is There Any Specified Ignore Flags, Groups, SteamIDs")]
+        [Comment("Example:")]
+        [Comment("\"SteamIDs: 76561198206086993,STEAM_0:1:507335558 | Flags: @css/root,@css/admin | Groups: #css/root,#css/admin\"")]
+        [Comment("\"SteamIDs:  | Flags:  | Groups: \" = To Ignore No One (Anti Flood Applies To Everyone)")]
+        [String("SteamIDs", "Flags", "Groups")]
+        public string AntiFlood_Ignore_Flags { get; set; } = "SteamIDs: | Flags: | Groups:";
 
         [BreakLine("----------------------------[ ↓ Hide Config ↓ ]----------------------------{nextline}")]
 
@@ -1007,7 +1039,7 @@ namespace Game_Manager_GoldKingZ.Config
 
         [BreakLine("----------------------------[ ↓ Locally Config ↓ ]----------------------------{nextline}")]
 
-        [Comment("Save Players Data By Cookies Locally (In ../plugins/Game-Manager-GoldKingZ/cookies/)?")]
+        [Comment("Save Players Data By Cookies Locally (In ../plugins/ClientPrefs-GoldKingZ/Game-Manager-GoldKingZ/)?")]
         [Comment("0 = No")]
         [Comment("1 = Yes, But Save Data On Players Disconnect (Warning Performance)")]
         [Comment("2 = Yes, But Save Data On Map Change (Recommended)")]
