@@ -11,7 +11,7 @@
 
 ---
 
-# [CS2] Game-Manager-GoldKingZ (2.1.5)
+# [CS2] Game-Manager-GoldKingZ (2.1.6)
 
 Block/Hide Unnecessaries In Game
 
@@ -21,19 +21,20 @@ Block/Hide Unnecessaries In Game
 ![hidechat](https://github.com/oqyh/cs2-Game-Manager/assets/48490385/1b5e2e57-3936-416f-895b-02731780e577)
 ![dm](https://github.com/user-attachments/assets/8e7e1631-bd94-4f8c-be22-20e3175eddec)
 ![reward](https://github.com/user-attachments/assets/6964f35e-daa9-4132-9d47-52dfd1947abf)
+<img width="480" height="169" alt="game_manager 2 1 6" src="https://github.com/user-attachments/assets/79777c51-2be3-42fc-9cd6-2937c01ad5a5" />
 
 
 ---
 
 ## 📦 Dependencies
 
-[![Metamod:Source](https://img.shields.io/badge/Metamod:Source-2d2d2d?logo=sourceengine)](https://www.sourcemm.net)
+[![Metamod:Source](https://img.shields.io/badge/Metamod:Source-REQUIRED_TO_DOWNLOAD-red?logo=sourceengine&labelColor=2d2d2d)](https://www.sourcemm.net)
 
-[![CounterStrikeSharp](https://img.shields.io/badge/CounterStrikeSharp-83358F)](https://github.com/roflmuffin/CounterStrikeSharp)
+[![CounterStrikeSharp](https://img.shields.io/badge/CounterStrikeSharp-REQUIRED_TO_DOWNLOAD-red?logo=github&labelColor=83358F)](https://github.com/roflmuffin/CounterStrikeSharp)
 
-[![ClientPrefs-GoldKingZ](https://img.shields.io/badge/ClientPrefs--GoldKingZ-FFD700?logo=github)](https://github.com/oqyh/cs2-ClientPrefs-GoldKingZ/releases) **[Required — Download `ClientPrefs-GoldKingZ.x.x.x.zip`]**
+[![ClientPrefs-GoldKingZ](https://img.shields.io/badge/ClientPrefs--GoldKingZ-REQUIRED_TO_DOWNLOAD-red?logo=github&labelColor=FFD700)](https://github.com/oqyh/cs2-ClientPrefs-GoldKingZ/releases)
 
-[![JSON](https://img.shields.io/badge/JSON-000000?logo=json)](https://www.newtonsoft.com/json) [Included in zip]
+[![JSON](https://img.shields.io/badge/JSON-INCLUDED_IN_ZIP-brightgreen?logo=json&labelColor=000000)](https://www.newtonsoft.com/json)
 
 ---
 
@@ -82,7 +83,7 @@ Block/Hide Unnecessaries In Game
 | `BlockBotRadio` | Block Bot Radio | `true`/`false` | - |
 | `BlockGrenadesRadio` | Block Radio When Throwing Grenades | `true`/`false` | - |
 | `BlockChatWheel` | Block Chat Wheel | `true`/`false` | - |
-| `BlockPing` | Block Players Ping | `true`/`false` | - |
+| `BlockPing` | Block Players Ping | `0`-No<br>`1`-Yes, Completely<br>`2`-Yes, Only Sound | - |
 | `BlockSpray` | Block Players Graffiti Spray | `true`/`false` | - |
 | `BlockBots` | Block Bots (Permanently Remove bots) | `true`/`false` | - |
 | `BlockMapSaying` | Block when map sending messages | `0`-No<br>`1`-Yes, Completely<br>`2`-Yes, But Use `BlockMapSaying_Filter` | - |
@@ -96,7 +97,11 @@ Block/Hide Unnecessaries In Game
 | `Block_Commands_Contains` | Block commands containing | Array of strings | - |
 | `Block_Commands_Contains_IgnoreCase` | Ignore case for contains | `true`/`false` | - |
 | `Block_Commands_Ignore_Flags` | Ignore flags for command blocking | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `Block_Commands_StartWith` or `Block_Commands_Contains` |
- 
+| `AntiFlood_Messages` | Anti flood chat (max messages allowed within `AntiFlood_Seconds`) | `0`-Disable<br>`1`+ messages | - |
+| `AntiFlood_Seconds` | Time window (seconds) to count messages | e.g. `5` | `AntiFlood_Messages > 0` |
+| `AntiFlood_PunishCooldown` | Punishment cooldown (seconds) blocking player from chatting | e.g. `10` | `AntiFlood_Messages > 0` |
+| `AntiFlood_Ignore_Flags` | Ignore flags for anti flood | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `AntiFlood_Messages > 0` |
+
 </details>
 
 <details>
@@ -161,7 +166,19 @@ Block/Hide Unnecessaries In Game
 | `Custom_MuteSounds1_Flags` | Restricted flags | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `Custom_MuteSounds1=2 or 3` |
 | `Custom_MuteSounds1_Hide` | Hide chat after toggle | `0`-No<br>`1`-Only after success<br>`2`-Always hide | `Custom_MuteSounds1=2 or 3` |
 | `Custom_MuteSounds2` | Custom mute sounds 2 | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled)<br>`3`-Togglable (disabled) | - |
+| `Custom_MuteSounds2_SoundeventHashAndString_Global_Side` | Global soundevent hashes/names | Array of strings | `Custom_MuteSounds2=1` |
+| `Custom_MuteSounds2_SoundeventHashAndString_Victim_Side` | Victim-side soundevent hashes/names | Array of strings | `Custom_MuteSounds2=2 or 3` |
+| `Custom_MuteSounds2_SoundeventHashAndString_Attacker_Side` | Attacker-side soundevent hashes/names | Array of strings | `Custom_MuteSounds2=2 or 3` |
+| `Custom_MuteSounds2_CommandsInGame` | Toggle commands | `Console_Commands: | Chat_Commands:` | `Custom_MuteSounds2=2 or 3` |
+| `Custom_MuteSounds2_Flags` | Restricted flags | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `Custom_MuteSounds2=2 or 3` |
+| `Custom_MuteSounds2_Hide` | Hide chat after toggle | `0`-No<br>`1`-Only after success<br>`2`-Always hide | `Custom_MuteSounds2=2 or 3` |
 | `Custom_MuteSounds3` | Custom mute sounds 3 | `0`-No<br>`1`-Yes<br>`2`-Togglable (enabled)<br>`3`-Togglable (disabled) | - |
+| `Custom_MuteSounds3_SoundeventHashAndString_Global_Side` | Global soundevent hashes/names | Array of strings | `Custom_MuteSounds3=1` |
+| `Custom_MuteSounds3_SoundeventHashAndString_Victim_Side` | Victim-side soundevent hashes/names | Array of strings | `Custom_MuteSounds3=2 or 3` |
+| `Custom_MuteSounds3_SoundeventHashAndString_Attacker_Side` | Attacker-side soundevent hashes/names | Array of strings | `Custom_MuteSounds3=2 or 3` |
+| `Custom_MuteSounds3_CommandsInGame` | Toggle commands | `Console_Commands: | Chat_Commands:` | `Custom_MuteSounds3=2 or 3` |
+| `Custom_MuteSounds3_Flags` | Restricted flags | `SteamIDs: 76561198206086993, STEAM_0:1:507335558`<br>`Flags: @css/root, @css/admin`<br>`Groups: #css/root, #css/admin` | `Custom_MuteSounds3=2 or 3` |
+| `Custom_MuteSounds3_Hide` | Hide chat after toggle | `0`-No<br>`1`-Only after success<br>`2`-Always hide | `Custom_MuteSounds3=2 or 3` |
  
 </details>
 
@@ -376,6 +393,17 @@ Block/Hide Unnecessaries In Game
 
 <details>
 <summary><b>📋 View Version History</b> (Click to expand 🔽)</summary>
+
+### [2.1.6]
+- Upgraded to .NET 10
+- Remove Debug From Release For Optimization
+- Update ClientPrefs-GoldKingZ 1.0.3
+- Added AntiFlood_Messages
+- Added AntiFlood_Seconds
+- Added AntiFlood_PunishCooldown
+- Added AntiFlood_Ignore_Flags
+- Added BlockPing 2 Mute Sound Ping Only
+- Added Lang `PrintToChatToPlayer.AntiFlood.Blocked`
 
 ### [2.1.5]
 - Clean Up
