@@ -42,12 +42,15 @@ public class Game_UserMessages
 
     public HookResult MuteGunShots_UserMessages(UserMessage um)
     {
-        var weapon_id = um.ReadUInt("weapon_id");
-        var sound_type = um.ReadInt("sound_type");
-        var item_def_index = um.ReadInt("item_def_index");
-        Helper.DebugMessage("[Sounds_MuteGunShots] weapon_id : " + weapon_id, Configs.Instance.EnableDebug.ToDebugConfig(3));
-        Helper.DebugMessage("[Sounds_MuteGunShots] sound_type : " + sound_type, Configs.Instance.EnableDebug.ToDebugConfig(3));
-        Helper.DebugMessage("[Sounds_MuteGunShots] item_def_index : " + item_def_index, Configs.Instance.EnableDebug.ToDebugConfig(3));
+        if (Configs.Instance.EnableDebug.ToDebugConfig(3) >= 0)
+        {
+            var weapon_id = um.ReadUInt("weapon_id");
+            var sound_type = um.ReadInt("sound_type");
+            var item_def_index = um.ReadInt("item_def_index");
+        if (Configs.Instance.EnableDebug.ToDebugConfig(3) >= 0) Helper.DebugMessage("[Sounds_MuteGunShots] weapon_id : " + weapon_id, Configs.Instance.EnableDebug.ToDebugConfig(3));
+        if (Configs.Instance.EnableDebug.ToDebugConfig(3) >= 0) Helper.DebugMessage("[Sounds_MuteGunShots] sound_type : " + sound_type, Configs.Instance.EnableDebug.ToDebugConfig(3));
+        if (Configs.Instance.EnableDebug.ToDebugConfig(3) >= 0) Helper.DebugMessage("[Sounds_MuteGunShots] item_def_index : " + item_def_index, Configs.Instance.EnableDebug.ToDebugConfig(3));
+        }
 
         if (Configs.Instance.Sounds_MuteGunShots == 1)
         {
@@ -87,11 +90,11 @@ public class Game_UserMessages
             || Configs.Instance.Ignore_ChickenKilledMessages && message.Contains("#Pet_Killed")
             || Configs.Instance.Ignore_Custom_TextMsg.Contains(message))
             {
-                Helper.DebugMessage("[Ignore_Custom] [TextMsg] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(4) >= 0) Helper.DebugMessage("[Ignore_Custom] [TextMsg] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
                 um.Recipients.Clear();
             } else
             {
-                Helper.DebugMessage("[Ignore_Custom] [TextMsg] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(4) >= 0) Helper.DebugMessage("[Ignore_Custom] [TextMsg] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
             }
             
         }
@@ -108,11 +111,11 @@ public class Game_UserMessages
             || Configs.Instance.Ignore_DefusingBombMessages && message.Contains("#Cstrike_TitlesTXT_Defusing_Bomb")
             || Configs.Instance.Ignore_Custom_RadioText.Contains(message))
             {
-                Helper.DebugMessage("[Ignore_Custom] [RadioText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(4) >= 0) Helper.DebugMessage("[Ignore_Custom] [RadioText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
                 um.Recipients.Clear();
             } else
             {
-                Helper.DebugMessage("[Ignore_Custom] [RadioText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(4) >= 0) Helper.DebugMessage("[Ignore_Custom] [RadioText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
             }
             
         }
@@ -125,11 +128,11 @@ public class Game_UserMessages
         if (Configs.Instance.Ignore_TeamMateAttackMessages && Helper.TeamWarningArray.Contains(message)
         || Configs.Instance.Ignore_Custom_HintText.Contains(message))
         {
-            Helper.DebugMessage("[Ignore_Custom] [HintText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+            if (Configs.Instance.EnableDebug.ToDebugConfig(4) >= 0) Helper.DebugMessage("[Ignore_Custom] [HintText] - [MUTED] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
             um.Recipients.Clear();
         }else
         {
-            Helper.DebugMessage("[Ignore_Custom] [HintText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
+            if (Configs.Instance.EnableDebug.ToDebugConfig(4) >= 0) Helper.DebugMessage("[Ignore_Custom] [HintText] " + message, Configs.Instance.EnableDebug.ToDebugConfig(4));
         }
 
         return HookResult.Continue;
@@ -178,14 +181,14 @@ public class Game_UserMessages
             switch (config1.Custom_MuteSounds1)
             {
                 case 1:
-                    if (config1.Custom_MuteSounds1_SoundeventHashAndString_Global_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config1.Custom_MuteSounds1_SoundeventHashAndString_Global_Side, soundevent))
                     {
                         Custom_Mute1 = true;
                     }
                     break;
                         
                 case 2 or 3:
-                    if (config1.Custom_MuteSounds1_SoundeventHashAndString_Attacker_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config1.Custom_MuteSounds1_SoundeventHashAndString_Attacker_Side, soundevent))
                     {
                         if (attacker.IsValid(true) && 
                             MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(attacker.Slot, out var attackerData))
@@ -198,7 +201,7 @@ public class Game_UserMessages
                         }
                     }
                     
-                    if (config1.Custom_MuteSounds1_SoundeventHashAndString_Victim_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config1.Custom_MuteSounds1_SoundeventHashAndString_Victim_Side, soundevent))
                     {
                         if (victim.IsValid(true) && 
                             MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(victim.Slot, out var victimData))
@@ -220,14 +223,14 @@ public class Game_UserMessages
             switch (config2.Custom_MuteSounds2)
             {
                 case 1:
-                    if (config2.Custom_MuteSounds2_SoundeventHashAndString_Global_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config2.Custom_MuteSounds2_SoundeventHashAndString_Global_Side, soundevent))
                     {
                         Custom_Mute2 = true;
                     }
                     break;
                         
                 case 2 or 3:
-                    if (config2.Custom_MuteSounds2_SoundeventHashAndString_Attacker_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config2.Custom_MuteSounds2_SoundeventHashAndString_Attacker_Side, soundevent))
                     {
                         if (attacker.IsValid(true) && 
                             MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(attacker.Slot, out var attackerData))
@@ -240,7 +243,7 @@ public class Game_UserMessages
                         }
                     }
                     
-                    if (config2.Custom_MuteSounds2_SoundeventHashAndString_Victim_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config2.Custom_MuteSounds2_SoundeventHashAndString_Victim_Side, soundevent))
                     {
                         if (victim.IsValid(true) && 
                             MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(victim.Slot, out var victimData))
@@ -262,14 +265,14 @@ public class Game_UserMessages
             switch (config3.Custom_MuteSounds3)
             {
                 case 1:
-                    if (config3.Custom_MuteSounds3_SoundeventHashAndString_Global_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config3.Custom_MuteSounds3_SoundeventHashAndString_Global_Side, soundevent))
                     {
                         Custom_Mute3 = true;
                     }
                     break;
                         
                 case 2 or 3:
-                    if (config3.Custom_MuteSounds3_SoundeventHashAndString_Attacker_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config3.Custom_MuteSounds3_SoundeventHashAndString_Attacker_Side, soundevent))
                     {
                         if (attacker.IsValid(true) && 
                             MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(attacker.Slot, out var attackerData))
@@ -282,7 +285,7 @@ public class Game_UserMessages
                         }
                     }
                     
-                    if (config3.Custom_MuteSounds3_SoundeventHashAndString_Victim_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config3.Custom_MuteSounds3_SoundeventHashAndString_Victim_Side, soundevent))
                     {
                         if (victim.IsValid(true) && 
                             MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(victim.Slot, out var victimData))
@@ -300,7 +303,7 @@ public class Game_UserMessages
         
         bool MuteKnife = false;
         if (Configs.Instance.Sounds_MuteKnife > 0 && 
-            Configs.Instance.Sounds_MuteKnife_SoundeventHashAndString.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+            SoundRules.Matches(Configs.Instance.Sounds_MuteKnife_SoundeventHashAndString, soundevent))
         {
             switch (Configs.Instance.Sounds_MuteKnife)
             {
@@ -320,16 +323,16 @@ public class Game_UserMessages
         {
             if(attacker.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - Attacker: {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - Attacker: {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else if(victim.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - Victim: {victim.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - Victim: {victim.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else if(PlayerMadeSounds.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - Player: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - Player: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] [MUTED] - GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
             return HookResult.Stop;
         }
@@ -337,16 +340,16 @@ public class Game_UserMessages
         {
             if(attacker.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] Attacker: {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] Attacker: {attacker.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else if(victim.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] Victim: {victim.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] Victim: {victim.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else if(PlayerMadeSounds.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] Player: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] Player: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][UserMessages] GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
         }
         
@@ -379,14 +382,14 @@ public class Game_UserMessages
             switch (config1.Custom_MuteSounds1)
             {
                 case 1:
-                    if (config1.Custom_MuteSounds1_SoundeventHashAndString_Global_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config1.Custom_MuteSounds1_SoundeventHashAndString_Global_Side, soundevent))
                     {
                         Custom_Mute1 = true;
                     }
                     break;
                         
                 case 2 or 3:
-                    if (config1.Custom_MuteSounds1_SoundeventHashAndString_Attacker_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config1.Custom_MuteSounds1_SoundeventHashAndString_Attacker_Side, soundevent))
                     {
                         if (PlayerMadeSounds.IsValid(true) && MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(PlayerMadeSounds.Slot, out var attackerData))
                         {
@@ -407,14 +410,14 @@ public class Game_UserMessages
             switch (config2.Custom_MuteSounds2)
             {
                 case 1:
-                    if (config2.Custom_MuteSounds2_SoundeventHashAndString_Global_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config2.Custom_MuteSounds2_SoundeventHashAndString_Global_Side, soundevent))
                     {
                         Custom_Mute2 = true;
                     }
                     break;
                         
                 case 2 or 3:
-                    if (config2.Custom_MuteSounds2_SoundeventHashAndString_Attacker_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config2.Custom_MuteSounds2_SoundeventHashAndString_Attacker_Side, soundevent))
                     {
                         if (PlayerMadeSounds.IsValid(true) && MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(PlayerMadeSounds.Slot, out var attackerData))
                         {
@@ -435,14 +438,14 @@ public class Game_UserMessages
             switch (config3.Custom_MuteSounds3)
             {
                 case 1:
-                    if (config3.Custom_MuteSounds3_SoundeventHashAndString_Global_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config3.Custom_MuteSounds3_SoundeventHashAndString_Global_Side, soundevent))
                     {
                         Custom_Mute3 = true;
                     }
                     break;
                         
                 case 2 or 3:
-                    if (config3.Custom_MuteSounds3_SoundeventHashAndString_Attacker_Side.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    if (SoundRules.Matches(config3.Custom_MuteSounds3_SoundeventHashAndString_Attacker_Side, soundevent))
                     {
                         if (PlayerMadeSounds.IsValid(true) && MainPlugin.Instance._prefs != null && MainPlugin.Instance._prefs.TryGetValue(PlayerMadeSounds.Slot, out var attackerData))
                         {
@@ -459,7 +462,7 @@ public class Game_UserMessages
         
         bool MuteKnife = false;
         if (Configs.Instance.Sounds_MuteKnife > 0 && 
-            Configs.Instance.Sounds_MuteKnife_SoundeventHashAndString.Any(x => soundevent.Contains(x, StringComparison.OrdinalIgnoreCase)))
+            SoundRules.Matches(Configs.Instance.Sounds_MuteKnife_SoundeventHashAndString, soundevent))
         {
             switch (Configs.Instance.Sounds_MuteKnife)
             {
@@ -479,10 +482,10 @@ public class Game_UserMessages
         {
             if(PlayerMadeSounds.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] [MUTED] - Attacker: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] [MUTED] - Attacker: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] [MUTED] - GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] [MUTED] - GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
             return HookResult.Stop;
         }
@@ -490,10 +493,10 @@ public class Game_UserMessages
         {
             if(PlayerMadeSounds.IsValid(true))
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] - Attacker: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] - Attacker: {PlayerMadeSounds.PlayerName} : {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }else
             {
-                Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] - GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
+                if (Configs.Instance.EnableDebug.ToDebugConfig(2) >= 0) Helper.DebugMessage($"[Custom_MuteSounds][WeaponSound] - GLOBAL: {soundevent}", Configs.Instance.EnableDebug.ToDebugConfig(2));
             }
         }
         
@@ -781,22 +784,21 @@ public class Game_UserMessages
         {
             if (onetime)
             {
-                Server.NextFrame(() =>
+                MainPlugin.Instance.QueuePlayerFrame(player, () =>
                 {
-                    Helper.RemoveRegisterCommandsAndHooks();
-                    Helper.ClearVariables();
-                    
-                    Configs.Load(MainPlugin.Instance.ModuleDirectory);
-                    Helper.LoadJson(true, player);
+                    try
+                    {
+                        MainPlugin.Instance.ReloadConfiguration();
 
-                    Helper.DownloadMissingFiles();
-                    Helper.RegisterCommandsAndHooks();
-                    Helper.ExectueCommands();
-                    Helper.ReloadPlayersGlobals();
-                    Helper.StartTimer();
+                    }
+                    catch (InvalidDataException)
+                    {
+                        Helper.DebugMessage("Config reload rejected; existing config and handlers retained.", 0);
+                        Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.ReloadPlugin.Invalid"]);
+                        return;
+                    }
+                    Helper.AdvancedPlayerPrintToChat(player, null!, MainPlugin.Instance.Localizer["PrintToChatToPlayer.ReloadPlugin.Successfully"]);
                 });
-
-                Helper.AdvancedPlayerPrintToChat(player, commandInfo, MainPlugin.Instance.Localizer["PrintToChatToPlayer.ReloadPlugin.Successfully"]);
             }
 
             Helper.MuteCommands(um, cfg.Reload_GameManager_Hide);

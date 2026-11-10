@@ -58,9 +58,11 @@ public class Game_Listeners
         if (!player.IsValid()
         ||Configs.Instance.Block_Commands.Block_Commands_Ignore_Flags.HasValidPermissionData() && Helper.IsPlayerInGroupPermission(player, Configs.Instance.Block_Commands.Block_Commands_Ignore_Flags)) return HookResult.Continue;
 
+        var cfg = Configs.Instance.Block_Commands;
+        if (cfg.Block_Commands_StartWith.Count == 0 && cfg.Block_Commands_Contains.Count == 0) return HookResult.Continue;
         var commands = info.GetCommandString.ToString();
-        if (Configs.Instance.Block_Commands.Block_Commands_StartWith.Any(blocked => commands.StartsWith(blocked, Helper.GetComparison(Configs.Instance.Block_Commands.Block_Commands_StartWith_IgnoreCase)))
-        || Configs.Instance.Block_Commands.Block_Commands_Contains.Any(blocked => commands.Contains(blocked, Helper.GetComparison(Configs.Instance.Block_Commands.Block_Commands_Contains_IgnoreCase))))
+        if (CommandRules.Matches(commands, cfg.Block_Commands_StartWith, cfg.Block_Commands_StartWith_IgnoreCase,
+            cfg.Block_Commands_Contains, cfg.Block_Commands_Contains_IgnoreCase))
         {
             Helper.AdvancedPlayerPrintToChat(player, info, MainPlugin.Instance.Localizer["PrintToChatToPlayer.BlockCommands"], commands);
             return HookResult.Handled;

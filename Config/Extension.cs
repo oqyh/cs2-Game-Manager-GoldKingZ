@@ -167,6 +167,7 @@ public static class Extension
         var PlayerPawnValue = PlayerPawn.Value;
         if (PlayerPawnValue == null || !PlayerPawnValue.IsValid) return;
 
+        Helper.TrackRender(PlayerPawnValue, Color.FromArgb(alpha, red, green, blue));
         PlayerPawnValue.Render = Color.FromArgb(alpha, red, green, blue);
         Utilities.SetStateChanged(PlayerPawnValue, "CBaseModelEntity", "m_clrRender");
     }
@@ -193,6 +194,12 @@ public static class Extension
         if (entity == null || !entity.IsValid || entity.DesignerName != "player")return null;
 
         var entityIndex = entity.Index;
+        var pawn = entity.As<CCSPlayerPawn>();
+        var candidate = pawn.Controller.Value?.As<CCSPlayerController>();
+        if (candidate.IsValid(true) && !candidate.IsBot && !candidate.ControllingBot && (realPlayer ? candidate.Pawn.Value?.Index : candidate.PlayerPawn.Value?.Index) == entityIndex)
+            return candidate;
+        // Bot takeover can associate a different controller; preserve the original lookup.
+
 
         return Utilities.GetPlayers().FirstOrDefault(p =>p.IsValid(true) &&(realPlayer? p.Pawn.Value?.Index == entityIndex : p.PlayerPawn.Value?.Index == entityIndex));
     }
@@ -209,6 +216,7 @@ public static class Extension
 
         if (Hide)
         {
+            Helper.TrackHud(PlayerPawnValue, HideHUD);
             PlayerPawnValue.HideHUD |= HideHUD;
         }
         else
