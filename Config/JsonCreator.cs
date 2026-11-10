@@ -219,7 +219,7 @@ public class JsonCreator
                     Directory.CreateDirectory(directory);
                 }
 
-                if (!File.Exists(filePath) || string.IsNullOrWhiteSpace(File.ReadAllText(filePath)))
+                if (!File.Exists(filePath))
                 {
                     File.WriteAllText(filePath, defaultJson);
                 }

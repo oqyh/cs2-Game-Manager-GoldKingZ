@@ -17,6 +17,7 @@ public class CustomGameData
     private readonly Dictionary<string, string> _libraries  = new();
     private readonly Dictionary<string, int>    _offsets    = new();
     private bool _isLoaded = false;
+    internal static string Status => _instance == null ? "unloaded" : _instance._isLoaded ? "loaded" : "failed";
 
     private static string? GetModulePath(string library) => library.ToLowerInvariant() switch
     {
@@ -91,7 +92,8 @@ public class CustomGameData
 
         if (!_instance._isLoaded)
         {
-            Helper.DebugMessage("GameData failed to load");
+            Helper.DebugMessage("GameData failed to load", 0);
+            _instance = null;
             return;
         }
 

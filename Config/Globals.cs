@@ -41,7 +41,18 @@ public class Globals
         public CCSPlayerController Victim { get; set; }
         public string PlayerName { get; set; }
         public int PlayerName_Count { get; set; }
-        public bool PlayerName_Block { get; set; }
+        private bool nameBlocked;
+        public bool PlayerName_Block
+        {
+            get => nameBlocked;
+            set
+            {
+                nameBlocked = value;
+                if (value) MainPlugin.Instance.g_Main.ActiveNameBlocks.Add(this);
+                else MainPlugin.Instance.g_Main.ActiveNameBlocks.Remove(this);
+            }
+        }
+        public readonly CountdownText Countdown = new();
         public bool PlayerName_Block_Message { get; set; }
         public ulong SteamId { get; set; }
         public string MessageType { get; set; }
@@ -79,6 +90,7 @@ public class Globals
             AntiFlood_BlockedUntil = AntiFlood_BlockedUntill;
         }
     }
+    public readonly HashSet<PlayerDataClass> ActiveNameBlocks = new();
     public Dictionary<int, PlayerDataClass> Player_Data = new Dictionary<int, PlayerDataClass>();
     public Dictionary<string, string> HookConVars = new();
     public Dictionary<int, long> ActiveReloadId = new();
@@ -91,7 +103,7 @@ public class Globals
 
     public void Clear()
     {
-        _reloadIdCounter = 0;
+        ActiveNameBlocks.Clear();
         Player_Data?.Clear();
         ActiveReloadId?.Clear();
         CbaseWeapons?.Clear();
